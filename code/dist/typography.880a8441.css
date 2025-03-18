@@ -1,0 +1,19 @@
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Roboto'), local('Roboto-Regular'),
+         url('/roboto-v20-latin-regular.4700f6d2.woff2') format('woff2'), 
+         url('/roboto-v20-latin-regular.377f7333.woff') format('woff'); 
+  }
+
+@font-face {
+    font-family: 'Roboto Slab';
+    font-style: normal;
+    font-weight: 400;
+    src: local(''),
+         url('/roboto-slab-v12-latin-regular.2893b4cc.woff2') format('woff2'), 
+         url('/roboto-slab-v12-latin-regular.46b9acf3.woff') format('woff'); 
+  }
+
+/*# sourceMappingURL=/typography.880a8441.css.map */
