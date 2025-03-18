@@ -53,3 +53,31 @@ export function cleanMovieName (name) {
   if (articleMatch) nameStr = `${articleMatch[2]} ${articleMatch[1]}`
   return nameStr.toLowerCase().replace(/[^a-z0-9\s]/g, '')
 }
+
+export function adjustToInflation (movie) {
+  ///
+}
+
+export function parseRuntime (runtimeString) {
+  if (!runtimeString || typeof runtimeString !== 'string') return null
+  let totalMins = 0
+
+  const hoursMatch = runtimeString.match(/(\d+)h/)
+  const minutesMatch = runtimeString.match(/(\d+)m/)
+
+  if (hoursMatch && hoursMatch[1]) totalMins += parseInt(hoursMatch[1], 10) * 60
+  if (minutesMatch && minutesMatch[1]) totalMins += parseInt(minutesMatch[1], 10)
+
+  return totalMins > 0 ? totalMins : null
+}
+
+export const stopWords = new Set([
+  'about', 'after', 'again', 'against', 'all', 'also', 'and', 'any', 'are', 'because',
+  'been', 'before', 'being', 'between', 'both', 'but', 'can', 'cant', 'could', 'did', 'does',
+  'doing', 'dont', 'down', 'during', 'each', 'few', 'for', 'from', 'further', 'had', 'has',
+  'have', 'having', 'his', 'here', 'how', 'into', 'its', 'just', 'more', 'most', 'not', 'now', 'off',
+  'once', 'only', 'other', 'over', 'same', 'should', 'some', 'such', 'than', 'that',
+  'the', 'their', 'them', 'then', 'there', 'theres', 'these', 'they', 'this', 'those', 'through',
+  'too', 'under', 'until', 'very', 'was', 'were', 'what', 'when', 'where', 'which',
+  'while', 'who', 'whom', 'why', 'will', 'with', 'would', 'your'
+])

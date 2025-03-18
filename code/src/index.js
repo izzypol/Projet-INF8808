@@ -6,7 +6,7 @@ import { addAdditionalMovieData, getAdditionalMovieData } from './scripts/proces
 import { processMovieData } from './scripts/process_imdb'
 import {
   getFilmContributorsData, getGenreDataIntervals,
-  getTopCollaborations, getCertificateData, getDataBySeason, getMovieLengthData
+  getTopCollaborations, getCertificateData, getDataBySeason, getMovieLengthData, getTaglineWordsData, getTaglineLengthData
 } from './scripts/preprocess_data'
 
 // import * as helper from './scripts/helper.js'
@@ -71,10 +71,9 @@ import {
     const seasonalData = getDataBySeason(imdb)
 
     const movieLengthData = getMovieLengthData(imdb)
-    console.log(imdb)
-    console.log(movieLengthData)
-
-    // const seasonalReleaseData = getDataBySeason(imdb)
+    const taglineWordData = getTaglineWordsData(imdb)
+    const taglineLengthData = getTaglineLengthData(imdb)
+    console.log(taglineLengthData)
 
     // }, [])
     // d3.csv('./golden_globe_awards.csv', d3.autoType).then(function (data) {

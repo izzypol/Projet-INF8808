@@ -1,3 +1,5 @@
+import { stopWords, parseRuntime } from './helper'
+
 /**
  * Helper functions for metrics calculations
  */
@@ -173,16 +175,16 @@ export function getGenreDataIntervals (movies) {
   return decades
 }
 
-export function createYearIntervals (movies) {
+export function createYearIntervals (movies, intervalSize = 10) {
   const minYear = movies.reduce((min, movie) => movie.year < min ? movie.year : min, Number.MAX_VALUE)
   const maxYear = movies.reduce((max, movie) => movie.year > max ? movie.year : max, Number.MIN_VALUE)
 
-  const firstDecade = Math.floor(minYear / 10) * 10
-  const lastDecade = Math.floor(maxYear / 10) * 10
+  const firstDecade = Math.floor(minYear / intervalSize) * intervalSize
+  const lastDecade = Math.floor(maxYear / intervalSize) * intervalSize
 
   const intervals = []
-  for (let decade = firstDecade; decade <= lastDecade; decade += 10) {
-    const decadeYears = decade + 9
+  for (let decade = firstDecade; decade <= lastDecade; decade += intervalSize) {
+    const decadeYears = decade + (intervalSize - 1)
     intervals.push({
       startYear: decade,
       endYear: decadeYears,
@@ -441,7 +443,7 @@ export function getDataBySeason (movies) {
   return seasons
 }
 
-export function getMovieLengthData (movies) {
+export function getMovieLengthData (movies, intervalSize = 10) {
   let minRuntime = Number.MAX_VALUE
   let maxRuntime = 0
 
@@ -453,17 +455,14 @@ export function getMovieLengthData (movies) {
     }
   })
 
-  const firstInterval = Math.floor(minRuntime / 10) * 10
-  const lastInterval = Math.floor(maxRuntime / 10) * 10
-
-  console.log(minRuntime)
-  console.log(maxRuntime)
+  const firstInterval = Math.floor(minRuntime / intervalSize) * intervalSize
+  const lastInterval = Math.floor(maxRuntime / intervalSize) * intervalSize
 
   const intervals = []
-  for (let minutes = firstInterval; minutes <= lastInterval; minutes += 10) {
+  for (let minutes = firstInterval; minutes <= lastInterval; minutes += intervalSize) {
     intervals.push({
       startMinutes: minutes,
-      endMinutes: minutes + 9,
+      endMinutes: minutes + (intervalSize - 1),
       label: `${minutes}s`,
       movies: [],
       nMovies: 0,
@@ -506,15 +505,147 @@ export function getMovieLengthData (movies) {
   return intervals
 }
 
-function parseRuntime (runtimeString) {
-  if (!runtimeString || typeof runtimeString !== 'string') return null
-  let totalMins = 0
+export function getTaglineWordsData (movies, minWordLength = 3, minOccurrences = 2) {
+  const createWordObject = () => {
+    return {
+      movies: [],
+      count: 0,
+      genres: [],
+      mostPopularGenre: null,
+      ...MetricsHelper.createMetricsObject()
+    }
+  }
 
-  const hoursMatch = runtimeString.match(/(\d+)h/)
-  const minutesMatch = runtimeString.match(/(\d+)m/)
+  const wordCounts = {}
+  movies.forEach(movie => {
+    if (!movie.tagline || typeof movie.tagline !== 'string') return
 
-  if (hoursMatch && hoursMatch[1]) totalMins += parseInt(hoursMatch[1], 10) * 60
-  if (minutesMatch && minutesMatch[1]) totalMins += parseInt(minutesMatch[1], 10)
+    const words = movie.tagline
+      .toLowerCase()
+      .replace(/[^\w\s]/g, '')
+      .split(/\s+/)
+      .filter(word =>
+        word.length >= minWordLength &&
+        !stopWords.has(word)
+      )
 
-  return totalMins > 0 ? totalMins : null
+    words.forEach(word => {
+      if (!wordCounts[word]) wordCounts[word] = 0
+      wordCounts[word]++
+    })
+  })
+
+  const significantWords = Object.keys(wordCounts)
+    .filter(word => wordCounts[word] >= minOccurrences)
+
+  const wordData = {}
+  significantWords.forEach(word => {
+    wordData[word] = createWordObject()
+  })
+
+  movies.forEach(movie => {
+    if (!movie.tagline || typeof movie.tagline !== 'string') return
+
+    const movieWords = new Set(
+      movie.tagline
+        .toLowerCase()
+        .replace(/[^\w\s]/g, '')
+        .split(/\s+/)
+        .filter(word => significantWords.includes(word))
+    )
+
+    movieWords.forEach(word => {
+      wordData[word].movies.push({
+        name: movie.name,
+        year: movie.year,
+        tagline: movie.tagline
+      })
+
+      wordData[word].count++
+
+      MetricsHelper.addMovieMetrics(wordData[word], movie)
+
+      if (movie.genre) {
+        const genres = Array.isArray(movie.genre) ? movie.genre : [movie.genre]
+        genres.forEach(genre => {
+          if (genre && genre.trim()) wordData[word].genres.push(genre.trim())
+        })
+      }
+    })
+  })
+
+  Object.keys(wordData).forEach(word => {
+    const data = wordData[word]
+    MetricsHelper.calculateAverages(data)
+
+    if (data.genres.length) {
+      const { mostPopularGenre, genreCounts } = MetricsHelper.findMostPopularGenre(data.genres)
+      data.mostPopularGenre = mostPopularGenre
+      data.genreCounts = genreCounts
+    }
+
+    MetricsHelper.cleanupMetricsProperties(data)
+    delete data.genres
+  })
+
+  const result = Object.entries(wordData)
+    .map(([word, data]) => ({
+      word,
+      ...data
+    }))
+    .sort((a, b) => b.count - a.count)
+
+  return result
+}
+
+export function getTaglineLengthData (movies) {
+  const lengthMap = {}
+
+  const createLengthObject = () => {
+    return {
+      movies: [],
+      count: 0,
+      wordCount: 0,
+      ...MetricsHelper.createMetricsObject()
+    }
+  }
+
+  movies.forEach(movie => {
+    if (!movie.tagline || typeof movie.tagline !== 'string') return
+
+    const tagline = movie.tagline.trim()
+    if (tagline.length === 0) return
+
+    const length = tagline.length
+
+    if (!lengthMap[length]) lengthMap[length] = createLengthObject()
+    lengthMap[length].movies.push({
+      name: movie.name,
+      year: movie.year,
+      tagline: movie.tagline
+    })
+    lengthMap[length].count++
+
+    const wordCount = tagline.split(/\s+/).length
+
+    lengthMap[length].wordCount += wordCount
+    MetricsHelper.addMovieMetrics(lengthMap[length], movie)
+  })
+
+  const result = Object.entries(lengthMap).map(([length, data]) => {
+    MetricsHelper.calculateAverages(data)
+
+    data.avgWordCount = data.wordCount / data.count
+    delete data.wordCount
+
+    MetricsHelper.cleanupMetricsProperties(data)
+    delete data.genres
+
+    return {
+      length: parseInt(length, 10),
+      ...data
+    }
+  })
+
+  return result.sort((a, b) => a.length - b.length)
 }

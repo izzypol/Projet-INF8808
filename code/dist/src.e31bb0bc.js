@@ -123,7 +123,10 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.adjustToInflation = adjustToInflation;
 exports.cleanMovieName = cleanMovieName;
+exports.parseRuntime = parseRuntime;
+exports.stopWords = void 0;
 // /**
 //  * Generates the SVG element g which will contain the data visualisation.
 //  *
@@ -177,6 +180,19 @@ function cleanMovieName(name) {
   if (articleMatch) nameStr = "".concat(articleMatch[2], " ").concat(articleMatch[1]);
   return nameStr.toLowerCase().replace(/[^a-z0-9\s]/g, '');
 }
+function adjustToInflation(movie) {
+  ///
+}
+function parseRuntime(runtimeString) {
+  if (!runtimeString || typeof runtimeString !== 'string') return null;
+  var totalMins = 0;
+  var hoursMatch = runtimeString.match(/(\d+)h/);
+  var minutesMatch = runtimeString.match(/(\d+)m/);
+  if (hoursMatch && hoursMatch[1]) totalMins += parseInt(hoursMatch[1], 10) * 60;
+  if (minutesMatch && minutesMatch[1]) totalMins += parseInt(minutesMatch[1], 10);
+  return totalMins > 0 ? totalMins : null;
+}
+var stopWords = exports.stopWords = new Set(['about', 'after', 'again', 'against', 'all', 'also', 'and', 'any', 'are', 'because', 'been', 'before', 'being', 'between', 'both', 'but', 'can', 'cant', 'could', 'did', 'does', 'doing', 'dont', 'down', 'during', 'each', 'few', 'for', 'from', 'further', 'had', 'has', 'have', 'having', 'his', 'here', 'how', 'into', 'its', 'just', 'more', 'most', 'not', 'now', 'off', 'once', 'only', 'other', 'over', 'same', 'should', 'some', 'such', 'than', 'that', 'the', 'their', 'them', 'then', 'there', 'theres', 'these', 'they', 'this', 'those', 'through', 'too', 'under', 'until', 'very', 'was', 'were', 'what', 'when', 'where', 'which', 'while', 'who', 'whom', 'why', 'will', 'with', 'would', 'your']);
 },{}],"scripts/process_golden_globes.js":[function(require,module,exports) {
 "use strict";
 
@@ -452,7 +468,10 @@ exports.getDataBySeason = getDataBySeason;
 exports.getFilmContributorsData = getFilmContributorsData;
 exports.getGenreDataIntervals = getGenreDataIntervals;
 exports.getMovieLengthData = getMovieLengthData;
+exports.getTaglineLengthData = getTaglineLengthData;
+exports.getTaglineWordsData = getTaglineWordsData;
 exports.getTopCollaborations = getTopCollaborations;
+var _helper = require("./helper");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
@@ -626,17 +645,18 @@ function getGenreDataIntervals(movies) {
   return decades;
 }
 function createYearIntervals(movies) {
+  var intervalSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
   var minYear = movies.reduce(function (min, movie) {
     return movie.year < min ? movie.year : min;
   }, Number.MAX_VALUE);
   var maxYear = movies.reduce(function (max, movie) {
     return movie.year > max ? movie.year : max;
   }, Number.MIN_VALUE);
-  var firstDecade = Math.floor(minYear / 10) * 10;
-  var lastDecade = Math.floor(maxYear / 10) * 10;
+  var firstDecade = Math.floor(minYear / intervalSize) * intervalSize;
+  var lastDecade = Math.floor(maxYear / intervalSize) * intervalSize;
   var intervals = [];
-  for (var decade = firstDecade; decade <= lastDecade; decade += 10) {
-    var decadeYears = decade + 9;
+  for (var decade = firstDecade; decade <= lastDecade; decade += intervalSize) {
+    var decadeYears = decade + (intervalSize - 1);
     intervals.push(_objectSpread({
       startYear: decade,
       endYear: decadeYears,
@@ -851,24 +871,23 @@ function getDataBySeason(movies) {
   return seasons;
 }
 function getMovieLengthData(movies) {
+  var intervalSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
   var minRuntime = Number.MAX_VALUE;
   var maxRuntime = 0;
   movies.forEach(function (movie) {
-    var runtime = parseRuntime(movie.run_time);
+    var runtime = (0, _helper.parseRuntime)(movie.run_time);
     if (runtime) {
       minRuntime = Math.min(minRuntime, runtime);
       maxRuntime = Math.max(maxRuntime, runtime);
     }
   });
-  var firstInterval = Math.floor(minRuntime / 10) * 10;
-  var lastInterval = Math.floor(maxRuntime / 10) * 10;
-  console.log(minRuntime);
-  console.log(maxRuntime);
+  var firstInterval = Math.floor(minRuntime / intervalSize) * intervalSize;
+  var lastInterval = Math.floor(maxRuntime / intervalSize) * intervalSize;
   var intervals = [];
-  for (var minutes = firstInterval; minutes <= lastInterval; minutes += 10) {
+  for (var minutes = firstInterval; minutes <= lastInterval; minutes += intervalSize) {
     intervals.push(_objectSpread({
       startMinutes: minutes,
-      endMinutes: minutes + 9,
+      endMinutes: minutes + (intervalSize - 1),
       label: "".concat(minutes, "s"),
       movies: [],
       nMovies: 0,
@@ -876,7 +895,7 @@ function getMovieLengthData(movies) {
     }, MetricsHelper.createMetricsObject()));
   }
   movies.forEach(function (movie) {
-    var movieRuntime = parseRuntime(movie.run_time);
+    var movieRuntime = (0, _helper.parseRuntime)(movie.run_time);
     var interval = intervals.find(function (interval) {
       return movieRuntime >= interval.startMinutes && movieRuntime <= interval.endMinutes;
     });
@@ -905,16 +924,124 @@ function getMovieLengthData(movies) {
   });
   return intervals;
 }
-function parseRuntime(runtimeString) {
-  if (!runtimeString || typeof runtimeString !== 'string') return null;
-  var totalMins = 0;
-  var hoursMatch = runtimeString.match(/(\d+)h/);
-  var minutesMatch = runtimeString.match(/(\d+)m/);
-  if (hoursMatch && hoursMatch[1]) totalMins += parseInt(hoursMatch[1], 10) * 60;
-  if (minutesMatch && minutesMatch[1]) totalMins += parseInt(minutesMatch[1], 10);
-  return totalMins > 0 ? totalMins : null;
+function getTaglineWordsData(movies) {
+  var minWordLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
+  var minOccurrences = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 2;
+  var createWordObject = function createWordObject() {
+    return _objectSpread({
+      movies: [],
+      count: 0,
+      genres: [],
+      mostPopularGenre: null
+    }, MetricsHelper.createMetricsObject());
+  };
+  var wordCounts = {};
+  movies.forEach(function (movie) {
+    if (!movie.tagline || typeof movie.tagline !== 'string') return;
+    var words = movie.tagline.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(function (word) {
+      return word.length >= minWordLength && !_helper.stopWords.has(word);
+    });
+    words.forEach(function (word) {
+      if (!wordCounts[word]) wordCounts[word] = 0;
+      wordCounts[word]++;
+    });
+  });
+  var significantWords = Object.keys(wordCounts).filter(function (word) {
+    return wordCounts[word] >= minOccurrences;
+  });
+  var wordData = {};
+  significantWords.forEach(function (word) {
+    wordData[word] = createWordObject();
+  });
+  movies.forEach(function (movie) {
+    if (!movie.tagline || typeof movie.tagline !== 'string') return;
+    var movieWords = new Set(movie.tagline.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(function (word) {
+      return significantWords.includes(word);
+    }));
+    movieWords.forEach(function (word) {
+      wordData[word].movies.push({
+        name: movie.name,
+        year: movie.year,
+        tagline: movie.tagline
+      });
+      wordData[word].count++;
+      MetricsHelper.addMovieMetrics(wordData[word], movie);
+      if (movie.genre) {
+        var genres = Array.isArray(movie.genre) ? movie.genre : [movie.genre];
+        genres.forEach(function (genre) {
+          if (genre && genre.trim()) wordData[word].genres.push(genre.trim());
+        });
+      }
+    });
+  });
+  Object.keys(wordData).forEach(function (word) {
+    var data = wordData[word];
+    MetricsHelper.calculateAverages(data);
+    if (data.genres.length) {
+      var _MetricsHelper$findMo6 = MetricsHelper.findMostPopularGenre(data.genres),
+        mostPopularGenre = _MetricsHelper$findMo6.mostPopularGenre,
+        genreCounts = _MetricsHelper$findMo6.genreCounts;
+      data.mostPopularGenre = mostPopularGenre;
+      data.genreCounts = genreCounts;
+    }
+    MetricsHelper.cleanupMetricsProperties(data);
+    delete data.genres;
+  });
+  var result = Object.entries(wordData).map(function (_ref5) {
+    var _ref6 = _slicedToArray(_ref5, 2),
+      word = _ref6[0],
+      data = _ref6[1];
+    return _objectSpread({
+      word: word
+    }, data);
+  }).sort(function (a, b) {
+    return b.count - a.count;
+  });
+  return result;
 }
-},{}],"index.js":[function(require,module,exports) {
+function getTaglineLengthData(movies) {
+  var lengthMap = {};
+  var createLengthObject = function createLengthObject() {
+    return _objectSpread({
+      movies: [],
+      count: 0,
+      wordCount: 0
+    }, MetricsHelper.createMetricsObject());
+  };
+  movies.forEach(function (movie) {
+    if (!movie.tagline || typeof movie.tagline !== 'string') return;
+    var tagline = movie.tagline.trim();
+    if (tagline.length === 0) return;
+    var length = tagline.length;
+    if (!lengthMap[length]) lengthMap[length] = createLengthObject();
+    lengthMap[length].movies.push({
+      name: movie.name,
+      year: movie.year,
+      tagline: movie.tagline
+    });
+    lengthMap[length].count++;
+    var wordCount = tagline.split(/\s+/).length;
+    lengthMap[length].wordCount += wordCount;
+    MetricsHelper.addMovieMetrics(lengthMap[length], movie);
+  });
+  var result = Object.entries(lengthMap).map(function (_ref7) {
+    var _ref8 = _slicedToArray(_ref7, 2),
+      length = _ref8[0],
+      data = _ref8[1];
+    MetricsHelper.calculateAverages(data);
+    data.avgWordCount = data.wordCount / data.count;
+    delete data.wordCount;
+    MetricsHelper.cleanupMetricsProperties(data);
+    delete data.genres;
+    return _objectSpread({
+      length: parseInt(length, 10)
+    }, data);
+  });
+  return result.sort(function (a, b) {
+    return a.length - b.length;
+  });
+}
+},{"./helper":"scripts/helper.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
 var _process_golden_globes = require("./scripts/process_golden_globes");
@@ -980,10 +1107,9 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; } // 'use strict'
     var certificateData = (0, _preprocess_data.getCertificateData)(imdb);
     var seasonalData = (0, _preprocess_data.getDataBySeason)(imdb);
     var movieLengthData = (0, _preprocess_data.getMovieLengthData)(imdb);
-    console.log(imdb);
-    console.log(movieLengthData);
-
-    // const seasonalReleaseData = getDataBySeason(imdb)
+    var taglineWordData = (0, _preprocess_data.getTaglineWordsData)(imdb);
+    var taglineLengthData = (0, _preprocess_data.getTaglineLengthData)(imdb);
+    console.log(taglineLengthData);
 
     // }, [])
     // d3.csv('./golden_globe_awards.csv', d3.autoType).then(function (data) {
@@ -1077,7 +1203,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59990" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53103" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
