@@ -6,8 +6,10 @@ import { addAdditionalMovieData, getAdditionalMovieData } from './scripts/proces
 import { processMovieData } from './scripts/process_imdb'
 import {
   getFilmContributorsData, getGenreDataIntervals,
-  getTopCollaborations, getCertificateData, getDataBySeason, getMovieLengthData, getTaglineWordsData, getTaglineLengthData
+  getTopCollaborations, getCertificateData, getDataBySeason, getMovieLengthData, getTaglineWordsData, getTaglineLengthData, calculateMovieProfits, getMoviesByGenre
 } from './scripts/preprocess_data'
+
+import { adjustForInflation } from './scripts/helper.js'
 
 // import * as helper from './scripts/helper.js'
 // import * as preproc from './scripts/preprocess_imbd_data.js'
@@ -42,6 +44,12 @@ import {
     d3.csv('./the_oscar_award.csv', d3.autoType)
   ]).then(function ([goldenGlobes, imdb, movies, oscars]) {
     imdb = processMovieData(imdb)
+    const maxYear = imdb.reduce((max, movie) => movie.year > max ? movie.year : max, Number.MIN_VALUE)
+
+    imdb.forEach(movie => {
+      if (movie.box_office && typeof movie.box_office !== 'string') movie.box_office = adjustForInflation(movie.box_office, movie.year, maxYear)
+      if (movie.budget && typeof movie.budget !== 'string') movie.budget = adjustForInflation(movie.budget, movie.year, maxYear)
+    })
 
     const movieNames = imdb.reduce((acc, movie) => {
       if (!movie.name) return acc
@@ -62,8 +70,13 @@ import {
     const additionalMovieData = getAdditionalMovieData(movies, movieNames)
     imdb = addAdditionalMovieData(imdb, additionalMovieData)
 
+    imdb = calculateMovieProfits(imdb)
+    console.log(imdb)
+
     const contributorData = getFilmContributorsData(imdb)
-    const genreData = getGenreDataIntervals(imdb)
+    const genreIntervalData = getGenreDataIntervals(imdb)
+    const genreData = getMoviesByGenre(imdb)
+    console.log(genreData)
 
     const collaborationsData = getTopCollaborations(imdb)
 
@@ -73,7 +86,6 @@ import {
     const movieLengthData = getMovieLengthData(imdb)
     const taglineWordData = getTaglineWordsData(imdb)
     const taglineLengthData = getTaglineLengthData(imdb)
-    console.log(taglineLengthData)
 
     // }, [])
     // d3.csv('./golden_globe_awards.csv', d3.autoType).then(function (data) {

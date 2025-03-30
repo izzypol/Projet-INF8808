@@ -649,3 +649,60 @@ export function getTaglineLengthData (movies) {
 
   return result.sort((a, b) => a.length - b.length)
 }
+
+export function calculateMovieProfits (imdb) {
+  imdb.forEach(movie => {
+    if (movie.budget && movie.box_office && typeof movie.budget !== 'string' && typeof movie.box_office !== 'string') {
+      movie.profit = movie.box_office - movie.budget
+    }
+  })
+
+  return imdb
+}
+
+// eslint-disable-next-line jsdoc/require-jsdoc
+export function getMoviesByGenre (movies) {
+  const genreData = {}
+
+  movies.forEach(movie => {
+    const genres = []
+
+    if (movie.genre) {
+      if (Array.isArray(movie.genre)) {
+        for (let i = 0; i < movie.genre.length; i++) {
+          if (movie.genre[i] && typeof movie.genre[i] === 'string') {
+            genres.push(movie.genre[i].trim())
+          }
+        }
+      } else if (typeof movie.genre === 'object') {
+        Object.keys(movie.genre).forEach(key => {
+          if (movie.genre[key] && typeof movie.genre[key] === 'string') {
+            genres.push(movie.genre[key].trim())
+          }
+        })
+      } else if (typeof movie.genre === 'string') genres.push(movie.genre.trim())
+    }
+
+    genres.forEach(genreName => {
+      if (!genreData[genreName]) {
+        genreData[genreName] = {
+          movies: [],
+          count: 0,
+          ...MetricsHelper.createMetricsObject()
+        }
+      }
+
+      genreData[genreName].movies.push(movie)
+      genreData[genreName].count++
+
+      MetricsHelper.addMovieMetrics(genreData[genreName], movie)
+    })
+  })
+
+  Object.keys(genreData).forEach(genre => {
+    MetricsHelper.calculateAverages(genreData[genre])
+    MetricsHelper.cleanupMetricsProperties(genreData[genre])
+  })
+
+  return genreData
+}

@@ -123,7 +123,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.adjustToInflation = adjustToInflation;
+exports.adjustForInflation = adjustForInflation;
 exports.cleanMovieName = cleanMovieName;
 exports.parseRuntime = parseRuntime;
 exports.stopWords = void 0;
@@ -180,9 +180,18 @@ function cleanMovieName(name) {
   if (articleMatch) nameStr = "".concat(articleMatch[2], " ").concat(articleMatch[1]);
   return nameStr.toLowerCase().replace(/[^a-z0-9\s]/g, '');
 }
-function adjustToInflation(movie) {
-  ///
+
+// eslint-disable-next-line jsdoc/require-jsdoc
+function adjustForInflation(moneterayAmount, movieYear, topYear) {
+  var nYears = topYear - movieYear;
+  var inflationRate = 1 + 3.3 / 100;
+  for (var i = 0; i < nYears; i++) {
+    moneterayAmount *= inflationRate;
+  }
+  return Number(moneterayAmount.toFixed(2));
 }
+
+// eslint-disable-next-line jsdoc/require-jsdoc
 function parseRuntime(runtimeString) {
   if (!runtimeString || typeof runtimeString !== 'string') return null;
   var totalMins = 0;
@@ -462,12 +471,14 @@ function processMovieData(data) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.calculateMovieProfits = calculateMovieProfits;
 exports.createYearIntervals = createYearIntervals;
 exports.getCertificateData = getCertificateData;
 exports.getDataBySeason = getDataBySeason;
 exports.getFilmContributorsData = getFilmContributorsData;
 exports.getGenreDataIntervals = getGenreDataIntervals;
 exports.getMovieLengthData = getMovieLengthData;
+exports.getMoviesByGenre = getMoviesByGenre;
 exports.getTaglineLengthData = getTaglineLengthData;
 exports.getTaglineWordsData = getTaglineWordsData;
 exports.getTopCollaborations = getTopCollaborations;
@@ -1041,6 +1052,53 @@ function getTaglineLengthData(movies) {
     return a.length - b.length;
   });
 }
+function calculateMovieProfits(imdb) {
+  imdb.forEach(function (movie) {
+    if (movie.budget && movie.box_office && typeof movie.budget !== 'string' && typeof movie.box_office !== 'string') {
+      movie.profit = movie.box_office - movie.budget;
+    }
+  });
+  return imdb;
+}
+
+// eslint-disable-next-line jsdoc/require-jsdoc
+function getMoviesByGenre(movies) {
+  var genreData = {};
+  movies.forEach(function (movie) {
+    var genres = [];
+    if (movie.genre) {
+      if (Array.isArray(movie.genre)) {
+        for (var i = 0; i < movie.genre.length; i++) {
+          if (movie.genre[i] && typeof movie.genre[i] === 'string') {
+            genres.push(movie.genre[i].trim());
+          }
+        }
+      } else if (_typeof(movie.genre) === 'object') {
+        Object.keys(movie.genre).forEach(function (key) {
+          if (movie.genre[key] && typeof movie.genre[key] === 'string') {
+            genres.push(movie.genre[key].trim());
+          }
+        });
+      } else if (typeof movie.genre === 'string') genres.push(movie.genre.trim());
+    }
+    genres.forEach(function (genreName) {
+      if (!genreData[genreName]) {
+        genreData[genreName] = _objectSpread({
+          movies: [],
+          count: 0
+        }, MetricsHelper.createMetricsObject());
+      }
+      genreData[genreName].movies.push(movie);
+      genreData[genreName].count++;
+      MetricsHelper.addMovieMetrics(genreData[genreName], movie);
+    });
+  });
+  Object.keys(genreData).forEach(function (genre) {
+    MetricsHelper.calculateAverages(genreData[genre]);
+    MetricsHelper.cleanupMetricsProperties(genreData[genre]);
+  });
+  return genreData;
+}
 },{"./helper":"scripts/helper.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
@@ -1049,6 +1107,7 @@ var _process_oscars = require("./scripts/process_oscars");
 var _process_additional_movie_data = require("./scripts/process_additional_movie_data");
 var _process_imdb = require("./scripts/process_imdb");
 var _preprocess_data = require("./scripts/preprocess_data");
+var _helper = require("./scripts/helper.js");
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -1088,6 +1147,13 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; } // 'use strict'
       movies = _ref2[2],
       oscars = _ref2[3];
     imdb = (0, _process_imdb.processMovieData)(imdb);
+    var maxYear = imdb.reduce(function (max, movie) {
+      return movie.year > max ? movie.year : max;
+    }, Number.MIN_VALUE);
+    imdb.forEach(function (movie) {
+      if (movie.box_office && typeof movie.box_office !== 'string') movie.box_office = (0, _helper.adjustForInflation)(movie.box_office, movie.year, maxYear);
+      if (movie.budget && typeof movie.budget !== 'string') movie.budget = (0, _helper.adjustForInflation)(movie.budget, movie.year, maxYear);
+    });
     var movieNames = imdb.reduce(function (acc, movie) {
       if (!movie.name) return acc;
       var nameStr = String(movie.name);
@@ -1101,15 +1167,18 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; } // 'use strict'
     imdb = (0, _process_golden_globes.addGoldenGlobesData)(imdb, goldenGlobesMovies);
     var additionalMovieData = (0, _process_additional_movie_data.getAdditionalMovieData)(movies, movieNames);
     imdb = (0, _process_additional_movie_data.addAdditionalMovieData)(imdb, additionalMovieData);
+    imdb = (0, _preprocess_data.calculateMovieProfits)(imdb);
+    console.log(imdb);
     var contributorData = (0, _preprocess_data.getFilmContributorsData)(imdb);
-    var genreData = (0, _preprocess_data.getGenreDataIntervals)(imdb);
+    var genreIntervalData = (0, _preprocess_data.getGenreDataIntervals)(imdb);
+    var genreData = (0, _preprocess_data.getMoviesByGenre)(imdb);
+    console.log(genreData);
     var collaborationsData = (0, _preprocess_data.getTopCollaborations)(imdb);
     var certificateData = (0, _preprocess_data.getCertificateData)(imdb);
     var seasonalData = (0, _preprocess_data.getDataBySeason)(imdb);
     var movieLengthData = (0, _preprocess_data.getMovieLengthData)(imdb);
     var taglineWordData = (0, _preprocess_data.getTaglineWordsData)(imdb);
     var taglineLengthData = (0, _preprocess_data.getTaglineLengthData)(imdb);
-    console.log(taglineLengthData);
 
     // }, [])
     // d3.csv('./golden_globe_awards.csv', d3.autoType).then(function (data) {
@@ -1178,7 +1247,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; } // 'use strict'
     // })
   });
 })(d3);
-},{"./scripts/process_golden_globes":"scripts/process_golden_globes.js","./scripts/process_oscars":"scripts/process_oscars.js","./scripts/process_additional_movie_data":"scripts/process_additional_movie_data.js","./scripts/process_imdb":"scripts/process_imdb.js","./scripts/preprocess_data":"scripts/preprocess_data.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./scripts/process_golden_globes":"scripts/process_golden_globes.js","./scripts/process_oscars":"scripts/process_oscars.js","./scripts/process_additional_movie_data":"scripts/process_additional_movie_data.js","./scripts/process_imdb":"scripts/process_imdb.js","./scripts/preprocess_data":"scripts/preprocess_data.js","./scripts/helper.js":"scripts/helper.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -1203,7 +1272,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "53103" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58099" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

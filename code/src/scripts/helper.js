@@ -54,10 +54,19 @@ export function cleanMovieName (name) {
   return nameStr.toLowerCase().replace(/[^a-z0-9\s]/g, '')
 }
 
-export function adjustToInflation (movie) {
-  ///
+// eslint-disable-next-line jsdoc/require-jsdoc
+export function adjustForInflation (moneterayAmount, movieYear, topYear) {
+  const nYears = topYear - movieYear
+  const inflationRate = 1 + (3.3 / 100)
+
+  for (let i = 0; i < nYears; i++) {
+    moneterayAmount *= inflationRate
+  }
+
+  return Number(moneterayAmount.toFixed(2))
 }
 
+// eslint-disable-next-line jsdoc/require-jsdoc
 export function parseRuntime (runtimeString) {
   if (!runtimeString || typeof runtimeString !== 'string') return null
   let totalMins = 0
