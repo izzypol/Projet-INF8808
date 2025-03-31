@@ -1,95 +1,155 @@
+/* Base styles */
 body {
-    font-family: 'Roboto Slab', 'sans-serif';
-    font-size: 16px;
-    background-color: #fff;
-    color: #2A2B2E;
     margin: 0;
-    height: 100vh;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    color: #333;
+    background-color: #fff;
+  }
+  
+  header {
+    position: relative;
+    height: 400px; /* same as in the reference image */
+    overflow: hidden;
+    color: white;
+    background-color:#333;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-header {
-    background-color: #fff;
-    padding: 25px 100px;
-    border-bottom: 2px solid #97939A;
-}
-
-main {
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Remove the background-image from .header-img */
+.header-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
-    padding-right: 25px;
+    filter: blur(8px);
+    opacity: 0.4;
+    z-index: 1;
+    overflow: hidden;
 }
 
-h1 {
-    color: #2A2B2E;
-    font-family: 'Roboto Slab', 'serif';
-    font-size: 56px;
-    margin: 0;
-    font-weight: normal;
+/* Add this img inside */
+.header-img img {
+    width: 100%;
+    position: absolute;
+    height: 150%;
+    top: -82px;
+}
+  
+  /* Overlay content */
+  .header-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    width: 100%;
+  }
+  
+  /* Navigation bar */
+  .navigation {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 10px 20px;
+    border-radius: 50px;
+    margin: 0 auto 20px auto;
+    max-width: 900px;
+    backdrop-filter: blur(5px);
+  }
+  
+  .navigation a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 18px;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+  }
+  
+  .navigation a:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Title styling */
+  header h1 {
+    margin: 70px;
+    font-size: 1.8em;
+  }
+  
+
+/* Main content */
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+section {
+    margin-bottom: 50px;
 }
 
 h2 {
-    color: #2A2B2E;
-    font-family: 'Roboto Slab', 'serif';
-    font-weight: normal;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
 }
 
-svg {
-    background-color: #ffffff;
+/* Visualization containers */
+.visualization {
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
-button {
-    padding: 10px 30px;
-    color: #000;
-    background-color: #fff;
-    border: 1px solid #333;
-    border-radius: 4px;
-    cursor: pointer;
-    outline: 0;
-    font-family: 'Helvetica', 'sans-serif';
-    font-size: 16px;
-}
-
-button:hover, button:active {
-	background:linear-gradient(to bottom, #f6f6f6 5%, #ffffff 100%);
-	background-color:#f6f6f6;
-}
-
-.title, .axis-text {
-    transform-origin: center;
-    transform-box: fill-box;
-    text-anchor: middle;
-}
-
-.viz-container{
-    height: 100%;
-    padding: 0 100px;
+.viz-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
 .graph {
+    min-height: 300px;
     width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
-.tick line{
-    visibility: hidden;
-  }
+/* SVG styling */
+svg {
+    background-color: white;
+    border: 1px solid #eee;
+}
 
-  .info {
-      pointer-events: none;
-      font-family: 'Roboto';
-  }
+/* Footer */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 50px;
+}
 
-  .axis text {
-      font-family: 'Roboto';
-      cursor: default;
-      
-  }
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    header {
+        height: auto;
+    }
 
-  .axis path {
-      opacity: 0;
-  }
+    .header-overlay {
+        padding: 10px;
+    }
+
+    .navigation {
+        flex-direction: column;
+        gap: 10px;
+        border-radius: 20px;
+    }
+    .visualization {
+        padding: 10px;
+    }
+}
