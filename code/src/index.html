@@ -1,33 +1,93 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="Description" content="Code pour le TP3 de INF8808.">
-        <title>TP3 | INF8808</title>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="Description" content="Visualisations de données de films IMDB">
+  <title>Les films et les influences sur leur succès | INF8808</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/typography.css">
+</head>
+<body>
 
-        <link rel="stylesheet" href="assets/style.css">
-        <link rel="stylesheet" href="assets/typography.css">
-
-      </head>
-
-      <body>
-        <header>
-          <h1>
-            Trees planted in Montreal neighborhoods
-          </h1>
-          <h2>
-            From 2010 to 2020
-          </h2>
-        </header>
-        <!-- <main>
-          <div class="viz-container">
-            <div class="graph" id="heatmap">
-              <svg class="heatmap-svg"></svg>
-            </div>
-          </div>
-        </main> -->
-        <script src="https://d3js.org/d3.v7.js"></script>
-        <script type="module" src="index.js"></script>
-      </body>
+  <header>
+    <div class="header-img">
+      <img src="assets/img/IMDB.png" alt="IMDB background">
+    </div>
+    <div class="header-content">
+      <nav class="navigation">
+        <a href="#success">Mesure du succès</a>
+        <a href="#team">Équipe du film</a>
+        <a href="#genres">Genres & tendances</a>
+        <a href="#impact">Impact d'un film</a>
+      </nav>
+      <h1>Les films et les influences sur leur succès</h1>
+    </div>
+  </header>
+  
+  <main>
+    <section id="introduction">
+      <h2>Introduction</h2>
+      <p>Présentation du dataset, objectif et problématique. Cette visualisation explore les facteurs qui contribuent au succès des films, en analysant les données de l'IMDB, des Oscars et des Golden Globes pour identifier les tendances et les corrélations significatives.</p>
+      <p>
+        Les différentes valeurs du box-office ont été comparées en tenant compte de l'inflation du dollar américain, afin d'assurer une évaluation plus juste et représentative dans le temps. L’ajustement des montants a été réalisé en se basant sur l’indice des prix à la consommation (CPI). Source: https://tradingeconomics.com/united-states/inflation-cpi.
+      </p>
+    </section>
+    
+    <section id="success">
+      <h2>1. Mesure du succès</h2>
+      <p>Plusieurs métriques peuvent être adoptés pour mesurer le succès d'un film. Par exemple, on peut regarder le box-office ou le classement IMDB, mais également le nombre de nomination ou encore le profit généré.</p>
+      
+      <div class="visualization">
+        <div class="graph" id="success-scatter">
+          <!-- Mesure de succès scatter plot -->
+          <svg class="success-scatter-svg"></svg>
+        </div>
+      </div>
+    </section>
+    
+    <section id="team">
+      <h2>2. Équipe du film</h2>
+      <p>Quel est la performance des différents acteurs, réalisateurs et scénaristes. Et quels sont les collaborations les plus fructueuses ?</p>
+      
+      <div class="visualization">
+        <div class="graph" id="team-heatmap">
+          <!--  Équipe du film Heatmap -->
+          <svg class="team-heatmap-svg"></svg>
+        </div>
+      </div>
+    </section>
+    
+    <section id="genres">
+      <h2>3. Genres et tendances</h2>
+      <p>Quelles sont les caractéristiques intrinsèques aux films qui marchent le mieux ?</p>
+      
+      <div class="visualization">
+        <div class="graph" id="genre-timeline">
+          <!-- Genres et tendance -->
+          <svg class="genre-timeline-svg"></svg>
+        </div>
+      </div>
+    </section>
+    
+    <section id="impact">
+      <h2>4. Impact d'un film</h2>
+      <p>Visualisez l'impact d'un film sur le marché</p>
+      
+      <div class="visualization">
+        <div class="graph" id="film-impact">
+          <!-- Impact du film -->
+          <svg class="film-impact-svg"></svg>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <footer>
+    <p>Footer</p>
+  </footer>
+  
+  <script src="https://d3js.org/d3.v7.js"></script>
+  <script type="module" src="index.js"></script>
+</body>
 </html>
