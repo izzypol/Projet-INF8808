@@ -54,7 +54,14 @@ export function cleanMovieName (name) {
   return nameStr.toLowerCase().replace(/[^a-z0-9\s]/g, '')
 }
 
-// eslint-disable-next-line jsdoc/require-jsdoc
+/**
+ * Adjusts a monetary amount for inflation based on the year difference
+ *
+ * @param {number} moneterayAmount The original monetary amount to adjust
+ * @param {number} movieYear The year of the original amount
+ * @param {number} topYear The year to adjust the amount to
+ * @returns {number} The inflation-adjusted amount, rounded to 2 decimal places
+ */
 export function adjustForInflation (moneterayAmount, movieYear, topYear) {
   const nYears = topYear - movieYear
   const inflationRate = 1 + (3.3 / 100)
@@ -66,7 +73,12 @@ export function adjustForInflation (moneterayAmount, movieYear, topYear) {
   return Number(moneterayAmount.toFixed(2))
 }
 
-// eslint-disable-next-line jsdoc/require-jsdoc
+/**
+ * Parses a runtime string into total minutes
+ *
+ * @param {string} runtimeString A string representing the runtime in hours and/or minutes
+ * @returns {number|null} The total runtime in minutes, or null if invalid input
+ */
 export function parseRuntime (runtimeString) {
   if (!runtimeString || typeof runtimeString !== 'string') return null
   let totalMins = 0

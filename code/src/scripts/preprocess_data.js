@@ -1,7 +1,7 @@
 import { stopWords, parseRuntime } from './helper'
 
 /**
- * Helper functions for metrics calculations
+ * Helper functions for metrics calculations (averages, quantity, etc)
  */
 const MetricsHelper = {
   standardMetrics: [
@@ -11,6 +11,11 @@ const MetricsHelper = {
     { property: 'popularity', movieProperty: 'popularity' }
   ],
 
+  /**
+   * Creates an object with new metrics with initialized properties for current standard metrics
+   *
+   * @returns {object} An object with total value and count properties for each of the standard metrics
+   */
   createMetricsObject () {
     const metricsObject = {}
 
@@ -23,6 +28,13 @@ const MetricsHelper = {
     return metricsObject
   },
 
+  /**
+   * Adds the new metrics of a movie to an existing object
+   *
+   * @param {object} currObject The current object to which we will be adding the new metrics to
+   * @param {object} movie The movie object which contains the metric values required
+   * @returns {object} The updated current object with the new metrics
+   */
   addMovieMetrics (currObject, movie) {
     this.standardMetrics.forEach(metric => {
       const value = movie[metric.movieProperty]
@@ -38,6 +50,13 @@ const MetricsHelper = {
     return currObject
   },
 
+  /**
+   * Calculates the average values for all standard metrics of a given metrics object
+   *
+   * @param {object} currObject The metrics object to which we need to calculate the averages of the standard
+   * metrics for
+   * @returns {object} The metrics object with the calculated averages added to it
+   */
   calculateAverages (currObject) {
     this.standardMetrics.forEach(metric => {
       const totalProp = `total${metric.property.charAt(0).toUpperCase() + metric.property.slice(1)}`
@@ -50,6 +69,12 @@ const MetricsHelper = {
     return currObject
   },
 
+  /**
+   * Removes the temporary calculation properties, such as the total and count, from the current object
+   *
+   * @param {object} currObject The current object on which to remove the additional metrics
+   * @returns {object} The current cleaned metrics object
+   */
   cleanupMetricsProperties (currObject) {
     this.standardMetrics.forEach(metric => {
       const totalProp = `total${metric.property.charAt(0).toUpperCase() + metric.property.slice(1)}`
@@ -62,6 +87,12 @@ const MetricsHelper = {
     return currObject
   },
 
+  /**
+   * Finds the most popular genre from an array of genres
+   *
+   * @param {string[]} genres Array of genre names
+   * @returns {object|null} Object containing most popular genre and counts
+   */
   findMostPopularGenre (genres) {
     if (!genres || !genres.length) return null
 
@@ -148,6 +179,12 @@ export function getFilmContributorsData (movies) {
   return contributors
 }
 
+/**
+ * Analyzes genre data for movies across different time periods
+ *
+ * @param {object[]} movies Array of movie objects
+ * @returns {object[]} Array of interval objects by a set of years with genre and movie analysis
+ */
 export function getGenreDataIntervals (movies) {
   const decades = createYearIntervals(movies)
 
@@ -175,6 +212,13 @@ export function getGenreDataIntervals (movies) {
   return decades
 }
 
+/**
+ * Creates time intervals for movies based on their release years
+ *
+ * @param {object[]} movies Array of movie objects
+ * @param {number} intervalSize Size of each interval in years (10 by default)
+ * @returns {object[]} Array of interval objects with movies and their metrics
+ */
 export function createYearIntervals (movies, intervalSize = 10) {
   const minYear = movies.reduce((min, movie) => movie.year < min ? movie.year : min, Number.MAX_VALUE)
   const maxYear = movies.reduce((max, movie) => movie.year > max ? movie.year : max, Number.MIN_VALUE)
@@ -218,7 +262,7 @@ export function createYearIntervals (movies, intervalSize = 10) {
  * Gets the top collaborations for actor/director and actor/actor collaborations
  *
  * @param {Array} movies Array of movie objects
- * @param {number} limit Number of top collaborations to return (default 20)
+ * @param {number} limit Number of top collaborations to return (20 by default)
  * @returns {object} Object with the top actor/director and actor/actor collaborations
  */
 export function getTopCollaborations (movies, limit = 20) {
@@ -330,6 +374,12 @@ function countCollaborations (movies) {
   }
 }
 
+/**
+ * Analyzes the movie data by the available certificate ratings
+ *
+ * @param {object[]} movies Array of movie objects
+ * @returns {object} Object with certificate data and associated metrics
+ */
 export function getCertificateData (movies) {
   const createCertificateObject = () => {
     return {
@@ -378,6 +428,12 @@ export function getCertificateData (movies) {
   return certificateData
 }
 
+/**
+ * Groups the movie data by seasons (summer, fall, winter, spring) based on release dates
+ *
+ * @param {object[]} movies Array of movie objects
+ * @returns {object} Object with movie data organized by season and their associated metrics
+ */
 export function getDataBySeason (movies) {
   const createSeasonObject = (beginDate, endDate) => ({
     beginDate,
@@ -399,6 +455,7 @@ export function getDataBySeason (movies) {
   const getSeason = (dateString) => {
     if (!dateString || typeof dateString !== 'string') return null
 
+    // Reason : We need to split the string, however year is not required for use
     // eslint-disable-next-line no-unused-vars
     const [year, month, day] = dateString.split('-').map(num => parseInt(num, 10))
     const monthDay = `${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
@@ -443,6 +500,13 @@ export function getDataBySeason (movies) {
   return seasons
 }
 
+/**
+ * Groups and analyzes movies by given runtime length intervals
+ *
+ * @param {object[]} movies Array of movie objects
+ * @param {number} intervalSize Size of each runtime interval in minutes (10 by default)
+ * @returns {object[]} Array of runtime interval objects with their associated movies and metrics
+ */
 export function getMovieLengthData (movies, intervalSize = 10) {
   let minRuntime = Number.MAX_VALUE
   let maxRuntime = 0
@@ -505,6 +569,14 @@ export function getMovieLengthData (movies, intervalSize = 10) {
   return intervals
 }
 
+/**
+ * Analyzes the frequency of appearance for words and associated data in movie taglines
+ *
+ * @param {object[]} movies Array of movie objects
+ * @param {number} minWordLength Minimum length of words to include (3 by default)
+ * @param {number} minOccurrences Minimum occurrences of words to include (2 by default)
+ * @returns {object[]} Array of word objects with associated movie data and their metrics
+ */
 export function getTaglineWordsData (movies, minWordLength = 3, minOccurrences = 2) {
   const createWordObject = () => {
     return {
@@ -598,6 +670,12 @@ export function getTaglineWordsData (movies, minWordLength = 3, minOccurrences =
   return result
 }
 
+/**
+ * Analyzes the tagline length statistics and metrics for movies
+ *
+ * @param {object[]} movies Array of movie objects
+ * @returns {object[]} Array of tagline length objects with associated movie data and metrics
+ */
 export function getTaglineLengthData (movies) {
   const lengthMap = {}
 
@@ -650,6 +728,12 @@ export function getTaglineLengthData (movies) {
   return result.sort((a, b) => a.length - b.length)
 }
 
+/**
+ * Calculates the profit for each movie based on budget and box office data
+ *
+ * @param {object[]} imdb Array of movie objects
+ * @returns {object[]} Array of movie objects with added profit property
+ */
 export function calculateMovieProfits (imdb) {
   imdb.forEach(movie => {
     if (movie.budget && movie.box_office && typeof movie.budget !== 'string' && typeof movie.box_office !== 'string') {
@@ -660,7 +744,12 @@ export function calculateMovieProfits (imdb) {
   return imdb
 }
 
-// eslint-disable-next-line jsdoc/require-jsdoc
+/**
+ * Groups and analyzes movies by their genres
+ *
+ * @param {object[]} movies Array of movie objects
+ * @returns {object} Object with the genre data and associated movie metrics
+ */
 export function getMoviesByGenre (movies) {
   const genreData = {}
 
