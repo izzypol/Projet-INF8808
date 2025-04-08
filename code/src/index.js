@@ -9,7 +9,7 @@ import {
   getTopCollaborations, getCertificateData, getDataBySeason, getMovieLengthData, getTaglineWordsData, getTaglineLengthData, calculateMovieProfits, getMoviesByGenre
 } from './scripts/preprocess_data'
 
-import { adjustForInflation } from './scripts/helper.js'
+import { adjustForInflation, convertMovieNamesToString } from './scripts/helper.js'
 
 // import * as helper from './scripts/helper.js'
 // import * as preproc from './scripts/preprocess_imbd_data.js'
@@ -69,6 +69,7 @@ import { adjustForInflation } from './scripts/helper.js'
 
     const additionalMovieData = getAdditionalMovieData(movies, movieNames)
     imdb = addAdditionalMovieData(imdb, additionalMovieData)
+    convertMovieNamesToString(movies)
 
     imdb = calculateMovieProfits(imdb)
     console.log(imdb)
@@ -84,6 +85,7 @@ import { adjustForInflation } from './scripts/helper.js'
     const seasonalData = getDataBySeason(imdb)
 
     const movieLengthData = getMovieLengthData(imdb)
+    console.log(movieLengthData)
     const taglineWordData = getTaglineWordsData(imdb)
     const taglineLengthData = getTaglineLengthData(imdb)
 
