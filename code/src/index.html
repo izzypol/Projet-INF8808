@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +9,10 @@
   <link rel="stylesheet" href="assets/style.css">
   <link rel="stylesheet" href="assets/typography.css">
 </head>
+
 <body>
 
-  <header>
+  <!-- <header>
     <div class="header-img">
       <img src="assets/img/IMDB.png" alt="IMDB background">
     </div>
@@ -23,71 +25,110 @@
       </nav>
       <h1>Les films et les influences sur leur succès</h1>
     </div>
+  </header> -->
+
+  <header class="navigation">
+    <nav>
+      <a href="#success">Mesure du succès</a>
+      <a href="#team">Équipe du film</a>
+      <a href="#genres">Genres & tendances</a>
+      <a href="#impact">Impact d'un film</a>
+    </nav>
   </header>
-  
+
+  <section class="hero">
+    <div class="header-img">
+      <img src="assets/img/IMDB.png" alt="IMDB background">
+    </div>
+    <div class="header-content">
+      <h1>Les films et les influences sur leur succès</h1>
+    </div>
+  </section>
+
+
+
   <main>
     <section id="introduction">
       <h2>Introduction</h2>
-      <p>Présentation du dataset, objectif et problématique. Cette visualisation explore les facteurs qui contribuent au succès des films, en analysant les données de l'IMDB, des Oscars et des Golden Globes pour identifier les tendances et les corrélations significatives.</p>
+      <p>Présentation du dataset, objectif et problématique. Cette visualisation explore les facteurs qui contribuent au
+        succès des films, en analysant les données de l'IMDB, des Oscars et des Golden Globes pour identifier les
+        tendances et les corrélations significatives.</p>
       <p>
-        Les différentes valeurs du box-office ont été comparées en tenant compte de l'inflation du dollar américain, afin d'assurer une évaluation plus juste et représentative dans le temps. L’ajustement des montants a été réalisé en se basant sur l’indice des prix à la consommation (CPI). Source: https://tradingeconomics.com/united-states/inflation-cpi.
+        Les différentes valeurs du box-office ont été comparées en tenant compte de l'inflation du dollar américain,
+        afin d'assurer une évaluation plus juste et représentative dans le temps. L’ajustement des montants a été
+        réalisé en se basant sur l’indice des prix à la consommation (CPI). Source: <a
+          href="https://tradingeconomics.com/united-states/inflation-cpi">https://tradingeconomics.com/united-states/inflation-cpi</a>.
       </p>
     </section>
-    
+
     <section id="success">
       <h2>1. Mesure du succès</h2>
-      <p>Plusieurs métriques peuvent être adoptés pour mesurer le succès d'un film. Par exemple, on peut regarder le box-office ou le classement IMDB, mais également le nombre de nomination ou encore le profit généré.</p>
-      
-      <div class="visualization">
-        <div class="graph" id="success-scatter">
-          <!-- Mesure de succès scatter plot -->
-          <svg class="success-scatter-svg"></svg>
+
+      <div class="viz_n_text_container">
+        <p>Plusieurs métriques peuvent être adoptés pour mesurer le succès d'un film. Par exemple, on peut regarder le
+          box-office ou le classement IMDB, mais également le nombre de nomination ou encore le profit généré.</p>
+
+        <div class="visualization">
+          <div class="graph" id="success-scatter">
+            <!-- Mesure de succès scatter plot -->
+            <svg class="success-scatter-svg"></svg>
+          </div>
         </div>
       </div>
+
     </section>
-    
+
     <section id="team">
       <h2>2. Équipe du film</h2>
-      <p>Quel est la performance des différents acteurs, réalisateurs et scénaristes. Et quels sont les collaborations les plus fructueuses ?</p>
-      
-      <div class="visualization">
-        <div class="graph" id="team-heatmap">
-          <!--  Équipe du film Heatmap -->
-          <svg class="team-heatmap-svg"></svg>
+      <div class="viz_n_text_container">
+
+        <div class="visualization">
+          <div class="graph" id="team-heatmap">
+            <!--  Équipe du film Heatmap -->
+            <svg class="team-heatmap-svg"></svg>
+          </div>
         </div>
+        <p>Quel est la performance des différents acteurs, réalisateurs et scénaristes. Et quels sont les collaborations
+          les plus fructueuses ?</p>
       </div>
     </section>
-    
+
     <section id="genres">
       <h2>3. Genres et tendances</h2>
-      <p>Quelles sont les caractéristiques intrinsèques aux films qui marchent le mieux ?</p>
-      
-      <div class="visualization">
-        <div class="graph" id="genre-timeline">
-          <!-- Genres et tendance -->
-          <svg class="genre-timeline-svg"></svg>
+      <div class="viz_n_text_container">
+
+        <p>Quelles sont les caractéristiques intrinsèques aux films qui marchent le mieux ?</p>
+        <div class="visualization">
+          <div class="graph" id="genre-timeline">
+            <!-- Genres et tendance -->
+            <svg class="genre-timeline-svg"></svg>
+          </div>
         </div>
       </div>
     </section>
-    
+
     <section id="impact">
       <h2>4. Impact d'un film</h2>
-      <p>Visualisez l'impact d'un film sur le marché</p>
-      
-      <div class="visualization">
-        <div class="graph" id="film-impact">
-          <!-- Impact du film -->
-          <svg class="film-impact-svg"></svg>
+      <div class="viz_n_text_container">
+
+
+        <div class="visualization">
+          <div class="graph" id="film-impact">
+            <!-- Impact du film -->
+            <svg class="film-impact-svg"></svg>
+          </div>
         </div>
+        <p>Visualisez l'impact d'un film sur le marché</p>
       </div>
     </section>
   </main>
-  
+
   <footer>
     <p>Footer</p>
   </footer>
-  
-  <script src="https://d3js.org/d3.v7.js"></script>
-  <script type="module" src="index.js"></script>
+
+  <!-- <script src="https://d3js.org/d3.v7.js"></script>
+  <script type="module" src="index.js"></script> -->
 </body>
+
 </html>

@@ -181,7 +181,14 @@ function cleanMovieName(name) {
   return nameStr.toLowerCase().replace(/[^a-z0-9\s]/g, '');
 }
 
-// eslint-disable-next-line jsdoc/require-jsdoc
+/**
+ * Adjusts a monetary amount for inflation based on the year difference
+ *
+ * @param {number} moneterayAmount The original monetary amount to adjust
+ * @param {number} movieYear The year of the original amount
+ * @param {number} topYear The year to adjust the amount to
+ * @returns {number} The inflation-adjusted amount, rounded to 2 decimal places
+ */
 function adjustForInflation(moneterayAmount, movieYear, topYear) {
   var nYears = topYear - movieYear;
   var inflationRate = 1 + 3.3 / 100;
@@ -191,7 +198,12 @@ function adjustForInflation(moneterayAmount, movieYear, topYear) {
   return Number(moneterayAmount.toFixed(2));
 }
 
-// eslint-disable-next-line jsdoc/require-jsdoc
+/**
+ * Parses a runtime string into total minutes
+ *
+ * @param {string} runtimeString A string representing the runtime in hours and/or minutes
+ * @returns {number|null} The total runtime in minutes, or null if invalid input
+ */
 function parseRuntime(runtimeString) {
   if (!runtimeString || typeof runtimeString !== 'string') return null;
   var totalMins = 0;
@@ -496,7 +508,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 /**
- * Helper functions for metrics calculations
+ * Helper functions for metrics calculations (averages, quantity, etc)
  */
 var MetricsHelper = {
   standardMetrics: [{
@@ -512,6 +524,11 @@ var MetricsHelper = {
     property: 'popularity',
     movieProperty: 'popularity'
   }],
+  /**
+   * Creates an object with new metrics with initialized properties for current standard metrics
+   *
+   * @returns {object} An object with total value and count properties for each of the standard metrics
+   */
   createMetricsObject: function createMetricsObject() {
     var metricsObject = {};
     this.standardMetrics.forEach(function (metric) {
@@ -521,6 +538,13 @@ var MetricsHelper = {
     });
     return metricsObject;
   },
+  /**
+   * Adds the new metrics of a movie to an existing object
+   *
+   * @param {object} currObject The current object to which we will be adding the new metrics to
+   * @param {object} movie The movie object which contains the metric values required
+   * @returns {object} The updated current object with the new metrics
+   */
   addMovieMetrics: function addMovieMetrics(currObject, movie) {
     this.standardMetrics.forEach(function (metric) {
       var value = movie[metric.movieProperty];
@@ -533,6 +557,13 @@ var MetricsHelper = {
     });
     return currObject;
   },
+  /**
+   * Calculates the average values for all standard metrics of a given metrics object
+   *
+   * @param {object} currObject The metrics object to which we need to calculate the averages of the standard
+   * metrics for
+   * @returns {object} The metrics object with the calculated averages added to it
+   */
   calculateAverages: function calculateAverages(currObject) {
     this.standardMetrics.forEach(function (metric) {
       var totalProp = "total".concat(metric.property.charAt(0).toUpperCase() + metric.property.slice(1));
@@ -542,6 +573,12 @@ var MetricsHelper = {
     });
     return currObject;
   },
+  /**
+   * Removes the temporary calculation properties, such as the total and count, from the current object
+   *
+   * @param {object} currObject The current object on which to remove the additional metrics
+   * @returns {object} The current cleaned metrics object
+   */
   cleanupMetricsProperties: function cleanupMetricsProperties(currObject) {
     this.standardMetrics.forEach(function (metric) {
       var totalProp = "total".concat(metric.property.charAt(0).toUpperCase() + metric.property.slice(1));
@@ -551,6 +588,12 @@ var MetricsHelper = {
     });
     return currObject;
   },
+  /**
+   * Finds the most popular genre from an array of genres
+   *
+   * @param {string[]} genres Array of genre names
+   * @returns {object|null} Object containing most popular genre and counts
+   */
   findMostPopularGenre: function findMostPopularGenre(genres) {
     if (!genres || !genres.length) return null;
     var genreCounts = {};
@@ -631,6 +674,13 @@ function getFilmContributorsData(movies) {
   });
   return contributors;
 }
+
+/**
+ * Analyzes genre data for movies across different time periods
+ *
+ * @param {object[]} movies Array of movie objects
+ * @returns {object[]} Array of interval objects by a set of years with genre and movie analysis
+ */
 function getGenreDataIntervals(movies) {
   var decades = createYearIntervals(movies);
   decades.forEach(function (decade) {
@@ -655,6 +705,14 @@ function getGenreDataIntervals(movies) {
   });
   return decades;
 }
+
+/**
+ * Creates time intervals for movies based on their release years
+ *
+ * @param {object[]} movies Array of movie objects
+ * @param {number} intervalSize Size of each interval in years (10 by default)
+ * @returns {object[]} Array of interval objects with movies and their metrics
+ */
 function createYearIntervals(movies) {
   var intervalSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
   var minYear = movies.reduce(function (min, movie) {
@@ -697,7 +755,7 @@ function createYearIntervals(movies) {
  * Gets the top collaborations for actor/director and actor/actor collaborations
  *
  * @param {Array} movies Array of movie objects
- * @param {number} limit Number of top collaborations to return (default 20)
+ * @param {number} limit Number of top collaborations to return (20 by default)
  * @returns {object} Object with the top actor/director and actor/actor collaborations
  */
 function getTopCollaborations(movies) {
@@ -782,6 +840,13 @@ function countCollaborations(movies) {
     actorActorCollabs: finalizeCollabs(actorActorCollabs)
   };
 }
+
+/**
+ * Analyzes the movie data by the available certificate ratings
+ *
+ * @param {object[]} movies Array of movie objects
+ * @returns {object} Object with certificate data and associated metrics
+ */
 function getCertificateData(movies) {
   var createCertificateObject = function createCertificateObject() {
     return _objectSpread({
@@ -822,6 +887,13 @@ function getCertificateData(movies) {
   });
   return certificateData;
 }
+
+/**
+ * Groups the movie data by seasons (summer, fall, winter, spring) based on release dates
+ *
+ * @param {object[]} movies Array of movie objects
+ * @returns {object} Object with movie data organized by season and their associated metrics
+ */
 function getDataBySeason(movies) {
   var createSeasonObject = function createSeasonObject(beginDate, endDate) {
     return _objectSpread({
@@ -842,6 +914,7 @@ function getDataBySeason(movies) {
   var getSeason = function getSeason(dateString) {
     if (!dateString || typeof dateString !== 'string') return null;
 
+    // Reason : We need to split the string, however year is not required for use
     // eslint-disable-next-line no-unused-vars
     var _dateString$split$map = dateString.split('-').map(function (num) {
         return parseInt(num, 10);
@@ -881,6 +954,14 @@ function getDataBySeason(movies) {
   });
   return seasons;
 }
+
+/**
+ * Groups and analyzes movies by given runtime length intervals
+ *
+ * @param {object[]} movies Array of movie objects
+ * @param {number} intervalSize Size of each runtime interval in minutes (10 by default)
+ * @returns {object[]} Array of runtime interval objects with their associated movies and metrics
+ */
 function getMovieLengthData(movies) {
   var intervalSize = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
   var minRuntime = Number.MAX_VALUE;
@@ -935,6 +1016,15 @@ function getMovieLengthData(movies) {
   });
   return intervals;
 }
+
+/**
+ * Analyzes the frequency of appearance for words and associated data in movie taglines
+ *
+ * @param {object[]} movies Array of movie objects
+ * @param {number} minWordLength Minimum length of words to include (3 by default)
+ * @param {number} minOccurrences Minimum occurrences of words to include (2 by default)
+ * @returns {object[]} Array of word objects with associated movie data and their metrics
+ */
 function getTaglineWordsData(movies) {
   var minWordLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 3;
   var minOccurrences = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 2;
@@ -1010,6 +1100,13 @@ function getTaglineWordsData(movies) {
   });
   return result;
 }
+
+/**
+ * Analyzes the tagline length statistics and metrics for movies
+ *
+ * @param {object[]} movies Array of movie objects
+ * @returns {object[]} Array of tagline length objects with associated movie data and metrics
+ */
 function getTaglineLengthData(movies) {
   var lengthMap = {};
   var createLengthObject = function createLengthObject() {
@@ -1052,6 +1149,13 @@ function getTaglineLengthData(movies) {
     return a.length - b.length;
   });
 }
+
+/**
+ * Calculates the profit for each movie based on budget and box office data
+ *
+ * @param {object[]} imdb Array of movie objects
+ * @returns {object[]} Array of movie objects with added profit property
+ */
 function calculateMovieProfits(imdb) {
   imdb.forEach(function (movie) {
     if (movie.budget && movie.box_office && typeof movie.budget !== 'string' && typeof movie.box_office !== 'string') {
@@ -1061,7 +1165,12 @@ function calculateMovieProfits(imdb) {
   return imdb;
 }
 
-// eslint-disable-next-line jsdoc/require-jsdoc
+/**
+ * Groups and analyzes movies by their genres
+ *
+ * @param {object[]} movies Array of movie objects
+ * @returns {object} Object with the genre data and associated movie metrics
+ */
 function getMoviesByGenre(movies) {
   var genreData = {};
   movies.forEach(function (movie) {
@@ -1272,7 +1381,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58099" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54104" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
