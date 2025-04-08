@@ -145,7 +145,7 @@ h2 {
 }
 
 .graph {
-  min-height: 300px;
+  min-height: calc(60vh);
   width: 100%;
 }
 
