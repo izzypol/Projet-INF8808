@@ -11,6 +11,14 @@ import {
 
 import { adjustForInflation } from './scripts/helper.js'
 
+/* Visualisation 4 - Importations */
+
+import * as viz4Helper from './viz4-scripts/viz4-helper.js'
+import * as viz4Search from './viz4-scripts/viz4-search.js'
+import * as viz4Scales from './viz4-scripts/viz4-scales.js'
+import * as viz4Process from './viz4-scripts/viz4-process.js'
+import * as viz4Viz from './viz4-scripts/viz4-viz.js'
+
 // import * as helper from './scripts/helper.js'
 // import * as preproc from './scripts/preprocess_imbd_data.js'
 // import * as viz from './scripts/viz.js'
@@ -86,6 +94,74 @@ import { adjustForInflation } from './scripts/helper.js'
     const movieLengthData = getMovieLengthData(imdb)
     const taglineWordData = getTaglineWordsData(imdb)
     const taglineLengthData = getTaglineLengthData(imdb)
+
+    
+        /* Visualisation 4 - Impact des films */
+    
+        const margin = {
+          top: 75,
+          right: 200,
+          bottom: 100,
+          left: 80
+        }
+        
+        let svgSize, graphSize
+    
+        function setSizing () {
+            svgSize = {
+              width: 1000,
+              height: 600
+            }
+        
+            graphSize = {
+              width: svgSize.width - margin.right - margin.left,
+              height: svgSize.height - margin.bottom - margin.top
+            }
+        
+            viz4Helper.setCanvasSize(svgSize.width, svgSize.height)
+          }
+    
+        setSizing();
+    
+        const viz4xScale = viz4Scales.setXScale(graphSize.width, imdb);
+        const viz4yScaleBoxOffice = viz4Scales.setYScaleBO(graphSize.height, imdb);
+        const viz4 = d3.select(".film-impact-svg");
+    
+        const axes = viz4.append("g").attr("class", "axes")
+          .attr("transform", 'translate(' +margin.left+ ', ' +margin.top+ ')');
+        const courbes = viz4.append("g").attr("class", "courbes")
+          .attr("transform", 'translate(' +margin.left+ ', ' +margin.top+ ')');
+    
+        viz4Helper.appendAxes(axes);
+        viz4Helper.appendGraphLabels(axes);
+        viz4Helper.positionLabels(axes,graphSize.width,graphSize.height);
+    
+        viz4Helper.drawXAxis(viz4xScale, graphSize.height);
+        viz4Helper.drawYAxis(viz4yScaleBoxOffice);
+    
+        let title;
+    
+        document.addEventListener('viz4movieSelected', (e) => {
+          console.log("Received movie:", e.detail.movie);
+          title = e.detail.movie;
+          // Update your visualization
+          const testProcess = viz4Process.getMoviesBySameField(title, imdb, "directors");
+          //const testProcess2 = viz4Process.getMoviesBySameField(title, imdb, "year");
+          console.log("liste : ", testProcess);
+          viz4Viz.drawCircles(testProcess, viz4xScale, viz4yScaleBoxOffice);
+      });
+    
+    
+    
+        viz4.append("circle");
+    
+        viz4Search.initFilmList(imdb);
+    
+        buildViz4(certificateData);
+    
+        function buildViz4(data){
+            //console.log(data);
+        }
 
     // }, [])
     // d3.csv('./golden_globe_awards.csv', d3.autoType).then(function (data) {
