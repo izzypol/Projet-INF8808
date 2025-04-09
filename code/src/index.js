@@ -174,27 +174,12 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
       viz3Helper.positionLabels(axesViz3, graphSizeViz3.width, graphSizeViz3.height);
 
 
-
-      // const colorScale = d3.scaleOrdinal()
-      //   .domain(viz3MarketPerIntervalSmall.presentCategory)
-      //   .range(d3.schemeSet3);
-
       const customColors = [
-        "#1f77b4", // Bleu
-        "#ff7f0e", // Orange
-        "#2ca02c", // Vert
-        "#d62728", // Rouge
-        "#9467bd", // Violet
-        "#8c564b", // Marron
-        "#e377c2", // Rose
-        "#7f7f7f", // Gris
-        "#bcbd22", // Vert olive
-        "#17becf", // Cyan
-        "#393b79", // Bleu foncé
-        "#637939", // Vert foncé
-        "#8c6d31", // Marron clair
-        "#843c39", // Rouge brique
-        "#7b4173"  // Violet foncé
+        "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
+        "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
+        "#393b79", "#637939", "#8c6d31", "#843c39", "#7b4173",
+        "#aec7e8", "#ffbb78", "#98df8a", "#ff9896", "#c5b0d5",
+        "#c49c94", "#f7b6d2", "#c7c7c7", "#dbdb8d", "#9edae5"
       ];
 
       const colorScale = d3.scaleOrdinal()
@@ -216,13 +201,35 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
         .attr("class", "layer")
         .attr("fill", d => colorScale(d.key))
         .selectAll("rect")
-        .data(d => d)
+        .data(d => {
+          // On ajoute la catégorie à chaque élément
+          return d.map(item => ({
+            ...item,
+            category: d.key
+          }));
+        })
         .enter()
         .append("rect")
         .attr("x", d => viz3xScale(d.data.interval))
         .attr("y", d => viz3yScaleBoxOffice(d[1]))
         .attr("height", d => viz3yScaleBoxOffice(d[0]) - viz3yScaleBoxOffice(d[1]))
-        .attr("width", viz3xScale.bandwidth());
+        .attr("width", viz3xScale.bandwidth())
+
+      // .on("mouseover", (event, d) => {
+      //   const [x, y] = [viz3xScale(d.data.interval), viz3yScaleBoxOffice(d[1])];
+
+      //   tooltipGroup
+      //     .style("display", "block")
+      //     .attr("transform", `translate(${x}, ${y - 60})`); // Positionner au-dessus du rectangle
+
+      //   tooltipGroup.select(".tooltip-text")
+      //     .text(`Catégorie: ${d.category}\nIntervalle: ${d.data.interval}\nProportion: ${(d[1] - d[0] * 100).toFixed(1)}%`);
+      // })
+      // .on("mouseout", () => {
+      //   tooltipGroup.style("display", "none"); // Masquer le tooltip
+      // });
+
+
 
       // Ajouter les noms associés aux couleurs dans la légende -> insérer dans legendDiv
       viz3MarketPerIntervalSmall.presentCategory.forEach(cat => {
@@ -339,7 +346,7 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
       const test = viz4Process.generateDataToDisplay(title, imdb, ListOfFields);
       console.log("Test", test);
       viz4Viz.drawAllCategories(test, viz4xScale, viz4yScaleBoxOffice, viz4ColorScale);
-      
+
     });
 
     viz4.append("circle");

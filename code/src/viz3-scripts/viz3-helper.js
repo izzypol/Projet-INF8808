@@ -1,15 +1,4 @@
 /**
- * Generates the SVG element g which will contain the data visualisation.
- *
- * @param {object} margin The desired margins around the graph
- * @returns {*} The d3 Selection for the created g element
- */
-export function margeG(g, margin) {
-    g.attr('transform',
-        'translate(' + margin.left + ',' + margin.top + ')')
-}
-
-/**
  * Sets the size of the SVG canvas containing the graph.
  *
  * @param {number} width The desired width
