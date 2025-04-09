@@ -14,6 +14,8 @@ import { adjustForInflation, convertMovieNamesToString } from './scripts/helper.
 
 /* Visualisation 3 - Importations */
 import * as viz3Process from './viz3-scripts/viz3-preprocess.js'
+import * as viz3Helper from './viz3-scripts/viz3-helper.js'
+import * as viz3Scales from './viz3-scripts/viz3-scales.js'
 
 
 
@@ -86,12 +88,11 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
     convertMovieNamesToString(imdb)
 
     imdb = calculateMovieProfits(imdb)
-    console.log(imdb)
+    // console.log(imdb)
 
     const contributorData = getFilmContributorsData(imdb)
     const genreIntervalData = getGenreDataIntervals(imdb)
     const genreData = getMoviesByGenre(imdb)
-    // console.log(genreData)
 
     const collaborationsData = getTopCollaborations(imdb)
 
@@ -103,9 +104,178 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
     const taglineLengthData = getTaglineLengthData(imdb)
 
 
+
+
+
     /* Visualisation 3 - Genres et tendances */
 
-    viz3Process.getDataPerTimeInterval(imdb, 15, "rating");
+
+    let metricViz3 = "rating"; // "box_office", 
+    let selectedFilterViz3 = "genre";
+    let intervalLenght = 10;
+    let numElemPerStack = 4;
+
+
+    function buildViz3(metricViz3, selectedFilterViz3, intervalLenght, numElemPerStack) {
+
+      const viz3 = d3.select(".tendance-timeline-svg");
+      const legendDiv = d3.select(".legend-tendances");
+
+      // Clear previous content
+      viz3.selectAll(".axes").remove();
+      viz3.selectAll(".bars").remove();
+      legendDiv.selectAll("*").remove();
+
+
+      // Preprocessing
+      const viz3Data = viz3Process.getDataPerTimeInterval(imdb, intervalLenght, metricViz3);  // if metric="rating" et on prend des intervalles de temps de 8 années
+      const viz3MarketPerInterval = viz3Process.getMarketPerTimeInterval(viz3Data, selectedFilterViz3) //if selectedfilter = "genre"
+      const viz3MarketPerIntervalSmall = viz3Process.reduceNumberOfLine(viz3MarketPerInterval, numElemPerStack); //seulement 4 genres par intervalle
+      const intervalsDates = Object.keys(viz3MarketPerIntervalSmall["intervals"]);
+
+      const stackedData = viz3Process.stackData(viz3MarketPerIntervalSmall);
+
+
+      // setup graph scales
+      const svgSizeViz3 = {
+        width: 1000,
+        height: 600
+      }
+
+      const marginViz3 = {
+        top: 40,
+        right: 40,
+        bottom: 60,
+        left: 100
+      }
+
+      const graphSizeViz3 = {
+        width: svgSizeViz3.width - marginViz3.right - marginViz3.left,
+        height: svgSizeViz3.height - marginViz3.bottom - marginViz3.top
+      }
+
+      viz3Helper.setCanvasSize(svgSizeViz3.width, svgSizeViz3.height);
+      const viz3xScale = viz3Scales.setXScale(graphSizeViz3.width, intervalsDates);
+      const viz3yScaleBoxOffice = viz3Scales.setYScale(graphSizeViz3.height);
+
+      const axesViz3 = viz3.append("g").attr("class", "axes")
+        .attr("transform", `translate(${marginViz3.left},${marginViz3.top})`);
+
+
+
+      // Dessin des axes
+      viz3Helper.appendAxes(axesViz3);
+      viz3Helper.drawXAxis(viz3xScale, graphSizeViz3.height, intervalsDates);
+      viz3Helper.drawYAxis(viz3yScaleBoxOffice);
+
+
+      // Ajout des labels d'axes
+      viz3Helper.appendGraphLabels(axesViz3);
+      viz3Helper.positionLabels(axesViz3, graphSizeViz3.width, graphSizeViz3.height);
+
+
+
+      // const colorScale = d3.scaleOrdinal()
+      //   .domain(viz3MarketPerIntervalSmall.presentCategory)
+      //   .range(d3.schemeSet3);
+
+      const customColors = [
+        "#1f77b4", // Bleu
+        "#ff7f0e", // Orange
+        "#2ca02c", // Vert
+        "#d62728", // Rouge
+        "#9467bd", // Violet
+        "#8c564b", // Marron
+        "#e377c2", // Rose
+        "#7f7f7f", // Gris
+        "#bcbd22", // Vert olive
+        "#17becf", // Cyan
+        "#393b79", // Bleu foncé
+        "#637939", // Vert foncé
+        "#8c6d31", // Marron clair
+        "#843c39", // Rouge brique
+        "#7b4173"  // Violet foncé
+      ];
+
+      const colorScale = d3.scaleOrdinal()
+        .domain(viz3MarketPerIntervalSmall.presentCategory)
+        .range(customColors);
+
+      const series = d3.stack()
+        .keys(viz3MarketPerIntervalSmall.presentCategory)(stackedData);
+
+      // Créer un groupe de base où dessiner les barres
+      const barsGroup = viz3.append("g")
+        .attr("class", "bars")
+        .attr("transform", `translate(${marginViz3.left},${marginViz3.top})`);
+
+      barsGroup.selectAll("g.layer")
+        .data(series)
+        .enter()
+        .append("g")
+        .attr("class", "layer")
+        .attr("fill", d => colorScale(d.key))
+        .selectAll("rect")
+        .data(d => d)
+        .enter()
+        .append("rect")
+        .attr("x", d => viz3xScale(d.data.interval))
+        .attr("y", d => viz3yScaleBoxOffice(d[1]))
+        .attr("height", d => viz3yScaleBoxOffice(d[0]) - viz3yScaleBoxOffice(d[1]))
+        .attr("width", viz3xScale.bandwidth());
+
+      // Ajouter les noms associés aux couleurs dans la légende -> insérer dans legendDiv
+      viz3MarketPerIntervalSmall.presentCategory.forEach(cat => {
+        const item = legendDiv.append("div")
+          .style("display", "flex")
+          .style("align-items", "center");
+
+        item.append("div")
+          .style("width", "30px")
+          .style("height", "15px")
+          .style("background-color", colorScale(cat))
+          .style("margin-right", "5px");
+
+        item.append("span")
+          .text(cat)
+          .style("font-size", "12px")
+      });
+
+
+    }
+
+    buildViz3(metricViz3, selectedFilterViz3, intervalLenght, numElemPerStack);
+
+
+
+    const selectorMetric = document.getElementById('metric-select');
+    selectorMetric.addEventListener('change', () => {
+      buildViz3(selectorMetric.value, selectorCategory.value, parseInt(sliderMovieLenght.value, 10), parseInt(sliderMaxLine.value, 10));
+    });
+
+    const selectorCategory = document.getElementById('categorie-select');
+    selectorCategory.addEventListener('change', () => {
+      buildViz3(selectorMetric.value, selectorCategory.value, parseInt(sliderMovieLenght.value, 10), parseInt(sliderMaxLine.value, 10));
+    });
+
+
+
+    const sliderMovieLenght = document.getElementById('slider-movieLenght');
+    const sliderMovieLenghtValue = document.getElementById('slider-movieLenght-value');
+
+    sliderMovieLenght.addEventListener('input', () => {
+      sliderMovieLenghtValue.textContent = sliderMovieLenght.value;
+      buildViz3(selectorMetric.value, selectorCategory.value, parseInt(sliderMovieLenght.value, 10), parseInt(sliderMaxLine.value, 10));
+    });
+
+
+    const sliderMaxLine = document.getElementById('slider-maxLine');
+    const sliderMaxLineValue = document.getElementById('slider-maxLine-value');
+
+    sliderMaxLine.addEventListener('input', () => {
+      sliderMaxLineValue.textContent = sliderMaxLine.value;
+      buildViz3(selectorMetric.value, selectorCategory.value, parseInt(sliderMovieLenght.value, 10), parseInt(sliderMaxLine.value, 10));
+    });
 
 
 

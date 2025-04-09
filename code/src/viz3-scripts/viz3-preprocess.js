@@ -63,9 +63,6 @@ function getMovieLengthInterval(movieLength, interval_size) {
  */
 export function getDataPerTimeInterval(data, intervalsLenght, selectedMetric) {
 
-    const minYear = Math.min(...data.map(movie => movie.year));
-    const maxYear = Math.max(...data.map(movie => movie.year));
-
     const res = {};
 
 
@@ -99,6 +96,20 @@ export function getDataPerTimeInterval(data, intervalsLenght, selectedMetric) {
         if (selectedMetric === "rating")
             metric = 1; // for rating, we just count the number of movies in the interval
 
+        if (selectedMetric === "profit") {
+            if (typeof movie.profit === "number") {
+                metric = movie.profit;
+            }
+            else {
+                metric = 0;
+            }
+        }
+
+        if (selectedMetric === "numNominations") {
+            const ggNomination = movie.goldenGlobesData ? (movie.goldenGlobesData.goldenGlobesNominations ? (typeof movie.goldenGlobesData.goldenGlobesNominations === "number" ? movie.goldenGlobesData.goldenGlobesNominations : 0) : 0) : 0;
+            const oscarNomination = movie.oscarsData ? (movie.oscarsData.oscarNominations ? (typeof movie.oscarsData.oscarNominations === "number" ? movie.oscarsData.oscarNominations : 0) : 0) : 0;
+            metric = ggNomination + oscarNomination;
+        }
 
         if (movie.box_office) {
             yearElem.totalMetric += metric;
@@ -153,5 +164,174 @@ export function getDataPerTimeInterval(data, intervalsLenght, selectedMetric) {
             res_elem.metricsPerCertificate[certificate] += yearElem.metricsPerCertificate[certificate];
         })
     }
-    console.log(res);
+    return res;
 }
+
+
+
+/**
+ * 
+ * @param {object} intervalData - res of preceding function in form 
+ * { 
+ *  "[1921, 1925]": {
+ * 
+ *          "totalMetric" : float //pour rating = num movies dans cet interval
+ * 
+ *          "metricPerGenre" : {
+ *              "Action" : float //pour rating = num movies de ce genre dans cet interval
+ *              "Drama" : float,
+ *               ...
+ *              },
+ * 
+ *           "metricsPerMovieLenght" : {
+ *                "0-100" : float //pour rating = num movies de cette longueur dans cet interval
+ *               "100-110" : float,
+ *               ...
+ *               },
+ * 
+ *           "metricsPerCertificate" : {
+ *                "R" : float //pour rating = num movies de cette catégorie dans cet interval
+ *                "PG-13" : float,
+ *                 ...
+ *                },
+ *      },
+ * 
+ *  "[1926, 1930]": {
+ *      ...
+ *      },
+ * 
+ *  ...
+ * 
+ *  "[2016, 2020]": {
+ *      ...
+ *      }
+ * }
+ * @param {string} selectedFilter - Le filtre utilisé pour l'analyse (e.g., "genre", "movieLength", "certificate")
+ * @returns {object} res in the form
+ * {
+ * "[1921, 1925]" : {
+ *      metricForfilter (metricPerselectedFilter) : {
+ *          "Action" : float //e.g: 0.5
+ *          "Drama" : float //e.g: 0.2
+ *              ...
+ *          },
+ *      },
+ *  [1926, 1930] : {...}
+ *   ...
+ * } 
+ */
+
+
+export function getMarketPerTimeInterval(intervalData, selectedFilter) {
+    const res = {};
+
+
+    for (const interval in intervalData) {
+        const intervalElem = intervalData[interval];
+
+
+        res[interval] = {
+            metricForfilter: {}
+        };
+
+
+        const res_elem = res[interval];
+
+        // On normalise les valeurs par rapport à la somme des valeurs de chaque intervalle
+        if (selectedFilter === "genre") {
+            const sum_genre_metric = Object.values(intervalElem.metricPerGenre).reduce((acc, val) => acc + val, 0);
+            Object.keys(intervalElem.metricPerGenre).forEach(genre => {
+                res_elem.metricForfilter[genre] = intervalElem.metricPerGenre[genre] / sum_genre_metric;
+            })
+        }
+        if (selectedFilter === "movieLength") {
+            const sum_lenght_metric = Object.values(intervalElem.metricsPerMovieLenght).reduce((acc, val) => acc + val, 0);
+            Object.keys(intervalElem.metricsPerMovieLenght).forEach(lengthInterval => {
+                res_elem.metricForfilter[lengthInterval] = intervalElem.metricsPerMovieLenght[lengthInterval] / sum_lenght_metric;
+            })
+        }
+
+        if (selectedFilter === "certificate") {
+            const sum_certificate_metric = Object.values(intervalElem.metricsPerCertificate).reduce((acc, val) => acc + val, 0);
+            Object.keys(intervalElem.metricsPerCertificate).forEach(certificate => {
+                res_elem.metricForfilter[certificate] = intervalElem.metricsPerCertificate[certificate] / sum_certificate_metric;
+            })
+        }
+    }
+    return res;
+}
+
+
+/**
+ * 
+ * @param {*} marketData - res of preceding function 
+ * @param {*} maxLines - object of the same form as marketData, but with the number of element in metricsForfilter limited to maxLines by regrouping the last elements in "Other" - and we store the list of present category in the res object to be able to display the legend
+ * * @returns {object} res in the form
+ * {
+ * "presentCategory": ["Action", "Drama", ...],}
+ * "intervals" : {
+ *    "[1921, 1925]" : {}...}
+ *    }
+ * }
+ */
+
+export function reduceNumberOfLine(marketData, maxLines) {
+
+    const res = { "presentCategory": [], "intervals": {} };
+
+    for (const interval in marketData) {
+        const intervalElem = marketData[interval];
+        const res_elem = res["intervals"][interval] = { metricForfilter: {} };
+
+
+        // Sort the genres by value
+        const sortedGenres = Object.entries(intervalElem.metricForfilter).sort((a, b) => b[1] - a[1]);
+
+
+        // Keep only the first maxLines elements and group the others in "Other"
+        const topGenres = sortedGenres.slice(0, maxLines - 1);
+        const otherGenres = sortedGenres.slice(maxLines - 1);
+
+
+        topGenres.forEach(([genre, value]) => {
+            res_elem.metricForfilter[genre] = value;
+            res["presentCategory"].push(genre);
+        })
+
+
+        // Add the "Other" category
+        res_elem.metricForfilter["Other"] = otherGenres.reduce((acc, [_, value]) => acc + value, 0);
+    }
+
+    // Remove duplicates from presentCategory
+    res["presentCategory"] = [...new Set(res["presentCategory"])];
+    res["presentCategory"].push("Other");
+    return res;
+}
+
+/**
+ * @param {object} marketDataSmall - res of preceding function
+ * @returns {object} res in the form
+ * [
+ *  { interval: "[1920, 1928]", Comedy: 0.28, Drama: 0.21, ..., Other: 0.*  21 },
+ *  { interval: "[1928, 1936]", Comedy: 0.18, Drama: 0.18, ..., Other: 0.*  36 },
+ *  ...
+ * ]
+*/
+
+
+export function stackData(marketDataSmall) {
+
+    return Object.entries(marketDataSmall.intervals).map(([interval, data]) => {
+        const row = { interval };
+        marketDataSmall.presentCategory.forEach(cat => {
+            row[cat] = data.metricForfilter[cat] || 0;
+        });
+        return row;
+    });
+
+}
+
+
+
+
