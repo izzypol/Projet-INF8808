@@ -105,7 +105,7 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
 
     /* Visualisation 3 - Genres et tendances */
 
-    viz3Process.getDataPerTimeInterval(imdb, 5, "box_office");
+    viz3Process.getDataPerTimeInterval(imdb, 15, "rating");
 
 
 
