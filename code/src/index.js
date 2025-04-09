@@ -104,6 +104,7 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
 
     const contributorData = getFilmContributorsData(imdb)
     const genreIntervalData = getGenreDataIntervals(imdb)
+    console.log(genreIntervalData)
     const genreData = getMoviesByGenre(imdb)
 
     const collaborationsData = getTopCollaborations(imdb)

@@ -18,6 +18,7 @@ export function getContents(d, colorScale) {
       backdrop-filter: blur(5px);
       box-shadow: 1px -1px 10px 0px rgba(0, 0, 0, 0.3);
       border-top : 1px solid ${colorScale(d.category)};
+      z-index: 6;
 
       "
   >
