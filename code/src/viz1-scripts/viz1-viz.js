@@ -49,7 +49,7 @@ export function drawCircles(g, data, rScale, colorScale) {
     .attr('r', d => rScale(
       d.oscarsData.oscarNominations + d.goldenGlobesData.goldenGlobesNominations
     ))
-    .attr('fill', d => colorScale(new Date(d.releaseDate).getFullYear()))
+    .attr('fill', d => colorScale(d.year))
     .style('opacity', 0.85)
     .attr('stroke', 'white');
 }

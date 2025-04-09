@@ -31,7 +31,7 @@ export function setRadiusScale (data) {
 export function setColorScale(data) {
   const flatData = Object.values(data).flat();
 
-  const years = flatData.map(d => new Date(d.releaseDate).getFullYear());
+  const years = flatData.map(d => d.year);
   const minYear = d3.min(years);
   const maxYear = d3.max(years);
 

@@ -49,15 +49,19 @@ export function appendAxes (g) {
  */
 export function appendGraphLabels (g) {
   g.append('text')
-    .text('rank')
+    .text('Classement')
     .attr('class', 'y1 axis-text')
     .attr('transform', 'rotate(-90)')
-    .attr('font-size', 12)
+    .attr('x', -30)  // Plus négatif = plus bas (le long de l'axe Y)
+    .attr('y', 13)    // Plus petit = plus proche de l'axe Y
+    .attr('font-size', 12);
 
-  g.append('text')
-    .text('box-office')
+    g.append('text')
+    .text('Box-office (en $)')
     .attr('class', 'x1 axis-text')
-    .attr('font-size', 12)
+    .attr('x', -40)   // À ajuster selon la largeur de ton graphe
+    .attr('y', 0)   // À ajuster selon la hauteur
+    .attr('font-size', 12);
 }
 
 /**
@@ -79,7 +83,11 @@ export function drawXAxis (g, xScale, height) {
  */
 export function drawYAxis (g, yScale) {
   g.select('.y1.axis')
-    .call(d3.axisLeft(yScale).tickSizeOuter(0).tickArguments([5, '.0r']));
+    .call(d3.axisLeft(yScale)
+      .tickSizeOuter(0)
+      .tickValues([1, 50, 100, 150, 200, 250])  // ou tout autre intervalle clair
+      .tickFormat(d3.format('d'))  // évite les arrondis foireux
+  );
 }
 
 /**
