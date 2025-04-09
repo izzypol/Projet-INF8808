@@ -11,6 +11,16 @@ import {
 
 import { adjustForInflation, convertMovieNamesToString } from './scripts/helper.js'
 
+/* Visualisation 1 - Importations */
+
+import * as viz1Helper from './viz1-scripts/viz1-helper.js'
+import * as viz1Legend from './viz1-scripts/viz1-legend.js'
+import * as viz1Scales from './viz1-scripts/viz1-scales.js'
+import * as viz1Tooltip from './viz1-scripts/viz1-tooltip.js'
+import * as viz1Viz from './viz1-scripts/viz1-viz.js'
+
+import d3Tip from 'd3-tip'
+
 
 /* Visualisation 3 - Importations */
 import * as viz3Process from './viz3-scripts/viz3-preprocess.js'
@@ -104,7 +114,82 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
     const taglineLengthData = getTaglineLengthData(imdb)
 
 
+    /* Visualisation 1 - Success scatter */
 
+    const margin1 = {
+      top: 75,
+      right: 200,
+      bottom: 100,
+      left: 80
+    }
+
+    let svgSize1, graphSize1
+
+    /**
+     *
+     */
+    function setSizing1() {
+      svgSize1 = {
+        width: 1000,
+        height: 600
+      }
+
+      graphSize1 = {
+        width: svgSize1.width - margin1.right - margin1.left,
+        height: svgSize1.height - margin1.bottom - margin1.top
+      }
+
+      viz1Helper.setCanvasSize(svgSize1.width, svgSize1.height)
+    }
+
+    setSizing1();
+
+    const svgViz1 = d3.select(".success-scatter-svg");
+    const g1 = viz1Helper.generateG(svgViz1, margin1, "graph-g-viz1")
+
+    const tip = d3Tip().attr('class', 'd3-tip').html(function (d) { return viz1Tooltip.getContents(d) })
+    g1.call(tip)
+
+    viz1Helper.appendAxes(g1)
+    viz1Helper.appendGraphLabels(g1)
+    viz1Helper.placeTitle(g1, graphSize1.width)
+  
+    viz1Viz.positionLabels(g1, graphSize1.width, graphSize1.height)
+
+
+    const radiusScale1 = viz1Scales.setRadiusScale(imdb)
+    const colorScale1 = viz1Scales.setColorScale(imdb)
+    const xScale1 = viz1Scales.setXScale(graphSize1.width, imdb)
+    const yScale1 = viz1Scales.setYScale(graphSize1.height, imdb)
+
+    viz1Helper.drawXAxis(g1, xScale1, graphSize1.height)
+    viz1Helper.drawYAxis(g1, yScale1)
+
+    const flatData = Object.values(imdb).flat();
+    const years = flatData.map(d => new Date(d.releaseDate).getFullYear());
+    const minDate = d3.min(years);
+    const maxDate = d3.max(years);
+    viz1Legend.drawLegend(colorScale1, g1, graphSize1.width, graphSize1.height, minDate, maxDate)
+
+    build1(g1, imdb, 0, radiusScale1, colorScale1, xScale1, yScale1)
+
+    viz1Viz.setCircleHoverHandler(g1, tip)
+
+    /**
+     * This function builds the graph.
+    * @param {object} g1 The D3 selection of the <g> element containing the circles
+     * @param {object} data The data to be used
+    * @param {number} transitionDuration The duration of the transition while placing the circles
+    * @param {number} year The year to be displayed
+    * @param {*} rScale1 The scale for the circles' radius
+    * @param {*} colorScale1 The scale for the circles' color
+     * @param {*} xScale1 The x scale for the graph
+    * @param {*} yScale1 The y scale for the graph
+    */
+    function build1 (g1, data, transitionDuration, rScale1, colorScale1, xScale1, yScale1) {
+      viz1Viz.drawCircles(g1, data, rScale1, colorScale1)
+      viz1Viz.moveCircles(g1, xScale1, yScale1, transitionDuration)
+};
 
 
     /* Visualisation 3 - Genres et tendances */
