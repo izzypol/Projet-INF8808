@@ -120,7 +120,7 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
 
     const margin1 = {
       top: 75,
-      right: 200,
+      right: 260,
       bottom: 100,
       left: 80
     }
