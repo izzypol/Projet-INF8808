@@ -91,6 +91,6 @@ export function positionLabels (g, width, height) {
     d3.select('.y.axis')
       .call(d3.axisLeft(yScale)
       .tickSizeOuter(0)
-      .ticks(10)
-      .tickFormat(d3.format(",d")));
+      .ticks(5)
+      .tickFormat(d3.format("~s")));
   }

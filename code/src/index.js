@@ -308,6 +308,7 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
 
     const viz4xScale = viz4Scales.setXScale(graphSize.width, imdb);
     const viz4yScaleBoxOffice = viz4Scales.setYScaleBO(graphSize.height, imdb);
+
     const viz4 = d3.select(".film-impact-svg");
 
     const axes = viz4.append("g").attr("class", "axes")
@@ -323,18 +324,23 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
     viz4Helper.drawYAxis(viz4yScaleBoxOffice);
 
     let title;
+    const ListOfFields = ["directors", "year", "genre"];
+
+    const viz4ColorScale = viz4Scales.setColorScale(ListOfFields);
 
     document.addEventListener('viz4movieSelected', (e) => {
       console.log("Received movie:", e.detail.movie);
       title = e.detail.movie;
       // Update your visualization
-      const testProcess = viz4Process.getMoviesBySameField(title, imdb, "directors");
+      //const testProcess = viz4Process.getMoviesBySameField(title, imdb, "directors");
       //const testProcess2 = viz4Process.getMoviesBySameField(title, imdb, "year");
-      console.log("liste : ", testProcess);
-      viz4Viz.drawCircles(testProcess, viz4xScale, viz4yScaleBoxOffice);
+      //console.log("liste : ", testProcess);
+      //viz4Viz.drawCircles(testProcess, viz4xScale, viz4yScaleBoxOffice);
+      const test = viz4Process.generateDataToDisplay(title, imdb, ListOfFields);
+      console.log("Test", test);
+      viz4Viz.drawAllCategories(test, viz4xScale, viz4yScaleBoxOffice, viz4ColorScale);
+      
     });
-
-
 
     viz4.append("circle");
 

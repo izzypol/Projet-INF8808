@@ -41,3 +41,13 @@ export function setYScaleBO (height, data) {      // Idem que la fonction pr√©c√
       .range([height,0]);
   
     return yScale}
+
+export function setColorScale(data){
+
+  const colorScale = d3.scaleOrdinal()
+    .domain(data.sort())
+                                                    
+    .range(d3.schemeSet1);                          
+
+  return colorScale
+}
