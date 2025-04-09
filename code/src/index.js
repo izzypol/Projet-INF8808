@@ -26,7 +26,9 @@ import d3Tip from 'd3-tip'
 import * as viz3Process from './viz3-scripts/viz3-preprocess.js'
 import * as viz3Helper from './viz3-scripts/viz3-helper.js'
 import * as viz3Scales from './viz3-scripts/viz3-scales.js'
-
+import * as viz3Legend from './viz3-scripts/viz3-legend.js'
+import * as viz3Tooltip from './viz3-scripts/viz3-tooltip.js'
+import * as viz3Example from './viz3-scripts/viz3-example.js'
 
 
 /* Visualisation 4 - Importations */
@@ -153,7 +155,7 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
     viz1Helper.appendAxes(g1)
     viz1Helper.appendGraphLabels(g1)
     viz1Helper.placeTitle(g1, graphSize1.width)
-  
+
     viz1Viz.positionLabels(g1, graphSize1.width, graphSize1.height)
 
 
@@ -186,10 +188,10 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
      * @param {*} xScale1 The x scale for the graph
     * @param {*} yScale1 The y scale for the graph
     */
-    function build1 (g1, data, transitionDuration, rScale1, colorScale1, xScale1, yScale1) {
+    function build1(g1, data, transitionDuration, rScale1, colorScale1, xScale1, yScale1) {
       viz1Viz.drawCircles(g1, data, rScale1, colorScale1)
       viz1Viz.moveCircles(g1, xScale1, yScale1, transitionDuration)
-};
+    };
 
 
     /* Visualisation 3 - Genres et tendances */
@@ -217,8 +219,10 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
       const viz3MarketPerInterval = viz3Process.getMarketPerTimeInterval(viz3Data, selectedFilterViz3) //if selectedfilter = "genre"
       const viz3MarketPerIntervalSmall = viz3Process.reduceNumberOfLine(viz3MarketPerInterval, numElemPerStack); //seulement 4 genres par intervalle
       const intervalsDates = Object.keys(viz3MarketPerIntervalSmall["intervals"]);
-
       const stackedData = viz3Process.stackData(viz3MarketPerIntervalSmall);
+
+
+
 
 
       // setup graph scales
@@ -226,22 +230,20 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
         width: 1000,
         height: 600
       }
-
       const marginViz3 = {
         top: 40,
         right: 40,
         bottom: 60,
         left: 100
       }
-
       const graphSizeViz3 = {
         width: svgSizeViz3.width - marginViz3.right - marginViz3.left,
         height: svgSizeViz3.height - marginViz3.bottom - marginViz3.top
       }
-
       viz3Helper.setCanvasSize(svgSizeViz3.width, svgSizeViz3.height);
       const viz3xScale = viz3Scales.setXScale(graphSizeViz3.width, intervalsDates);
       const viz3yScaleBoxOffice = viz3Scales.setYScale(graphSizeViz3.height);
+
 
       const axesViz3 = viz3.append("g").attr("class", "axes")
         .attr("transform", `translate(${marginViz3.left},${marginViz3.top})`);
@@ -266,10 +268,17 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
         "#aec7e8", "#ffbb78", "#98df8a", "#ff9896", "#c5b0d5",
         "#c49c94", "#f7b6d2", "#c7c7c7", "#dbdb8d", "#9edae5"
       ];
-
       const colorScale = d3.scaleOrdinal()
         .domain(viz3MarketPerIntervalSmall.presentCategory)
         .range(customColors);
+
+
+      viz3Legend.createLegend(viz3MarketPerIntervalSmall, legendDiv, colorScale);
+
+
+      const g3 = viz3Helper.generateG(viz3, marginViz3, "graph-g-viz3")
+      const tip3 = d3Tip().attr('class', 'd3-tip').html(function (d) { return viz3Tooltip.getContents(d, colorScale) })
+      g3.call(tip3)
 
       const series = d3.stack()
         .keys(viz3MarketPerIntervalSmall.presentCategory)(stackedData);
@@ -295,44 +304,29 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
         })
         .enter()
         .append("rect")
+        .attr('class', 'rect3')
         .attr("x", d => viz3xScale(d.data.interval))
         .attr("y", d => viz3yScaleBoxOffice(d[1]))
         .attr("height", d => viz3yScaleBoxOffice(d[0]) - viz3yScaleBoxOffice(d[1]))
         .attr("width", viz3xScale.bandwidth())
 
-      // .on("mouseover", (event, d) => {
-      //   const [x, y] = [viz3xScale(d.data.interval), viz3yScaleBoxOffice(d[1])];
 
-      //   tooltipGroup
-      //     .style("display", "block")
-      //     .attr("transform", `translate(${x}, ${y - 60})`); // Positionner au-dessus du rectangle
+      // Hover d'un rectangle
+      viz3Tooltip.setRectHoverHandler(viz3, tip3)
 
-      //   tooltipGroup.select(".tooltip-text")
-      //     .text(`Catégorie: ${d.category}\nIntervalle: ${d.data.interval}\nProportion: ${(d[1] - d[0] * 100).toFixed(1)}%`);
-      // })
-      // .on("mouseout", () => {
-      //   tooltipGroup.style("display", "none"); // Masquer le tooltip
-      // });
+      // Exemple de lecture
+      const randomRectData = viz3Example.selectRandomRectangle();
+      const phraseEx = viz3Example.phraseExemple(randomRectData, colorScale);
+      console.log("Phrase exemple : ", phraseEx);
 
+      const exampleContainerViz3 = document.querySelector(".exampleViz3");
 
+      exampleContainerViz3.innerHTML = phraseEx;
 
-      // Ajouter les noms associés aux couleurs dans la légende -> insérer dans legendDiv
-      viz3MarketPerIntervalSmall.presentCategory.forEach(cat => {
-        const item = legendDiv.append("div")
-          .style("display", "flex")
-          .style("align-items", "center");
-
-        item.append("div")
-          .style("width", "30px")
-          .style("height", "15px")
-          .style("background-color", colorScale(cat))
-          .style("margin-right", "5px");
-
-        item.append("span")
-          .text(cat)
-          .style("font-size", "12px")
-      });
-
+      // const textElementViz3 = document.createElement("p");
+      // textElementViz3.textContent = "Exemple de lecture : " + phraseEx;
+      // textElementViz3.classList.add("example-text")
+      // textContainerViz3.appendChild(textElementViz3);
 
     }
 
@@ -340,6 +334,8 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
 
 
 
+
+    // Gérer les changements d'option :
     const selectorMetric = document.getElementById('metric-select');
     selectorMetric.addEventListener('change', () => {
       buildViz3(selectorMetric.value, selectorCategory.value, parseInt(sliderMovieLenght.value, 10), parseInt(sliderMaxLine.value, 10));
@@ -349,7 +345,6 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
     selectorCategory.addEventListener('change', () => {
       buildViz3(selectorMetric.value, selectorCategory.value, parseInt(sliderMovieLenght.value, 10), parseInt(sliderMaxLine.value, 10));
     });
-
 
 
     const sliderMovieLenght = document.getElementById('slider-movieLenght');
