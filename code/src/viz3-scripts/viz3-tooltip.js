@@ -11,6 +11,7 @@ export function getContents(d, colorScale) {
 
 
   return `<div class="tooltip-value" style="
+      z-index: 6;
       background: linear-gradient(90deg,rgb(143, 143, 143) 0%,rgba(166, 166, 166, 0.4) 100%);
       padding: 12px;
       border-radius: 6px;
@@ -18,8 +19,6 @@ export function getContents(d, colorScale) {
       backdrop-filter: blur(5px);
       box-shadow: 1px -1px 10px 0px rgba(0, 0, 0, 0.3);
       border-top : 1px solid ${colorScale(d.category)};
-      z-index: 6;
-
       "
   >
     <div style="margin: 4px 0; color: ${colorScale(d.category)}; filter : brightness(1.5);">

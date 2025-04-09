@@ -1,4 +1,10 @@
 // 'use strict'
+/**
+ * @file This file is the entry-point for the the code for the Project of the course INF8808.
+ * @author TODO
+ * @version beta
+ */
+
 
 import { addGoldenGlobesData, getGoldenGlobesMovieData } from './scripts/process_golden_globes'
 import { addOscarsData, getOscarsMovieData } from './scripts/process_oscars'
@@ -48,11 +54,23 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
 
 // import * as d3Chromatic from 'd3-scale-chromatic'
 
-/**
- * @file This file is the entry-point for the the code for TP3 for the course INF8808.
- * @author Olivia Gélinas
- * @version v1.0.0
- */
+
+
+/* Déplacer le sélecteur de métrique en haut à droite si on le dépasse sur la page */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const chooseMetric = document.querySelector(".choose_metric");
+  const offsetTop = chooseMetric.offsetTop + 650;
+
+  window.addEventListener("scroll", () => {
+
+    if (window.scrollY > offsetTop) {
+      chooseMetric.classList.add("fixed");
+    } else {
+      chooseMetric.classList.remove("fixed");
+    }
+  });
+});
 
 (function (d3) {
   // let bounds
@@ -100,13 +118,10 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
     convertMovieNamesToString(imdb)
 
     imdb = calculateMovieProfits(imdb)
-    // console.log(imdb)
 
     const contributorData = getFilmContributorsData(imdb)
     const genreIntervalData = getGenreDataIntervals(imdb)
-    console.log(genreIntervalData)
     const genreData = getMoviesByGenre(imdb)
-
     const collaborationsData = getTopCollaborations(imdb)
 
     const certificateData = getCertificateData(imdb)
@@ -318,7 +333,6 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
       // Exemple de lecture
       const randomRectData = viz3Example.selectRandomRectangle();
       const phraseEx = viz3Example.phraseExemple(randomRectData, colorScale);
-      console.log("Phrase exemple : ", phraseEx);
 
       const exampleContainerViz3 = document.querySelector(".exampleViz3");
 
