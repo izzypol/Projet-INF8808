@@ -30,10 +30,56 @@ export function getMoviesBySameField(movieName, data, field) {
             );
         })
         .sort((a, b) => {
-            // Only sort if there are multiple elements
+        // Only sort if there are multiple elements
             if (data.length > 1) {
+                //console.log(a.name);
                 return a.name.localeCompare(b.name);
             }
             return 0; // No sorting needed for single element
+        })
+        ;
+}
+
+const succesMesure = "box_office";
+
+function averageByYear(data, succesMesure) {
+    const yearGroups = {};
+    
+    // 1. Group and sum by year
+    data.forEach(item => {
+        if (typeof item[succesMesure] !== 'number') return;
+        
+        const year = item.year;
+        yearGroups[year] = yearGroups[year] || { sum: 0, count: 0, names: [] };
+        yearGroups[year].sum += item[succesMesure];
+        yearGroups[year].count++;
+        yearGroups[year].names.push(item.name);
+    });
+    
+    // 2. Calculate averages and format output
+    return Object.keys(yearGroups)
+        .map(year => ({
+            year: +year,
+            average: parseFloat((yearGroups[year].sum / yearGroups[year].count).toFixed(2)),
+            count : yearGroups[year].count,
+            noms : yearGroups[year].names.join("; ")
+        }))
+        .sort((a, b) => a.year - b.year);
+}
+
+export function generateDataToDisplay(movieName, data, liste) {
+    const dataToDisplay = []; 
+
+    console.log("EncoreTest : ", data);
+    
+    liste.forEach(categorie => {
+        dataToDisplay.push({
+            category: categorie,
+            data: averageByYear(getMoviesBySameField(movieName, data, categorie), succesMesure)
         });
+    });
+
+    console.log("ToDisplay : ", dataToDisplay);
+    
+    return dataToDisplay;
 }
