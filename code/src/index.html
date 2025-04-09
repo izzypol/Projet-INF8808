@@ -63,13 +63,13 @@
 
       <div class="choose_metric">
         <div class="container">
-          <p>Choisissez une métrique pour mesure le succès:</p>
+          <p>Choisissez une métrique pour mesurer le succès:</p>
           <!-- dropdown menu -->
           <select id="metric-select" class="metric-select">
             <option value="box_office">Box Office</option>
-            <option value="imdb_rating">IMDB Rating</option>
+            <option value="rating">IMDB Rating</option>
             <option value="profit">Profit</option>
-            <option value="oscars">Oscars</option>
+            <option value="numNominations">Nombre de Nominations</option>
         </div>
       </div>
     </section>
@@ -91,16 +91,41 @@
 
     <section id="genres">
       <h2>3. Genres et tendances</h2>
-      <div class="viz_n_text_container">
+      <div class="options-tendances">
+        <h3>Options</h3>
+        <div class="option-container">
+          <!-- Dropdown menu -->
+          <label for="categorie-select">Sélectionner une catégorie</label>
+          <select id="categorie-select" class="categorie-select">
+            <option value="genre">Genre du film</option>
+            <option value="movieLength">Longeur du film</option>
+            <option value="certificate">Distribution du film</option>
+        </div>
 
-        <p>Quelles sont les caractéristiques intrinsèques aux films qui marchent le mieux ?</p>
+        <div class="slider-container">
+          <label for="slider-movieLenght">Sélectionner la longueur des intervalles d'années :</label>
+          <input type="range" id="slider-movieLenght" name="slider-movieLenght" min="5" max="30" step="1" value="10">
+          <span id="slider-movieLenght-value">10</span>
+        </div>
+
+        <div class="slider-container">
+          <label for="slider-maxLine">Sélectionner le nombre de catégorie par colonne</label>
+          <input type="range" id="slider-maxLine" name="slider-maxLine" min="2" max="8" step="1" value="4">
+          <span id="slider-maxLine-value">4</span>
+        </div>
+      </div>
+      <div class="viz_n_text_container">
+        <div class="text-container">
+        </div>
         <div class="visualization">
           <div class="graph" id="genre-timeline">
+            <div class="legend-tendances"></div>
             <!-- Genres et tendance -->
-            <svg class="genre-timeline-svg"></svg>
+            <svg class="tendance-timeline-svg"></svg>
           </div>
         </div>
       </div>
+      <div class="exampleViz3"></div>
     </section>
 
     <section id="impact">
@@ -110,21 +135,17 @@
 
         <div class="visualization">
 
-          <div id="search-container" 
-            style="margin-bottom: 0px; margin-right: 20px">
-          <input type="text" 
-                id="search-input" 
-                placeholder="Rechercher un film..." 
-                style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 4px;">
-        </div>
-        <ul id="movie-list" 
-            style="list-style-type: none; padding: 0; 
+          <div id="search-container" style="margin-bottom: 0px; margin-right: 20px">
+            <input type="text" id="search-input" placeholder="Rechercher un film..."
+              style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 4px;">
+          </div>
+          <ul id="movie-list" style="list-style-type: none; padding: 0; 
                   margin-top : 0px;
                   margin-left: 5px;
                   margin-right: 5px;
                   margin-bottom: 20px; 
                   border: 1px solid #ddd; border-top: none;">
-        </ul>
+          </ul>
 
 
           <div class="graph" id="film-impact">

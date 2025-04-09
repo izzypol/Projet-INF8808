@@ -105,7 +105,7 @@ main {
 section {
   margin-bottom: 90px;
   margin-top: 50px;
-  scroll-margin-top: 80px;
+  scroll-margin-top: 65px;
 }
 
 h2 {
@@ -122,16 +122,11 @@ h2 {
   gap: 10px;
 }
 
-
 /* Visualization containers */
 .visualization {
-  border: 1px solid #ddd;
-  padding: 20px;
+  border: none;
   margin-top: 20px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-
+  background-color: #fff;
   flex: 1;
 }
 
@@ -147,14 +142,16 @@ h2 {
 }
 
 .graph {
-  min-height: calc(60vh);
+  min-height: calc(50vh);
   width: 100%;
+  height: 100%;
+  position: relative;
 }
 
 /* SVG styling */
 svg {
   background-color: white;
-  border: 1px solid #eee;
+  border: none;
 }
 
 .choose_metric {
@@ -163,6 +160,34 @@ svg {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.choose_metric.fixed {
+  position: fixed;
+  top: 5px;
+  right: 5px;;
+  z-index: 1000;
+  align-items: right;
+  justify-content: right;
+  padding: 0px;
+  margin: 0px;
+  max-width:min-content;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.478), rgba(204, 199, 199, 0.478));
+  backdrop-filter: blur(10px);
+  border-radius: 5px;
+}
+
+.choose_metric.fixed>.container {
+  flex-direction: column;
+  gap: 0px;
+  padding: 8px;
+  border-radius: 5px;
+}
+.choose_metric.fixed>.container>.metric-select {
+  padding: 0px;
+}
+.choose_metric.fixed>.container>p {
+  margin: 2px;
 }
 
 .choose_metric>.container {
@@ -189,6 +214,75 @@ footer {
   text-align: center;
   padding: 20px 0;
   margin-top: 50px;
+}
+
+/* Viz 3 */
+
+
+.options-tendances {
+  box-shadow: 0 5px 5px rgba(0,0,0,0.2);
+  backdrop-filter: blur(10px);
+  z-index: 6;
+
+  display: flex;
+  flex-direction: row;
+  align-items: left;
+  padding: 10px 25px;
+  gap: 15px;
+
+  margin: 15px auto;
+  margin-bottom: 0px;
+  max-width: 90%;
+  margin-bottom: -10px;
+}
+
+.options-tendances>h3 {
+  margin : 0px;
+}
+
+.options-tendances>div {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  border-left: 1px solid #ccc;
+  padding-left: 5px;
+}
+
+.options-tendances label {
+  margin-left: 10px;
+  font-style: italic;
+}
+
+.categorie-select {
+  background-color: transparent;
+  padding: 5px;
+  color : rgb(0, 98, 255)
+}
+
+.legend-tendances {
+  max-width : 200px;
+  min-height : 100px;
+  position: absolute;
+  top : 0;
+  right: 0;
+  background: linear-gradient(45deg, rgba(128, 128, 128, 0.379), white);
+  box-shadow: 0 5px 5px rgba(0,0,0,0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  z-index: 5;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 10px;
+  gap: 5px;
+}
+
+.legend-tendances>div {
+  margin-left: 5px;
+}
+
+.legend-tendances>div>span {
+  color : gey;
 }
 
 /* Responsive adjustments */
