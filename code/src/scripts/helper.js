@@ -45,7 +45,7 @@
  * @param {string} name The movie name to clean
  * @returns {string} the cleaned movie name
  */
-export function cleanMovieName (name) {
+export function cleanMovieName(name) {
   let nameStr = String(name)
   const articlePattern = /^(.+),\s+(The|A|An)$/i
   const articleMatch = nameStr.match(articlePattern)
@@ -62,7 +62,7 @@ export function cleanMovieName (name) {
  * @param {number} topYear The year to adjust the amount to
  * @returns {number} The inflation-adjusted amount, rounded to 2 decimal places
  */
-export function adjustForInflation (moneterayAmount, movieYear, topYear) {
+export function adjustForInflation(moneterayAmount, movieYear, topYear) {
   const nYears = topYear - movieYear
   const inflationRate = 1 + (3.3 / 100)
 
@@ -79,7 +79,7 @@ export function adjustForInflation (moneterayAmount, movieYear, topYear) {
  * @param {string} runtimeString A string representing the runtime in hours and/or minutes
  * @returns {number|null} The total runtime in minutes, or null if invalid input
  */
-export function parseRuntime (runtimeString) {
+export function parseRuntime(runtimeString) {
   if (!runtimeString || typeof runtimeString !== 'string') return null
   let totalMins = 0
 
@@ -102,3 +102,17 @@ export const stopWords = new Set([
   'too', 'under', 'until', 'very', 'was', 'were', 'what', 'when', 'where', 'which',
   'while', 'who', 'whom', 'why', 'will', 'with', 'would', 'your'
 ])
+
+/**
+ * Converts all the movie names to string values
+ *
+ * @param {object} movies An object containing a list of the top 250 IMBD movies
+ * @returns {object} A list of the top 250 IMDB movies with their names all being of type string
+ */
+export function convertMovieNamesToString(movies) {
+  movies.forEach(movie => {
+    if (typeof movie.name !== 'string') movie.name = String(movie.name)
+  })
+
+  return movies
+}

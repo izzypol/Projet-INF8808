@@ -10,21 +10,21 @@ export function getMoviesBySameField(movieName, data, field) {
     if (!targetMovie) return [];
 
     // Handle both string and array field values
-    const targetValues = Array.isArray(targetMovie[field]) 
-        ? targetMovie[field] 
+    const targetValues = Array.isArray(targetMovie[field])
+        ? targetMovie[field]
         : [targetMovie[field]];
-    
+
     console.log("Target values:", targetValues);
 
     return data
         .filter(movie => {
-            const movieFieldValues = Array.isArray(movie[field]) 
-                ? movie[field] 
+            const movieFieldValues = Array.isArray(movie[field])
+                ? movie[field]
                 : [movie[field]];
-            
+
             // Check if any target value exists in movie's field values
-            return targetValues.some(targetVal => 
-                movieFieldValues.some(movieVal => 
+            return targetValues.some(targetVal =>
+                movieFieldValues.some(movieVal =>
                     String(movieVal).toLowerCase().includes(String(targetVal).toLowerCase())
                 )
             );
@@ -35,5 +35,5 @@ export function getMoviesBySameField(movieName, data, field) {
                 return a.name.localeCompare(b.name);
             }
             return 0; // No sorting needed for single element
-});
+        });
 }
