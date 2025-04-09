@@ -40,12 +40,10 @@ export function getMoviesBySameField(movieName, data, field) {
         ;
 }
 
-const succesMesure = "box_office";
-
 function averageByYear(data, succesMesure) {
     const yearGroups = {};
     
-    // 1. Group and sum by year
+    // Group and sum by year
     data.forEach(item => {
         if (typeof item[succesMesure] !== 'number') return;
         
@@ -56,7 +54,7 @@ function averageByYear(data, succesMesure) {
         yearGroups[year].names.push(item.name);
     });
     
-    // 2. Calculate averages and format output
+    // Calculate averages and format output
     return Object.keys(yearGroups)
         .map(year => ({
             year: +year,
@@ -75,11 +73,37 @@ export function generateDataToDisplay(movieName, data, liste) {
     liste.forEach(categorie => {
         dataToDisplay.push({
             category: categorie,
-            data: averageByYear(getMoviesBySameField(movieName, data, categorie), succesMesure)
+            data: averageByYear(getMoviesBySameField(movieName, data, categorie), "mesureDeSucces")
         });
     });
 
     console.log("ToDisplay : ", dataToDisplay);
     
     return dataToDisplay;
+}
+
+export function indexData(referenceName, originalData, successMesure) {
+
+    const validData = originalData.filter(movie => {
+        const value = movie[successMesure];
+        return (
+            value !== undefined &&  
+            value !== null &&     
+            !isNaN(value) &&       
+            value > 0             
+        );
+    });
+
+    const targetMovie = validData.find(movie => movie.name === referenceName);
+    if (!targetMovie) {
+        return [];
+    }
+
+    const referenceValue = targetMovie[successMesure];
+    console.log(`Indexing ${validData.length} movies against ${referenceName} (${referenceValue})`);
+
+    return validData.map(movie => ({
+        ...movie,  
+        mesureDeSucces: (movie[successMesure] / referenceValue) * 100
+    }));
 }

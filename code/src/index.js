@@ -111,52 +111,54 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
 
     /* Visualisation 4 - Impact des films */
 
-    const margin = {
+    const margin4 = {
       top: 75,
       right: 200,
       bottom: 100,
       left: 80
     }
 
-    let svgSize, graphSize
+    let svgSize4, graphSize4
 
     function setSizing() {
-      svgSize = {
+      svgSize4 = {
         width: 1000,
         height: 600
       }
 
-      graphSize = {
-        width: svgSize.width - margin.right - margin.left,
-        height: svgSize.height - margin.bottom - margin.top
+      graphSize4 = {
+        width: svgSize4.width - margin4.right - margin4.left,
+        height: svgSize4.height - margin4.bottom - margin4.top
       }
 
-      viz4Helper.setCanvasSize(svgSize.width, svgSize.height)
+      viz4Helper.setCanvasSize(svgSize4.width, svgSize4.height)
     }
 
     setSizing();
 
-    const viz4xScale = viz4Scales.setXScale(graphSize.width, imdb);
-    const viz4yScaleBoxOffice = viz4Scales.setYScaleBO(graphSize.height, imdb);
+    const viz4xScale = viz4Scales.setXScale(graphSize4.width, imdb);
+    const viz4yScaleBoxOffice = viz4Scales.setYScaleBO(graphSize4.height, imdb);
 
     const viz4 = d3.select(".film-impact-svg");
 
     const axes = viz4.append("g").attr("class", "axes")
-      .attr("transform", 'translate(' + margin.left + ', ' + margin.top + ')');
+      .attr("transform", 'translate(' + margin4.left + ', ' + margin4.top + ')');
     const courbes = viz4.append("g").attr("class", "courbes")
-      .attr("transform", 'translate(' + margin.left + ', ' + margin.top + ')');
+      .attr("transform", 'translate(' + margin4.left + ', ' + margin4.top + ')');
 
     viz4Helper.appendAxes(axes);
     viz4Helper.appendGraphLabels(axes);
-    viz4Helper.positionLabels(axes, graphSize.width, graphSize.height);
+    viz4Helper.positionLabels(axes, graphSize4.width, graphSize4.height);
 
-    viz4Helper.drawXAxis(viz4xScale, graphSize.height);
+    viz4Helper.drawXAxis(viz4xScale, graphSize4.height);
     viz4Helper.drawYAxis(viz4yScaleBoxOffice);
 
     let title;
-    const ListOfFields = ["directors", "year", "genre"];
+    const ListOfFields = ["directors", "genre", "casts", "writers"];
 
     const viz4ColorScale = viz4Scales.setColorScale(ListOfFields);
+
+    //viz4Process.indexData("1917", imdb, "box_office");
 
     document.addEventListener('viz4movieSelected', (e) => {
       console.log("Received movie:", e.detail.movie);
@@ -166,9 +168,15 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
       //const testProcess2 = viz4Process.getMoviesBySameField(title, imdb, "year");
       //console.log("liste : ", testProcess);
       //viz4Viz.drawCircles(testProcess, viz4xScale, viz4yScaleBoxOffice);
-      const test = viz4Process.generateDataToDisplay(title, imdb, ListOfFields);
-      console.log("Test", test);
-      viz4Viz.drawAllCategories(test, viz4xScale, viz4yScaleBoxOffice, viz4ColorScale);
+      const dataToShow = viz4Process.indexData(title, imdb, "box_office");
+
+      const test = viz4Process.generateDataToDisplay(title, dataToShow, ListOfFields);
+      console.log("Test : ", test);
+
+      const viz4yScaleFlexible = viz4Scales.setYScaleMesureSucces(graphSize4.height, test, "average");
+      viz4Helper.drawYAxis(viz4yScaleFlexible);
+
+      viz4Viz.drawCircles(test, viz4xScale, viz4yScaleFlexible, viz4ColorScale, graphSize4.width);
       
     });
 
