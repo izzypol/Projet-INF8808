@@ -328,3 +328,23 @@ footer {
     }
     
 }
+
+.viz4-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: top;
+  padding: 10px 25px;
+  gap: 55px;
+
+  margin: 15px auto;
+  margin-bottom: 0px;
+  max-width: 90%;
+  margin-bottom: -10px;
+}
+
+.check-group {
+  display: flex;
+  flex-direction: row;
+  align-items: top;
+  gap: 15px;
+}

@@ -451,6 +451,7 @@ document.addEventListener("DOMContentLoaded", () => {
         viz4Helper.drawYAxis(viz4yScaleFlexible);
 
         viz4Viz.drawCircles(test, viz4xScale, viz4yScaleFlexible, viz4ColorScale, graphSize4.width);
+        viz4Viz.drawRef(title, dataToShow, viz4xScale, viz4yScaleFlexible, graphSize4.height);
         
       });
 
@@ -470,6 +471,7 @@ document.addEventListener("DOMContentLoaded", () => {
       viz4Helper.drawYAxis(viz4yScaleFlexible);
 
       viz4Viz.drawCircles(test, viz4xScale, viz4yScaleFlexible, viz4ColorScale, graphSize4.width);
+      viz4Viz.drawRef(title, dataToShow, viz4xScale, viz4yScaleFlexible, graphSize4.height);
     }
 
    buildViz4(imdb, "box_office");

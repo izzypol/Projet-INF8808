@@ -107,6 +107,9 @@ function averageByYear(data, succesMesure) {
 
 export function generateDataToDisplay(movieName, data, fields, minlength) {
     const dataToDisplay = [];
+
+    // Capitalize first letter helper
+    const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     
     fields.forEach(field => {
         // Get grouped movies for this field
@@ -120,7 +123,7 @@ export function generateDataToDisplay(movieName, data, fields, minlength) {
 
             if (averageData.length > minlength){
                 dataToDisplay.push({
-                    category: `${group.categorie}`, // e.g. "genre: Action"
+                    category: `${capitalize(field)} : ${group.categorie}`, // e.g. "genre: Action"
                     data: averageByYear(group.movies, "mesureDeSucces")
                 })
             } 
@@ -152,10 +155,15 @@ export function indexData(referenceName, originalData, successMesure) {
     }
 
     const referenceValue = targetMovie[successMesure];
+    const targetYear = targetMovie.year;
     //console.log(`Indexing ${validData.length} movies against ${referenceName} (${referenceValue})`);
 
     return validData.map(movie => ({
         ...movie,  
         mesureDeSucces: (movie[successMesure] / referenceValue) * 100
-    }));
+    }))
+    .filter(movie => 
+        movie.name === referenceName ||  // Keep target movie
+        movie.year !== targetYear    // Remove others with same year
+    );
 }
