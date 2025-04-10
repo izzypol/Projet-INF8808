@@ -184,7 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
     viz1Helper.drawYAxis(g1, yScale1)
 
     const flatData = Object.values(imdb).flat();
-    const years = flatData.map(d => new Date(d.releaseDate).getFullYear());
+    const years = flatData.map(d => d.year);
     const minDate = d3.min(years);
     const maxDate = d3.max(years);
     viz1Legend.drawLegend(colorScale1, g1, graphSize1.width, graphSize1.height, minDate, maxDate)
