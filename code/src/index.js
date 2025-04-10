@@ -408,59 +408,75 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setSizing();
 
-    const viz4xScale = viz4Scales.setXScale(graphSize4.width, imdb);
-    const viz4yScaleBoxOffice = viz4Scales.setYScaleBO(graphSize4.height, imdb);
-
-    const viz4 = d3.select(".film-impact-svg");
-
-    const axes = viz4.append("g").attr("class", "axes")
-      .attr("transform", 'translate(' + margin4.left + ', ' + margin4.top + ')');
-    const courbes = viz4.append("g").attr("class", "courbes")
-      .attr("transform", 'translate(' + margin4.left + ', ' + margin4.top + ')');
-
-    viz4Helper.appendAxes(axes);
-    viz4Helper.appendGraphLabels(axes);
-    viz4Helper.positionLabels(axes, graphSize4.width, graphSize4.height);
-
-    viz4Helper.drawXAxis(viz4xScale, graphSize4.height);
-    viz4Helper.drawYAxis(viz4yScaleBoxOffice);
-
     let title;
     const ListOfFields = ["directors", "genre", "casts", "writers"];
 
-    const viz4ColorScale = viz4Scales.setColorScale(ListOfFields);
+    let viz4xScale;
+    let viz4yScaleBoxOffice;
+    let viz4ColorScale;
+    
+    function buildViz4(viz4data, viz4mesureSucces) {
 
-    //viz4Process.indexData("1917", imdb, "box_office");
+      viz4xScale = viz4Scales.setXScale(graphSize4.width, viz4data);
+      viz4yScaleBoxOffice = viz4Scales.setYScaleBO(graphSize4.height, viz4data);
 
-    document.addEventListener('viz4movieSelected', (e) => {
-      console.log("Received movie:", e.detail.movie);
-      title = e.detail.movie;
-      // Update your visualization
-      //const testProcess = viz4Process.getMoviesBySameField(title, imdb, "directors");
-      //const testProcess2 = viz4Process.getMoviesBySameField(title, imdb, "year");
-      //console.log("liste : ", testProcess);
-      //viz4Viz.drawCircles(testProcess, viz4xScale, viz4yScaleBoxOffice);
-      const dataToShow = viz4Process.indexData(title, imdb, "box_office");
+      const viz4 = d3.select(".film-impact-svg");
 
-      const test = viz4Process.generateDataToDisplay(title, dataToShow, ListOfFields);
-      console.log("Test : ", test);
+      const axes = viz4.append("g").attr("class", "axes")
+        .attr("transform", 'translate(' + margin4.left + ', ' + margin4.top + ')');
+      const courbes = viz4.append("g").attr("class", "courbes")
+        .attr("transform", 'translate(' + margin4.left + ', ' + margin4.top + ')');
+
+      viz4Helper.appendAxes(axes);
+      viz4Helper.appendGraphLabels(axes);
+      viz4Helper.positionLabels(axes, graphSize4.width, graphSize4.height);
+
+      viz4Helper.drawXAxis(viz4xScale, graphSize4.height);
+      viz4Helper.drawYAxis(viz4yScaleBoxOffice);
+
+      viz4ColorScale = viz4Scales.setColorScale(ListOfFields);
+
+      //viz4Process.indexData("1917", imdb, "box_office");
+
+      document.addEventListener('viz4movieSelected', (e) => {
+        console.log("Received movie:", e.detail.movie);
+        title = e.detail.movie;
+
+        const dataToShow = viz4Process.indexData(title, viz4data, viz4mesureSucces);
+
+        const test = viz4Process.generateDataToDisplay(title, dataToShow, ListOfFields, 2);
+        console.log("Test : ", test);
+
+        const viz4yScaleFlexible = viz4Scales.setYScaleMesureSucces(graphSize4.height, test, "average");
+        viz4Helper.drawYAxis(viz4yScaleFlexible);
+
+        viz4Viz.drawCircles(test, viz4xScale, viz4yScaleFlexible, viz4ColorScale, graphSize4.width);
+        
+      });
+
+      viz4Search.initFilmList(viz4data);
+  
+    }
+
+    function refreshViz4 (viz4data, viz4mesureSucces) {
+      console.log("Changement");
+
+      const dataToShow = viz4Process.indexData(title, viz4data, viz4mesureSucces);
+
+      const test = viz4Process.generateDataToDisplay(title, dataToShow, ListOfFields, 2);
+      console.log("Test refresh : ", test);
 
       const viz4yScaleFlexible = viz4Scales.setYScaleMesureSucces(graphSize4.height, test, "average");
       viz4Helper.drawYAxis(viz4yScaleFlexible);
 
       viz4Viz.drawCircles(test, viz4xScale, viz4yScaleFlexible, viz4ColorScale, graphSize4.width);
-      
-    });
-
-    viz4.append("circle");
-
-    viz4Search.initFilmList(imdb);
-
-    buildViz4(certificateData);
-
-    function buildViz4(data) {
-      //console.log(data);
     }
+
+   buildViz4(imdb, "box_office");
+
+   selectorMetric.addEventListener('change', () => {
+     refreshViz4(imdb, selectorMetric.value);
+   });
 
     // }, [])
     // d3.csv('./golden_globe_awards.csv', d3.autoType).then(function (data) {

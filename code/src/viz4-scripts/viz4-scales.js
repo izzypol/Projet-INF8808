@@ -46,7 +46,7 @@ export function setYScaleMesureSucces (height, data, key) {
   // TODO : Set scale
 
   const flatData = Object.values(data).flat();
-  console.log("flat : ", flatData);
+  //console.log("flat : ", flatData);
 
 //   const maxIndex = d3.maxIndex(flatData, d => d[key]);
 // const maxEntry = flatData[maxIndex];
