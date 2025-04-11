@@ -31,14 +31,28 @@ export function setYScale(height, topY) {      // Idem que la fonction précéde
     return yScale}
 
 /**
- * Defines the color scale based on release year.
- * @param data
- * @returns {*}
+ * Sets the color scale for entity types.
+ * 
+ * @returns {d3.ScaleOrdinal} The color scale
  */
-export function setColorScale(topY) {
-  const avg = topY.map(d => d.avg);
-        
-  return d3.scaleSequential()
-        .domain([d3.min(avg), d3.max(avg)])
-        .interpolator(d3.interpolateYlOrRd) 
+export function setColorScale() {
+  return d3.scaleOrdinal()
+    .domain(['actor', 'director'])
+    .range(['#4285F4', '#EA4335']);
+}
+
+/**
+ * Creates a radius scale for entity nodes based on collaboration count.
+ * 
+ * @param {Array} data The entity data
+ * @returns {d3.ScaleLinear} The radius scale
+ */
+export function setRadiusScale(data) {
+  // Find the maximum connection count
+  const maxCount = d3.max(data, d => d.count || 0);
+  
+  // Create scale with range appropriate for the visualization
+  return d3.scaleLinear()
+    .domain([0, maxCount])
+    .range([5, 20]);
 }

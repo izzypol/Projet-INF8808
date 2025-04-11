@@ -40,8 +40,8 @@
         tendances et les corrélations significatives.</p>
       <p>
         Les différentes valeurs du box-office ont été comparées en tenant compte de l'inflation du dollar américain,
-        afin d'assurer une évaluation plus juste et représentative dans le temps. L’ajustement des montants a été
-        réalisé en se basant sur l’indice des prix à la consommation (CPI). Source: <a
+        afin d'assurer une évaluation plus juste et représentative dans le temps. L'ajustement des montants a été
+        réalisé en se basant sur l'indice des prix à la consommation (CPI). Source: <a
           href="https://tradingeconomics.com/united-states/inflation-cpi">https://tradingeconomics.com/united-states/inflation-cpi</a>.
       </p>
     </section>
@@ -93,9 +93,10 @@
         <div class="visualization">
           <div class="team-controls" style="margin-bottom: 1em;">
             <div style="display: flex; flex-wrap: wrap; gap: 1em;">
-              <div>
+              <div id="search-container" style="position: relative; min-width: 200px;">
                 <label for="search-box">Search Actor/Director:</label><br />
-                <input id="search-box" type="text" placeholder="Type to search..." style="padding: 4px;" />
+                <input id="search-box" type="text" placeholder="Type to search..." style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" />
+                <!-- Dropdown will be inserted here by JavaScript -->
               </div>
           
               <div>
@@ -110,7 +111,7 @@
               </div>
           
               <div>
-                <label for="max-entities">Max Entities:</label><br />
+                <label for="max-entities">Liens Maximum:</label><br />
                 <select id="max-entities" style="padding: 4px;">
                   <option value="10">10</option>
                   <option value="15">15</option>
@@ -118,6 +119,11 @@
                   <option value="25">25</option>
                   <option value="30">30</option>
                 </select>
+              </div>
+
+              <div>
+                <label>&nbsp;</label><br />
+                <button id="reset-button" style="padding: 4px 8px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">Reset View</button>
               </div>
             </div>
             <p style="margin-top: 0.5em; font-size: 0.9em; color: gray;">
