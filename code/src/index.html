@@ -77,15 +77,61 @@
     <section id="team">
       <h2>2. Équipe du film</h2>
       <div class="viz_n_text_container">
-
+        <!-- <div class="team-controls">
+          <label for="y-role-select">Choisissez le rôle (axe Y):</label>
+          <select id="y-role-select" value="actor">
+            <option value="actor">Acteur</option>
+            <option value="writer">Scénariste</option>
+          </select>
+        
+          <label for="metric-select-team">Choisissez la métrique:</label>
+          <select id="metric-select-team" value="box_office">
+            <option value="box_office">Box Office</option>
+            <option value="rating">IMDB Note</option>
+          </select>
+        </div> -->
         <div class="visualization">
+          <div class="team-controls" style="margin-bottom: 1em;">
+            <div style="display: flex; flex-wrap: wrap; gap: 1em;">
+              <div>
+                <label for="search-box">Search Actor/Director:</label><br />
+                <input id="search-box" type="text" placeholder="Type to search..." style="padding: 4px;" />
+              </div>
+          
+              <div>
+                <label for="min-collab">Min Collaborations:</label><br />
+                <select id="min-collab" style="padding: 4px;">
+                  <option value="1" selected>1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+          
+              <div>
+                <label for="max-entities">Max Entities:</label><br />
+                <select id="max-entities" style="padding: 4px;">
+                  <option value="10">10</option>
+                  <option value="15">15</option>
+                  <option value="20" selected>20</option>
+                  <option value="25">25</option>
+                  <option value="30">30</option>
+                </select>
+              </div>
+            </div>
+            <p style="margin-top: 0.5em; font-size: 0.9em; color: gray;">
+              <span style="color: #4285F4;">●</span> Actors
+              &nbsp;&nbsp;
+              <span style="color: #EA4335;">●</span> Directors
+              &nbsp;&nbsp;– Click a name or search to highlight collaborations.
+            </p>
+          </div>
+          
           <div class="graph" id="team-heatmap">
-            <!--  Équipe du film Heatmap -->
-            <svg class="team-heatmap-svg"></svg>
+            <!-- D3.js will inject the SVG here -->
           </div>
         </div>
-        <p>Quel est la performance des différents acteurs, réalisateurs et scénaristes. Et quels sont les collaborations
-          les plus fructueuses ?</p>
       </div>
     </section>
 

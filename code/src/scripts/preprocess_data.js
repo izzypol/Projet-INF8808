@@ -259,35 +259,42 @@ export function createYearIntervals (movies, intervalSize = 10) {
 }
 
 /**
- * Gets the top collaborations for actor/director and actor/actor collaborations
+ * Gets the top collaborations for actor/director, actor/actor, and writer/director collaborations.
  *
  * @param {Array} movies Array of movie objects
  * @param {number} limit Number of top collaborations to return (20 by default)
- * @returns {object} Object with the top actor/director and actor/actor collaborations
+ * @returns {object} Object with the top actor/director, actor/actor, and writer/director collaborations
  */
 export function getTopCollaborations (movies, limit = 20) {
   const allCollabs = countCollaborations(movies)
 
   return {
     topActorDirectorCollabs: allCollabs.actorDirectorCollabs.slice(0, limit),
-    topActorActorCollabs: allCollabs.actorActorCollabs.slice(0, limit)
+    topActorActorCollabs: allCollabs.actorActorCollabs.slice(0, limit),
+    topWriterDirectorCollabs: allCollabs.writerDirectorCollabs.slice(0, limit)
   }
 }
 
 /**
- * Counts the amount of collaborations between actors and directors, and also between actors themselves
+ * Counts the amount of collaborations between actors and directors, writers and directors, and also between actors themselves
  *
- * @param {Array} movies Array of movie objects with casts and directors properties
- * @returns {object} Object containing actorDirectorCollabs and actorActorCollabs
+ * @param {Array} movies Array of movie objects with casts, writers, and directors properties
+ * @returns {object} Object containing actorDirectorCollabs, actorActorCollabs, and writerDirectorCollabs
  */
-function countCollaborations (movies) {
+export function countCollaborations (movies) {
   const actorDirectorCollabs = {}
   const actorActorCollabs = {}
+  const writerDirectorCollabs = {}
 
-  const createCollabObject = (isSameType, participant1, participant2) => {
+  const createCollabObject = (type, participant1, participant2) => {
+    const keys = {
+      actorDirector: { actor: participant1, director: participant2 },
+      actorActor: { actor1: participant1, actor2: participant2 },
+      writerDirector: { writer: participant1, director: participant2 }
+    }
+
     return {
-      [isSameType ? 'actor1' : 'actor']: participant1,
-      [isSameType ? 'actor2' : 'director']: participant2,
+      ...keys[type],
       movies: [],
       genres: [],
       mostPopularGenre: null,
@@ -315,7 +322,9 @@ function countCollaborations (movies) {
   movies.forEach(movie => {
     const castMembers = movie.casts || []
     const directors = movie.directors || []
+    const writers = movie.writers || []
 
+    // Actor/Director
     castMembers.forEach(actor => {
       if (!actor) return
 
@@ -323,15 +332,15 @@ function countCollaborations (movies) {
         if (!director) return
 
         const key = `${actor}/${director}`
-
         if (!actorDirectorCollabs[key]) {
-          actorDirectorCollabs[key] = createCollabObject(false, actor, director)
+          actorDirectorCollabs[key] = createCollabObject("actorDirector", actor, director)
         }
 
         addMovieToCollab(actorDirectorCollabs[key], movie)
       })
     })
 
+    // Actor/Actor
     for (let i = 0; i < castMembers.length; i++) {
       const actor1 = castMembers[i]
       if (!actor1) continue
@@ -340,16 +349,32 @@ function countCollaborations (movies) {
         const actor2 = castMembers[j]
         if (!actor2) continue
 
-        const actorPair = [actor1, actor2].sort()
-        const key = `${actorPair[0]}/${actorPair[1]}`
+        const pair = [actor1, actor2].sort()
+        const key = `${pair[0]}/${pair[1]}`
 
         if (!actorActorCollabs[key]) {
-          actorActorCollabs[key] = createCollabObject(true, actorPair[0], actorPair[1])
+          actorActorCollabs[key] = createCollabObject("actorActor", pair[0], pair[1])
         }
 
         addMovieToCollab(actorActorCollabs[key], movie)
       }
     }
+
+    // Writer/Director
+    writers.forEach(writer => {
+      if (!writer) return
+
+      directors.forEach(director => {
+        if (!director) return
+
+        const key = `${writer}/${director}`
+        if (!writerDirectorCollabs[key]) {
+          writerDirectorCollabs[key] = createCollabObject("writerDirector", writer, director)
+        }
+
+        addMovieToCollab(writerDirectorCollabs[key], movie)
+      })
+    })
   })
 
   const finalizeCollabs = collabs => {
@@ -370,7 +395,8 @@ function countCollaborations (movies) {
 
   return {
     actorDirectorCollabs: finalizeCollabs(actorDirectorCollabs),
-    actorActorCollabs: finalizeCollabs(actorActorCollabs)
+    actorActorCollabs: finalizeCollabs(actorActorCollabs),
+    writerDirectorCollabs: finalizeCollabs(writerDirectorCollabs)
   }
 }
 
