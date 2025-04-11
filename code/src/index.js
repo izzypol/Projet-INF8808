@@ -317,9 +317,10 @@ import * as d3 from 'd3'
       if (resetButton) {
         resetButton.addEventListener("click", () => {
           searchInput.value = '';
-          
+          console.log
           dropdown.style("display", "none");
-          
+          collabSelect.value = 2;
+          maxEntSelect.value = 20;
           const filteredData = collabs.filter(c => 
             (c.connectionType === 'actor/director' || c.connectionType === 'writer/director') && 
             c.count >= parseInt(collabSelect.value)
