@@ -40,45 +40,8 @@ export function getMoviesBySameField(movieName, data, field) {
         };
     });
 
-    //console.log("Movies by field value : ", moviesByFieldValue);
-
     return moviesByFieldValue;
 }
-
-// export function getMoviesBySameField(movieName, data, field) {
-//     const targetMovie = data.find(movie => movie.name === movieName);
-//     if (!targetMovie) return [];
-
-//     // Handle both string and array field values
-//     const targetValues = Array.isArray(targetMovie[field])
-//         ? targetMovie[field]
-//         : [targetMovie[field]];
-
-//     console.log("Target values:", targetValues);
-
-//     return data
-//         .filter(movie => {
-//             const movieFieldValues = Array.isArray(movie[field])
-//                 ? movie[field]
-//                 : [movie[field]];
-
-//             // Check if any target value exists in movie's field values
-//             return targetValues.some(targetVal =>
-//                 movieFieldValues.some(movieVal =>
-//                     String(movieVal).toLowerCase().includes(String(targetVal).toLowerCase())
-//                 )
-//             );
-//         })
-//         .sort((a, b) => {
-//         // Only sort if there are multiple elements
-//             if (data.length > 1) {
-//                 //console.log(a.name);
-//                 return a.name.localeCompare(b.name);
-//             }
-//             return 0; // No sorting needed for single element
-//         })
-//         ;
-// }
 
 function averageByYear(data, succesMesure) {
     const yearGroups = {};
@@ -155,6 +118,7 @@ export function indexData(referenceName, originalData, successMesure) {
     }
 
     const referenceValue = targetMovie[successMesure];
+    console.log("Ref : ", referenceValue);
     const targetYear = targetMovie.year;
     //console.log(`Indexing ${validData.length} movies against ${referenceName} (${referenceValue})`);
 
@@ -166,4 +130,29 @@ export function indexData(referenceName, originalData, successMesure) {
         movie.name === referenceName ||  // Keep target movie
         movie.year !== targetYear    // Remove others with same year
     );
+}
+
+export function addNumberOfNominations(dataSource) {
+    return dataSource.map(movie => {
+        // Calculate Golden Globes nominations (with null checks)
+        const ggNomination = movie.goldenGlobesData?.goldenGlobesNominations ?? 0;
+        
+        // Calculate Oscars nominations (with null checks)
+        const oscarNomination = movie.oscarsData?.oscarNominations ?? 0;
+        
+        // Calculate total metric (sum of both)
+        const metric = (typeof ggNomination === 'number' ? ggNomination : 0) + 
+                      (typeof oscarNomination === 'number' ? oscarNomination : 0);
+        
+        // Return new object with all original properties plus the new metric field
+        return {
+            ...movie,
+            nominations: {
+                goldenGlobes: ggNomination,
+                oscars: oscarNomination,
+                total: metric
+            },
+            numNominations: metric  // Adding the total as a top-level property for easy access
+        };
+    });
 }

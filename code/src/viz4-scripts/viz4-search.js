@@ -68,6 +68,3 @@ export function initFilmList(filmArray) {
     list.selectAll("li:last-child")
        .style("border-bottom", "none");
   }
-  
-  // Initialize when the DOM is loaded
-  //document.addEventListener("DOMContentLoaded", initFilmList);

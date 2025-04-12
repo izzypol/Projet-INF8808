@@ -46,15 +46,6 @@ export function setYScaleMesureSucces (height, data, key) {
   // TODO : Set scale
 
   const flatData = Object.values(data).flat();
-  //console.log("flat : ", flatData);
-
-//   const maxIndex = d3.maxIndex(flatData, d => d[key]);
-// const maxEntry = flatData[maxIndex];
-
-// console.log(
-//   "Max value:", maxEntry[key],
-//   "Movie name:", maxEntry.name
-// );
 
   const yScale = d3.scaleLinear()
     .domain([
@@ -73,9 +64,10 @@ export function setYScaleMesureSucces (height, data, key) {
 
 export function setColorScale(data){
 
+  const categories = data.map(d => d.category).sort();
+
   const colorScale = d3.scaleOrdinal()
-    .domain(data.sort())
-                                                    
+    .domain(categories)
     .range(d3.schemeSet2);                          
 
   return colorScale
