@@ -44,6 +44,8 @@ import * as viz4Search from './viz4-scripts/viz4-search.js'
 import * as viz4Scales from './viz4-scripts/viz4-scales.js'
 import * as viz4Process from './viz4-scripts/viz4-process.js'
 import * as viz4Viz from './viz4-scripts/viz4-viz.js'
+import * as viz4CheckBoxes from './viz4-scripts/viz4-checkboxes.js'
+import * as viz4Tooltip from './viz4-scripts/viz4-tooltip.js'
 
 // import * as helper from './scripts/helper.js'
 // import * as preproc from './scripts/preprocess_imbd_data.js'
@@ -411,16 +413,23 @@ document.addEventListener("DOMContentLoaded", () => {
     let title;
     const ListOfFields = ["directors", "genre", "casts", "writers"];
 
+    let viz4FixedImdb = viz4Process.addNumberOfNominations(imdb)
+
     let viz4xScale;
     let viz4yScaleBoxOffice;
     let viz4ColorScale;
     
-    function buildViz4(viz4data, viz4mesureSucces) {
+    viz4CheckBoxes.generateCheckBoxes(ListOfFields);
+
+    const viz4 = d3.select(".film-impact-svg");
+    
+
+    buildViz4(viz4FixedImdb);
+    
+    function buildViz4(viz4data) {
 
       viz4xScale = viz4Scales.setXScale(graphSize4.width, viz4data);
       viz4yScaleBoxOffice = viz4Scales.setYScaleBO(graphSize4.height, viz4data);
-
-      const viz4 = d3.select(".film-impact-svg");
 
       const axes = viz4.append("g").attr("class", "axes")
         .attr("transform", 'translate(' + margin4.left + ', ' + margin4.top + ')');
@@ -434,33 +443,13 @@ document.addEventListener("DOMContentLoaded", () => {
       viz4Helper.drawXAxis(viz4xScale, graphSize4.height);
       viz4Helper.drawYAxis(viz4yScaleBoxOffice);
 
-      viz4ColorScale = viz4Scales.setColorScale(ListOfFields);
-
-      //viz4Process.indexData("1917", imdb, "box_office");
-
-      document.addEventListener('viz4movieSelected', (e) => {
-        console.log("Received movie:", e.detail.movie);
-        title = e.detail.movie;
-
-        const dataToShow = viz4Process.indexData(title, viz4data, viz4mesureSucces);
-
-        const test = viz4Process.generateDataToDisplay(title, dataToShow, ListOfFields, 2);
-        console.log("Test : ", test);
-
-        const viz4yScaleFlexible = viz4Scales.setYScaleMesureSucces(graphSize4.height, test, "average");
-        viz4Helper.drawYAxis(viz4yScaleFlexible);
-
-        viz4Viz.drawCircles(test, viz4xScale, viz4yScaleFlexible, viz4ColorScale, graphSize4.width);
-        viz4Viz.drawRef(title, dataToShow, viz4xScale, viz4yScaleFlexible, graphSize4.height);
-        
-      });
-
       viz4Search.initFilmList(viz4data);
-  
     }
 
-    function refreshViz4 (viz4data, viz4mesureSucces) {
+  function refreshViz4 (viz4data, viz4mesureSucces) {
       console.log("Changement");
+
+      viz4CheckBoxes.checkAll();
 
       const dataToShow = viz4Process.indexData(title, viz4data, viz4mesureSucces);
 
@@ -469,16 +458,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const viz4yScaleFlexible = viz4Scales.setYScaleMesureSucces(graphSize4.height, test, "average");
       viz4Helper.drawYAxis(viz4yScaleFlexible);
+      viz4ColorScale = viz4Scales.setColorScale(test);
 
+      console.log(viz4ColorScale);
       viz4Viz.drawCircles(test, viz4xScale, viz4yScaleFlexible, viz4ColorScale, graphSize4.width);
+      
       viz4Viz.drawRef(title, dataToShow, viz4xScale, viz4yScaleFlexible, graphSize4.height);
+
+      const tip4 = d3Tip().attr('class', 'viz4-tip').html(function (d) { return viz4Tooltip.getContents(d, viz4ColorScale) });
+      viz4.select(".courbes").call(tip4);
+      viz4Tooltip.setCircleHoverHandler(viz4.select(".courbes"), tip4);
     }
 
-   buildViz4(imdb, "box_office");
-
-   selectorMetric.addEventListener('change', () => {
-     refreshViz4(imdb, selectorMetric.value);
+  selectorMetric.addEventListener('change', () => {
+     refreshViz4(viz4FixedImdb, selectorMetric.value);
    });
+
+  document.addEventListener('viz4movieSelected', (e) => {
+    console.log("Received movie:", e.detail.movie);
+    title = e.detail.movie;
+    const viz4MesureSucces = selectorMetric.value;
+    
+    refreshViz4(viz4FixedImdb, viz4MesureSucces);
+  });
 
     // }, [])
     // d3.csv('./golden_globe_awards.csv', d3.autoType).then(function (data) {

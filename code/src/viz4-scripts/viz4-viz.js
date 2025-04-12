@@ -1,10 +1,13 @@
 export function drawCircles(data, xScale, yScale, colorScale, width) {
     const courbesElement = d3.select(".courbes"); 
 
+    console.log("je vais dessiner ", data);
+
     // Clear previous elements
     courbesElement.selectAll(".ensemble-points").remove();
     courbesElement.selectAll(".data-line").remove();
     courbesElement.selectAll(".legend-item").remove(); // Changed from myLabels
+    courbesElement.selectAll(".category-group").remove();
 
     const categoryGroups = courbesElement.selectAll(".category-group")
     .data(data)
@@ -26,22 +29,30 @@ export function drawCircles(data, xScale, yScale, colorScale, width) {
             .attr("stroke-width", 4)
             //.attr("pointer-events", "none")
             .on("mouseover", function(event, d) {
-                d3.selectAll(".data-line").each(function() {
-                    const currentOpacity = parseFloat(d3.select(this).style("opacity"));
-                    if (currentOpacity != 0) {
-                      d3.select(this).style("opacity", 0.35);
+                // Select the parent group and all its elements
+                const parentGroup = d3.select(this.parentNode);
+                
+                // Fade all other category groups
+                d3.selectAll(".category-group").each(function() {
+                    if (this !== parentGroup.node()) {
+                        const currentOpacity = parseFloat(d3.select(this).style("opacity"));
+                        if (currentOpacity != 0) {
+                            d3.select(this).style("opacity", 0.35);
+                        }
                     }
-                  });
-                d3.select(this).style("opacity", 1);
-                //console.log(d);
+                });
+                
+                // Highlight the hovered group
+                parentGroup.style("opacity", 1);
             })
             .on("mouseout", function(event, d) {
-                d3.selectAll(".data-line, .ensemble-points").each(function() {
+                // Restore opacity for all groups
+                d3.selectAll(".category-group, .ensemble-points").each(function() {
                     const currentOpacity = parseFloat(d3.select(this).style("opacity"));
                     if (currentOpacity != 0) {
-                      d3.select(this).style("opacity", 1);
+                        d3.select(this).style("opacity", 1);
                     }
-                  });
+                });
             });
           
 
@@ -58,10 +69,7 @@ export function drawCircles(data, xScale, yScale, colorScale, width) {
                 .attr("cx", d => xScale(d.year))
                 .attr("cy", d => yScale(d.average))
                 .attr("r", 5)
-                .attr("stroke", "white")
-                .on("click", function(event, d) {
-                    console.log(d);
-                });
+                .attr("stroke", "white");
 
     // Add legend
     const legend = courbesElement.append("g")
@@ -82,25 +90,26 @@ export function drawCircles(data, xScale, yScale, colorScale, width) {
             .style("font-size", "15px")
             .style("font-weight", "bold") // Start bold (since curves are visible)
             .style("cursor", "pointer")
-            .on("click", function(event, d) {
-                const categoryClass = d.category.replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').toLowerCase();
-                const currentOpacity = d3.selectAll(`.${categoryClass}`).style("opacity");
-                d3.selectAll(`.${categoryClass}`)
-                    .transition()
-                    .style("opacity", currentOpacity == 1 ? 0 : 1)
-                    .attr("pointer-events", currentOpacity == 1 ? "none" : "visible");
-                d3.select(this)
-                    .transition()
-                    .style("font-weight", currentOpacity == 0 ? "bold" : "normal");
-            });
+            .on("click", hideShowCategory);
+}
+
+
+function hideShowCategory(event, d) {
+    const categoryClass = d.category.replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').toLowerCase();
+    const currentOpacity = d3.selectAll(`.${categoryClass}`).style("opacity");
+    d3.selectAll(`.${categoryClass}`)
+        .transition()
+        .style("opacity", currentOpacity == 1 ? 0 : 1)
+        .attr("pointer-events", currentOpacity == 1 ? "none" : "visible");
+    d3.select(event.currentTarget)
+        .transition()
+        .style("font-weight", currentOpacity == 0 ? "bold" : "normal");
 }
 
 export function drawRef(title, data, xScale, yScale, height) {
     const courbesElement = d3.select(".courbes"); 
 
     courbesElement.selectAll(".ref-marker, .ref-line").remove();
-
-    console.log("Orig : ", data);
 
     const targetMovie = data.find(movie => movie.name === title);
     if (!targetMovie) return;
@@ -115,7 +124,7 @@ export function drawRef(title, data, xScale, yScale, height) {
         .attr("x2", xPos)
         .attr("y1", yPos)
         .attr("y2", yPos)
-        .attr("stroke", "red")
+        .attr("stroke", "black")
         .attr("stroke-width", 2)
         .attr("stroke-dasharray", "3,3") // Dashed line
         .attr("opacity", 0.7);
@@ -126,12 +135,10 @@ export function drawRef(title, data, xScale, yScale, height) {
         .attr("x2", xPos)
         .attr("y1", yPos)
         .attr("y2", height)
-        .attr("stroke", "red")
+        .attr("stroke", "black")
         .attr("stroke-width", 2)
         .attr("stroke-dasharray", "3,3") // Dashed line
         .attr("opacity", 0.7);
-
-    console.log("target : ", targetMovie);
 
     courbesElement.append("circle")
             .datum(targetMovie)
@@ -139,10 +146,7 @@ export function drawRef(title, data, xScale, yScale, height) {
             .attr("cx", xPos)
             .attr("cy", yPos)
             .attr("r", 5)
-            .attr("fill", "black")
-            .attr("stroke", "red")
-            .attr("stroke-width", 2)
-            .on("click", function(event, d) {
-                console.log(d);
-            });
+            .attr("fill", "white")
+            .attr("stroke", "black")
+            .attr("stroke-width", 2);
 }

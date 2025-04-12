@@ -1,7 +1,5 @@
 export function addLegend() {
 
-    
-
     courbesElement
     .selectAll("myLabels")
     .data(data)
