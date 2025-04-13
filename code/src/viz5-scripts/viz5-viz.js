@@ -35,20 +35,20 @@ export function setRadiusScale_5 (taglineWordCounts) {
 * @param {*} rScale5 The scale for the circles' radius
 * @param {*} colorScale5 The scale for the circles' color
 */
-export function build5(g5, data5, transitionDuration5, rScale5, colorScale5) {
+export function build5(data5,rScale5, colorScale5) {
 
 // // Initialize the circle: all located at the center of the svg area
   d3.select("g")
-   .selectAll("circle")
-   .data(data5)// change this?
-   .enter()
-   .append("circle")
-     .attr("class", "node")
-     .attr("r", rScale5)
-     .attr("cx", width / 2)
-     .attr("cy", height / 2)
-     .style("fill", colorScale5)
-     .style("fill-opacity", 0.8)
-     .attr("stroke", "black")
-     .style("stroke-width", 1)
+    .selectAll("circle")
+    .data(data5)// change this?
+    .enter()
+    .append("circle")
+      .attr("class", "node")
+      .attr("r", rScale5)
+      .attr("cx", width / 2)
+      .attr("cy", height / 2)
+      .style("fill", colorScale5)
+      .style("fill-opacity", 0.8)
+      .attr("stroke", "black")
+      .style("stroke-width", 1)
 };

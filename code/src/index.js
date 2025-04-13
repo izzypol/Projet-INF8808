@@ -588,14 +588,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const g5 = viz5Helper.generateG_5(svgViz5, margin5, "graph-g-viz5")
 
     const tip5 = d3Tip().attr('class', 'd3-tip').html(function (d) { return viz5Tooltip.getContents_5(viz5data) })
-    g5.call(tip)
+    g5.call(tip5)
+    console.log(g5)
 
     const seasonalCategories = viz5process.getSeasonalCategories(viz5data)
     const taglineCounts = viz5process.getTaglineCounts(viz5data)
     const radiusScale5 = viz5Viz.setRadiusScale_5(taglineCounts)
     const colorScales5 = viz5Viz.setColorScale_5(seasonalCategories)
 
-    viz5Viz.build5(g5, viz5data, 0, radiusScale5, colorScales5) 
+    viz5Viz.build5(viz5data, radiusScale5, colorScales5) 
     
     viz5Tooltip.setCircleHoverHandler_5(g5, tip5)
 
