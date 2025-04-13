@@ -14,7 +14,7 @@ import { generateEntityTooltipContent, generateConnectionTooltipContent } from '
  * @param {object} collabs The collaborations data
  * @param {object} imdb The IMDB data
  */
-export function renderChordDiagram(data, svgWidth, svgHeight, containerId, highlightEntity, tooltip, handleEntitySelect, collabs, imdb) {
+export function renderChordDiagram(data, svgWidth, svgHeight, margin, containerId, highlightEntity, tooltip, handleEntitySelect, collabs, imdb) {
   // Check for undefined data
   if (!data || !data.entities) return;
   
@@ -23,9 +23,10 @@ export function renderChordDiagram(data, svgWidth, svgHeight, containerId, highl
 
   const svg = d3.select(`#${containerId}`).append("svg")
     .attr("width", svgWidth)
-    .attr("height", svgHeight);
+    .attr("height", svgHeight)
+    .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-  const outerRadius = Math.min(svgWidth, svgHeight) / 2 - 60;
+  const outerRadius = Math.min(svgWidth, svgHeight) / 2 - 90;
   const innerRadius = outerRadius * 0.9;
 
   const g = svg.append("g")

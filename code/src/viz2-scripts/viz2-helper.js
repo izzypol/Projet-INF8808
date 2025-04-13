@@ -21,7 +21,7 @@ export function generateG (svgSelector, margin, id = null) {
  * @param {number} height The desired height
  */
 export function setCanvasSize (width, height) {
-  d3.select('#team-heatmap')
+  d3.select('#collaboration-chord')
     .select('svg')
     .attr('width', width)
     .attr('height', height)

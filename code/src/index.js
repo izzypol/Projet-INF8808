@@ -114,8 +114,7 @@ import * as d3 from 'd3'
     const contributorData = getFilmContributorsData(imdb)
     const genreIntervalData = getGenreDataIntervals(imdb)
     const countCollab = [];
-    const collabs = countCollaborations(imdb)
-    console.log(collabs);
+    const Allcollababorations = countCollaborations(imdb)
     const genreData = getMoviesByGenre(imdb)
     const certificateData = getCertificateData(imdb)
     const seasonalData = getDataBySeason(imdb)
@@ -206,12 +205,22 @@ import * as d3 from 'd3'
     /* Visualisation 2 - Équipe du film */
 
     function buildViz2_V2() {
-      const svgWidth = 800;
-      const svgHeight = 600;
-      const containerId = "team-heatmap";
+
+      const margin2 = {
+        top: 10,
+        right: 40,
+        bottom: 60,
+        left: 10
+      }
+      
+      const svgWidth = 850;
+      const svgHeight = 650;
+      const containerId = "collaboration-chord";
     
       let currentData = null;
       let highlightEntity = null;
+      let selectedEntityName = null;
+      let selectedEntityType = null;
     
       const searchInput = document.getElementById("search-box");
       const collabSelect = document.getElementById("min-collab");
@@ -219,7 +228,7 @@ import * as d3 from 'd3'
       
       // Set up the SVG container
       viz2Helper.setCanvasSize(svgWidth, svgHeight);
-      
+
       // Create tooltip
       const tooltip = viz2Tooltip.createTooltip();
 
@@ -228,18 +237,24 @@ import * as d3 from 'd3'
       const dropdown = dropdownContainer.dropdown;
       
       const handleEntitySelect = (entityName, entityType) => {
-        const filteredRawData = viz2Process.filterDataByEntity(entityName, entityType, collabs);
-        const newData = viz2Process.processData(filteredRawData.actorDirectorCollabs, maxEntSelect.value, collabs);
+        selectedEntityName = entityName;
+        selectedEntityType = entityType;
+        
+        const minCollabVal = parseInt(collabSelect.value);
+        const AllcollababorationsFiltered = Allcollababorations.filter(c => c.count >= minCollabVal);
+        const filteredCollabsByEntity = viz2Process.filterDataByEntity(entityName, AllcollababorationsFiltered);
+        const newData = viz2Process.processData(filteredCollabsByEntity, maxEntSelect.value, AllcollababorationsFiltered, entityName);
         
         viz2Viz.renderChordDiagram(
           newData, 
           svgWidth, 
           svgHeight, 
+          margin2,
           containerId, 
           highlightEntity, 
           tooltip, 
           handleEntitySelect, 
-          collabs, 
+          AllcollababorationsFiltered, 
           imdb
         );
         
@@ -255,16 +270,39 @@ import * as d3 from 'd3'
       
       function updateViz() {
         const minCollabVal = parseInt(collabSelect.value);
+        const AllcollababorationsFiltered = Allcollababorations.filter(c => c.count >= minCollabVal);
         const maxEntitiesVal = parseInt(maxEntSelect.value);
         const searchVal = searchInput.value.toLowerCase();
      
-        // Filter collaborations by minimum count
-        const filteredData = collabs.filter(c => 
-          (c.connectionType === 'actor/director' || c.connectionType === 'writer/director') && 
-          c.count >= minCollabVal
+        if (selectedEntityName) {
+          const filteredCollabsByEntity = viz2Process.filterDataByEntity(selectedEntityName, AllcollababorationsFiltered);
+          const data = viz2Process.processData(filteredCollabsByEntity, maxEntitiesVal, AllcollababorationsFiltered, selectedEntityName);
+          
+          currentData = data;
+          
+          const idx = data.entities.findIndex(name => name === selectedEntityName);
+          highlightEntity = idx !== -1 ? idx : null;
+          
+          viz2Viz.renderChordDiagram(
+            data, 
+            svgWidth, 
+            svgHeight, 
+            margin2,
+            containerId, 
+            highlightEntity, 
+            tooltip, 
+            handleEntitySelect, 
+            AllcollababorationsFiltered, 
+            imdb
+          );
+          return;
+        }
+        
+        const filteredCollabsByType = Allcollababorations.filter(c => 
+          (c.connectionType === 'actor/director' || c.connectionType === 'writer/director')
         );
         
-        const data = viz2Process.processData(filteredData, maxEntitiesVal, collabs);
+        const data = viz2Process.processData(filteredCollabsByType, maxEntitiesVal, AllcollababorationsFiltered);
      
         currentData = data;
      
@@ -278,11 +316,12 @@ import * as d3 from 'd3'
           data, 
           svgWidth, 
           svgHeight, 
+          margin2,
           containerId, 
           highlightEntity, 
           tooltip, 
           handleEntitySelect, 
-          collabs, 
+          AllcollababorationsFiltered, 
           imdb
         );
       }
@@ -291,10 +330,13 @@ import * as d3 from 'd3'
         const searchTerm = this.value.trim();
         
         if (searchTerm.length > 0) {
-          viz2Search.updateDropdownSuggestions(searchTerm, collabs, dropdown, handleEntitySelect);
+          const AllcollababorationsFiltered = Allcollababorations.filter(c => c.count >= collabSelect.value);
+
+          viz2Search.updateDropdownSuggestions(searchTerm, AllcollababorationsFiltered, dropdown, handleEntitySelect);
         } else {
           dropdown.style("display", "none");
-          
+          selectedEntityName = null;
+          selectedEntityType = null;
           updateViz();
         }
       });
@@ -317,16 +359,18 @@ import * as d3 from 'd3'
       if (resetButton) {
         resetButton.addEventListener("click", () => {
           searchInput.value = '';
-          console.log
           dropdown.style("display", "none");
           collabSelect.value = 2;
           maxEntSelect.value = 20;
-          const filteredData = collabs.filter(c => 
-            (c.connectionType === 'actor/director' || c.connectionType === 'writer/director') && 
-            c.count >= parseInt(collabSelect.value)
-          );
+          selectedEntityName = null;
+          selectedEntityType = null;
           
-          const data = viz2Process.processData(filteredData, maxEntSelect.value, collabs);
+          const filteredCollabsByType = Allcollababorations.filter(c => 
+            (c.connectionType === 'actor/director' || c.connectionType === 'writer/director')
+          );
+          const AllcollababorationsFiltered = Allcollababorations.filter(c => c.count >= collabSelect.value);
+
+          const data = viz2Process.processData(filteredCollabsByType, maxEntSelect.value, AllcollababorationsFiltered);
           currentData = data;
           
           highlightEntity = null;
@@ -335,11 +379,12 @@ import * as d3 from 'd3'
             data, 
             svgWidth, 
             svgHeight, 
+            margin2,
             containerId, 
             highlightEntity, 
             tooltip, 
             handleEntitySelect, 
-            collabs, 
+            AllcollababorationsFiltered, 
             imdb
           );
         });

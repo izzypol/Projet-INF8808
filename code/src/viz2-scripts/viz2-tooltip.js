@@ -53,7 +53,7 @@ export function createTooltip() {
   
     let content = `<div style="margin-bottom: 6px;">
                     <strong style="font-size: 14px; color: ${type === 'actor' ? '#4285F4' : '#EA4335'}">${entity}</strong><br>
-                    <span style="color: #666">${type === 'actor' ? 'Actor' : 'Director'}</span>
+                    <span style="color: #666">${type === 'actor' ? 'Acteur' : 'Réalisateur'}</span>
                   </div>`;
   
     if (connections.length > 0) {
@@ -62,14 +62,14 @@ export function createTooltip() {
       
       connections.forEach(conn => {
         content += `<div style="font-size: 11px; margin: 2px 0; display: flex; justify-content: space-between;">
-                     <span>${conn.name} <span style="color: ${conn.type === 'actor' ? '#4285F4' : '#EA4335'}">(${conn.type === 'actor' ? 'Actor' : 'Director'})</span></span>
+                     <span>${conn.name} <span style="color: ${conn.type === 'actor' ? '#4285F4' : '#EA4335'}">(${conn.type === 'actor' ? 'Acteur' : 'Réalisateur'})</span></span>
                      <span style="font-weight: bold; margin-left: 10px;">${conn.count}</span>
                    </div>`;
       });
       
       content += `</div>`;
     } else {
-      content += `<div style="margin-top: 8px; color: #999; font-size: 11px;">No direct collaborations</div>`;
+      content += `<div style="margin-top: 8px; color: #999; font-size: 11px;">Aucune collaboration directe</div>`;
     }
   
     return content;
@@ -100,7 +100,7 @@ export function createTooltip() {
       // Fallback if collaboration not found
       return `
         <div style="margin-bottom: 4px;">
-          <strong>Collaboration between:</strong>
+          <strong>Collaboration avec:</strong>
         </div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
           <span style="color: ${sourceType === 'actor' ? '#4285F4' : '#EA4335'}">
@@ -158,7 +158,7 @@ export function createTooltip() {
     if (collab.mostPopularGenre) {
       genreHTML = `
       <div style="font-size: 11px; margin-top: 4px;">
-        <span style="color: #555;">Popular Genre:</span>
+        <span style="color: #555;">Genre Populaire:</span>
         <span style="font-weight: bold; margin-left: 5px;">${collab.mostPopularGenre}</span>
       </div>`;
     }
@@ -177,12 +177,12 @@ export function createTooltip() {
       </div>
       <div style="margin-top: 6px; border-top: 1px solid #eee; padding-top: 4px;">
         <div style="font-size: 11px;">
-          <span style="color: #555;">Average Box Office:</span>
+          <span style="color: #555;">Box Office moyen:</span>
           <span style="font-weight: bold; margin-left: 5px;">${boxOfficeText}</span>
         </div>
         ${genreHTML}
         <div style="font-size: 11px; margin-top: 4px;">
-          <span style="color: #555;">Average Rating:</span>
+          <span style="color: #555;">Note IMDb Moyenne:</span>
           <span style="font-weight: bold; margin-left: 5px;">${collab.avgRating ? collab.avgRating.toFixed(1) : 'N/A'}</span>
         </div>
       </div>

@@ -4,9 +4,10 @@
  * @param {Array} rawData The actor-director collaboration data
  * @param {number} maxEntities Maximum number of entities to include
  * @param {Object} collabs The collabs object containing actor-director and actor-actor collaborations
+ * @param {string} [selectedEntity] Optional name of selected entity to ensure connections
  * @returns {Object} Processed data object with matrix, entities and types
  */
-export function processData(rawData, maxEntities, collabs) {
+export function processData(rawData, maxEntities, collabs, selectedEntity = null) {
   // First get all actors from actorDirectorData
   const actorsFromDirectorData = [...new Set(rawData.map(c => c.participant1 === "writer/director" ? c.participant2 : c.participant1))];
   
@@ -37,7 +38,7 @@ export function processData(rawData, maxEntities, collabs) {
   const topDirectors = directors
     .sort((a, b) => directorCounts[b] - directorCounts[a])
     .slice(0, Math.floor(maxEntities / 2));
-    
+  
   const allEntities = [...topActors, ...topDirectors];
   const allTypes = [...topActors.map(() => 'actor'), ...topDirectors.map(() => 'director')];
 
@@ -87,6 +88,31 @@ export function processData(rawData, maxEntities, collabs) {
     return { matrix: [], entities: [], types: [] };
   }
 
+  // If we have a selected entity, filter to include only entities connected to it
+  if (selectedEntity) {
+    const selectedIdx = allEntities.indexOf(selectedEntity);
+    
+    // If the selected entity isn't in our list, return empty data
+    if (selectedIdx === -1) {
+      return { matrix: [], entities: [], types: [] };
+    }
+    
+    // Only keep indices that have a direct connection to the selected entity
+    const directlyConnectedIndices = new Set();
+    directlyConnectedIndices.add(selectedIdx); // Add the selected entity itself
+    
+    // Add indices that have a connection to the selected entity
+    for (let i = 0; i < initialMatrix.length; i++) {
+      if (initialMatrix[selectedIdx][i] > 0) {
+        directlyConnectedIndices.add(i);
+      }
+    }
+    
+    // Replace our connected indices with only those directly connected to selected entity
+    connectedIndices.clear();
+    directlyConnectedIndices.forEach(idx => connectedIndices.add(idx));
+  }
+
   // Create new arrays with only connected entities
   const connectedEntities = [];
   const connectedTypes = [];
@@ -120,97 +146,35 @@ export function processData(rawData, maxEntities, collabs) {
  * Filter data to focus on a specific entity.
  * 
  * @param {string} entityName The name of the entity to focus on
- * @param {string} entityType The type of the entity ('actor' or 'director')
  * @param {Object} collabs The collaboration data
- * @returns {Object} Filtered data focused on the specified entity
+ * @returns {Array} Filtered collaboration data related to the selected entity
  */
-export function filterDataByEntity(entityName, entityType, collabs) {
-  // Create result structure
-  const result = {
-    actorDirectorCollabs: [],
-    actorActorCollabs: []
-  };
-  
-  // First determine if we're looking for an actor or director
-  const connectionType = entityType === 'actor' ? 'actor/director' : 'writer/director';
-  
-  if (entityType === 'actor') {
-    // Find all collaborations where this actor appears
-    // 1. Actor-Director collaborations where this actor worked with directors
-    result.actorDirectorCollabs = collabs.filter(c => 
-      (c.connectionType === 'actor/director' || c.connectionType === 'writer/director') && 
-      (c.participant1 === entityName || c.participant2 === entityName)
-    );
-    
-    // Get list of all connected directors
-    const connectedDirectors = [...new Set(
-      result.actorDirectorCollabs
-        .filter(c => c.participant1 === entityName ? c.participant2 : c.participant1)
-        .map(c => c.participant1 === entityName ? c.participant2 : c.participant1)
-    )];
-    
-    // 2. Actor-Actor collaborations where this actor worked with other actors
-    result.actorActorCollabs = collabs.filter(c => 
-      c.connectionType === 'actor/actor' && 
-      (c.participant1 === entityName || c.participant2 === entityName)
-    );
-    
-    // Get list of all connected actors
-    const connectedActors = [...new Set(
-      result.actorActorCollabs.map(c => c.participant1 === entityName ? c.participant2 : c.participant1)
-    )];
-    
-    // 3. Add all additional actor-director collaborations for any connected actors or directors
-    // This shows complete network of connections for this entity
-    const additionalActorDirectorCollabs = collabs.filter(c => 
-      (c.connectionType === 'actor/director' || c.connectionType === 'writer/director') &&
-      ((connectedActors.includes(c.participant1) || connectedActors.includes(c.participant2)) ||
-       (connectedDirectors.includes(c.participant1) || connectedDirectors.includes(c.participant2))) &&
-      c.participant1 !== entityName && c.participant2 !== entityName
-    );
-    
-    // Add these additional connections to our results
-    result.actorDirectorCollabs = [...result.actorDirectorCollabs, ...additionalActorDirectorCollabs];
-    
-    return result;
-  } else if (entityType === 'director') {
-    // Find all collaborations where this director appears
-    // 1. Actor-Director collaborations where this director worked with actors
-    result.actorDirectorCollabs = collabs.filter(c => 
-      (c.connectionType === 'actor/director' || c.connectionType === 'writer/director') && 
-      (c.participant1 === entityName || c.participant2 === entityName)
-    );
-    
-    // Get list of all connected actors
-    const connectedActors = [...new Set(
-      result.actorDirectorCollabs.map(c => c.participant1 === entityName ? c.participant2 : c.participant1)
-    )];
-    
-    // 2. Actor-Actor collaborations among actors who worked with this director
-    result.actorActorCollabs = collabs.filter(c => 
-      c.connectionType === 'actor/actor' && 
-      connectedActors.includes(c.participant1) && connectedActors.includes(c.participant2)
-    );
-    
-    // 3. Add all additional actor-director collaborations for any connected actors
-    // This shows the complete network around this director
-    const additionalActorDirectorCollabs = collabs.filter(c => 
-      (c.connectionType === 'actor/director' || c.connectionType === 'writer/director') &&
-      (connectedActors.includes(c.participant1) || connectedActors.includes(c.participant2)) &&
-      c.participant1 !== entityName && c.participant2 !== entityName
-    );
-    
-    // Add these additional connections to our results
-    result.actorDirectorCollabs = [...result.actorDirectorCollabs, ...additionalActorDirectorCollabs];
-    
-    return result;
+export function filterDataByEntity(entityName, collabs) {
+  if (!entityName) {
+    return [];
   }
   
-  // Fallback - return original collabs wrapped in our result structure
-  return {
-    actorDirectorCollabs: collabs.filter(c => c.connectionType === 'actor/director' || c.connectionType === 'writer/director'),
-    actorActorCollabs: collabs.filter(c => c.connectionType === 'actor/actor')
-  };
+  // 1. Get direct collaborations with this entity (both types)
+  const directCollabs = collabs.filter(c => 
+    c.participant1 === entityName || c.participant2 === entityName
+  );
+  
+  // 2. Find all entities that directly collaborate with the selected entity
+  const connectedEntities = [...new Set(
+    directCollabs.map(c => c.participant1 === entityName ? c.participant2 : c.participant1)
+  )];
+  
+  // 3. Get collaborations between entities directly connected to the selected entity
+  const connectedEntityCollabs = collabs.filter(c => 
+    // Both participants must be connected to the selected entity
+    connectedEntities.includes(c.participant1) && 
+    connectedEntities.includes(c.participant2) &&
+    // And we're not including the original entity again
+    c.participant1 !== entityName && c.participant2 !== entityName
+  );
+  
+  // Combine direct and connected entity collaborations
+  return [...directCollabs, ...connectedEntityCollabs];
 }
 
 /**
@@ -255,8 +219,8 @@ export function filterEntitiesForAutocomplete(entities, searchTerm, maxResults) 
 }
 
 export function handleEntitySelect(entityName, entityType, collabs, maxEntSelect, renderChordDiagram, currentData, highlightEntity, searchInput, dropdown) {
-  const filteredRawData = filterDataByEntity(entityName, entityType, collabs);
-  const newData = processData(filteredRawData.actorDirectorCollabs, maxEntSelect.value, collabs);
+  const filteredCollabs = filterDataByEntity(entityName, entityType, collabs);
+  const newData = processData(filteredCollabs, maxEntSelect.value, collabs, entityName);
   
   renderChordDiagram(newData);
   
