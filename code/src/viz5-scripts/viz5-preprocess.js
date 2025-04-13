@@ -157,7 +157,7 @@ const wordCategories = {
     ],
     progressMovement: [
       'way', 'comes', 'goes', 'run', 'come', 'coming', 'take',
-       'close', 'back', 'out', 'far', 'stay'
+      'close', 'back', 'out', 'far', 'stay'
     ]
   },
 
@@ -244,8 +244,13 @@ const wordToCategoryMap = (() => {
   Object.entries(wordCategories).forEach(([mainCategory, subcategories]) => {
     Object.entries(subcategories).forEach(([subCategory, words]) => {
       words.forEach(word => {
-        if (!map[word]) map[word] = ""
-        map[word]=`${mainCategory}`
+        if (!map[word]) map[word] = ''
+
+        let stringMainCategory = String(mainCategory)
+        stringMainCategory = stringMainCategory && String(stringMainCategory[0]).toUpperCase() + String(stringMainCategory).slice(1)
+        stringMainCategory = stringMainCategory.replace(/([a-z])([A-Z])/g, '$1 $2')
+        stringMainCategory = stringMainCategory.replace(/([A-Z])([A-Z][a-z])/g, '$1 $2')
+        map[word] = stringMainCategory
       })
     })
   })
@@ -376,4 +381,15 @@ export function getDataBySeason (movies, minWordLength = 3, minOccurrences = 2) 
   })
 
   return seasons
+}
+
+export function getSeasonalCategories (seasonalData) {
+  const categories = []
+  Object.entries(seasonalData).map(([keys, value]) => {
+    value.taglineWords.forEach(tagline => {
+      if (!categories.includes(tagline.category)) categories.push(tagline.category)
+    })
+  })
+
+  return categories
 }

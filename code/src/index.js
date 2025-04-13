@@ -49,7 +49,7 @@ import * as viz4Tooltip from './viz4-scripts/viz4-tooltip.js'
 
 /* viz 5 stuff */
 import * as viz5Helper from './viz5-scripts/viz5-helper.js'
-//import * as viz5Viz from './viz5-scripts/viz5-viz.js'
+import * as viz5Viz from './viz5-scripts/viz5-viz.js'
 import * as viz5process from './viz5-scripts/viz5-preprocess.js'
 
 // import * as helper from './scripts/helper.js'
@@ -552,7 +552,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //   build()
     // })
 
-    // viz5 stuff 
+    // viz5 stuff
     const viz5data = viz5process.getDataBySeason(imdb)
     console.log(viz5data)
 
@@ -564,7 +564,7 @@ document.addEventListener("DOMContentLoaded", () => {
       left: 80
     }
 
-    let svgSize5, graphSize5
+    let svgSize5 //, graphSize5
 
     function setSizing_5() {
       svgSize5 = {
@@ -572,30 +572,33 @@ document.addEventListener("DOMContentLoaded", () => {
         height: 600
       }
 
-      graphSize5= {
-        width: svgSize5.width - margin5.right - margin5.left,
-        height: svgSize5.height - margin5.bottom - margin5.top
-      }
+      // graphSize5 = {
+      //   width: svgSize5.width - margin5.right - margin5.left,
+      //   height: svgSize5.height - margin5.bottom - margin5.top
+      // }
 
       viz5Helper.setCanvasSize_5(svgSize5.width, svgSize5.height)
     }
 
     setSizing_5();
-    viz5Helper.generateG_5(d3.select(".season-taglines-svg"), margin5, "graph-g-viz5")
 
-    function buildViz5(viz5data) {
+    const svgViz5 = d3.select(".season-tagline-svg");
+    const g5 = viz5Helper.generateG_5(svgViz5, margin5, "graph-g-viz5")
 
-      viz5Helper.appendAxes(axes);
-      viz4Helper.appendGraphLabels(axes);
-      viz4Helper.positionLabels(axes, graphSize4.width, graphSize4.height);
+    const seasonalCategories = viz5process.getSeasonalCategories(viz5data)
+    viz5Viz.setColorScale_5(seasonalCategories)
 
-      viz4Helper.drawXAxis(viz4xScale, graphSize4.height);
-      viz4Helper.drawYAxis(viz4yScaleBoxOffice);
+    // function buildViz5(viz5data) {
 
-      viz4Search.initFilmList(viz4data);
-    }
+    //   viz5Helper.appendAxes(axes);
+    //   viz4Helper.appendGraphLabels(axes);
+    //   viz4Helper.positionLabels(axes, graphSize4.width, graphSize4.height);
 
+    //   viz4Helper.drawXAxis(viz4xScale, graphSize4.height);
+    //   viz4Helper.drawYAxis(viz4yScaleBoxOffice);
 
+    //   viz4Search.initFilmList(viz4data);
+    // }
   })
 
   
