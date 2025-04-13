@@ -35,19 +35,40 @@ export function setYScaleBO (height, data) {      // Idem que la fonction prÃ©cÃ
   
     const yScale = d3.scaleLinear()
       .domain([
-                d3.min(flatData, d => d.box_office),    
-                d3.max(flatData, d => d.box_office)
+                d3.min(flatData, d => 0),    
+                d3.max(flatData, d => 1000)
               ])
       .range([height,0]);
   
     return yScale}
 
+export function setYScaleMesureSucces (height, data, key) {
+  // TODO : Set scale
+
+  const flatData = Object.values(data).flat();
+
+  const yScale = d3.scaleLinear()
+    .domain([
+              //d3.min(flatData, d => d[key]),    
+              //d3.max(flatData, d => d[key])
+              d3.min(data, d => 
+                d3.min(d.data, x => x.average)
+              ),
+              d3.max(data, d => 
+                d3.max(d.data, x => x.average)
+              )
+            ])
+    .range([height,0]);
+
+  return yScale}
+
 export function setColorScale(data){
 
+  const categories = data.map(d => d.category).sort();
+
   const colorScale = d3.scaleOrdinal()
-    .domain(data.sort())
-                                                    
-    .range(d3.schemeSet1);                          
+    .domain(categories)
+    .range(d3.schemeSet2);                          
 
   return colorScale
 }

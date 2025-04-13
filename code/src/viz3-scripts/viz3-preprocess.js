@@ -238,13 +238,30 @@ export function getMarketPerTimeInterval(intervalData, selectedFilter) {
         const res_elem = res[interval];
 
         // On normalise les valeurs par rapport à la somme des valeurs de chaque intervalle
+
+        // Par exemple si on a prix la métrique "profit", les valeurs de profits peuvent être négatives, donc pour chaque intervalle on calcule le min et si il est négatif on l'ajoute à chaque valeur de l'intervalle pour que toutes les valeurs soient positives.
+
         if (selectedFilter === "genre") {
+
+            // Calcule du min :
+            const minG = Math.min(...Object.values(intervalElem.metricPerGenre));
+            if (minG < 0)
+                Object.keys(intervalElem.metricPerGenre).forEach(genre => {
+                    intervalElem.metricPerGenre[genre] += -minG;
+                })
+
             const sum_genre_metric = Object.values(intervalElem.metricPerGenre).reduce((acc, val) => acc + val, 0);
             Object.keys(intervalElem.metricPerGenre).forEach(genre => {
                 res_elem.metricForfilter[genre] = intervalElem.metricPerGenre[genre] / sum_genre_metric;
             })
         }
         if (selectedFilter === "movieLength") {
+
+            const minML = Math.min(...Object.values(intervalElem.metricsPerMovieLenght));
+            if (minML < 0)
+                Object.keys(intervalElem.metricsPerMovieLenght).forEach(lengthInterval => {
+                    intervalElem.metricsPerMovieLenght[lengthInterval] += -minML;
+                })
             const sum_lenght_metric = Object.values(intervalElem.metricsPerMovieLenght).reduce((acc, val) => acc + val, 0);
             Object.keys(intervalElem.metricsPerMovieLenght).forEach(lengthInterval => {
                 res_elem.metricForfilter[lengthInterval] = intervalElem.metricsPerMovieLenght[lengthInterval] / sum_lenght_metric;
@@ -252,6 +269,13 @@ export function getMarketPerTimeInterval(intervalData, selectedFilter) {
         }
 
         if (selectedFilter === "certificate") {
+
+            const minC = Math.min(...Object.values(intervalElem.metricsPerCertificate));
+            if (minC < 0)
+                Object.keys(intervalElem.metricsPerCertificate).forEach(certificate => {
+                    intervalElem.metricsPerCertificate[certificate] += -minC;
+                })
+
             const sum_certificate_metric = Object.values(intervalElem.metricsPerCertificate).reduce((acc, val) => acc + val, 0);
             Object.keys(intervalElem.metricsPerCertificate).forEach(certificate => {
                 res_elem.metricForfilter[certificate] = intervalElem.metricsPerCertificate[certificate] / sum_certificate_metric;

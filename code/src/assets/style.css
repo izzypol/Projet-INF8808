@@ -209,6 +209,34 @@ svg {
   justify-content: center;
 }
 
+.choose_metric.fixed {
+  position: fixed;
+  top: 5px;
+  right: 5px;;
+  z-index: 1000;
+  align-items: right;
+  justify-content: right;
+  padding: 0px;
+  margin: 0px;
+  max-width:min-content;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.478), rgba(204, 199, 199, 0.478));
+  backdrop-filter: blur(10px);
+  border-radius: 5px;
+}
+
+.choose_metric.fixed>.container {
+  flex-direction: column;
+  gap: 0px;
+  padding: 8px;
+  border-radius: 5px;
+}
+.choose_metric.fixed>.container>.metric-select {
+  padding: 0px;
+}
+.choose_metric.fixed>.container>p {
+  margin: 2px;
+}
+
 .choose_metric>.container {
   display: flex;
   gap : 10px;
@@ -351,4 +379,25 @@ footer {
     section {
         margin-bottom: 40px;
     }
+    
+}
+
+.viz4-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: top;
+  padding: 10px 25px;
+  gap: 55px;
+
+  margin: 15px auto;
+  margin-bottom: 0px;
+  max-width: 90%;
+  margin-bottom: -10px;
+}
+
+.check-group {
+  display: flex;
+  flex-direction: row;
+  align-items: top;
+  gap: 15px;
 }

@@ -1,4 +1,10 @@
 // 'use strict'
+/**
+ * @file This file is the entry-point for the the code for the Project of the course INF8808.
+ * @author TODO
+ * @version beta
+ */
+
 
 import { addGoldenGlobesData, getGoldenGlobesMovieData } from './scripts/process_golden_globes'
 import { addOscarsData, getOscarsMovieData } from './scripts/process_oscars'
@@ -44,6 +50,8 @@ import * as viz4Search from './viz4-scripts/viz4-search.js'
 import * as viz4Scales from './viz4-scripts/viz4-scales.js'
 import * as viz4Process from './viz4-scripts/viz4-process.js'
 import * as viz4Viz from './viz4-scripts/viz4-viz.js'
+import * as viz4CheckBoxes from './viz4-scripts/viz4-checkboxes.js'
+import * as viz4Tooltip from './viz4-scripts/viz4-tooltip.js'
 
 import * as d3 from 'd3'
 
@@ -57,11 +65,23 @@ import * as d3 from 'd3'
 
 // import * as d3Chromatic from 'd3-scale-chromatic'
 
-/**
- * @file This file is the entry-point for the the code for TP3 for the course INF8808.
- * @author Olivia Gélinas
- * @version v1.0.0
- */
+
+
+/* Déplacer le sélecteur de métrique en haut à droite si on le dépasse sur la page */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const chooseMetric = document.querySelector(".choose_metric");
+  const offsetTop = chooseMetric.offsetTop + 650;
+
+  window.addEventListener("scroll", () => {
+
+    if (window.scrollY > offsetTop) {
+      chooseMetric.classList.add("fixed");
+    } else {
+      chooseMetric.classList.remove("fixed");
+    }
+  });
+});
 
 (function (d3) {
   // let bounds
@@ -109,13 +129,13 @@ import * as d3 from 'd3'
     convertMovieNamesToString(imdb)
 
     imdb = calculateMovieProfits(imdb)
-    console.log(imdb)
   
+    const Allcollababorations = countCollaborations(imdb)
     const contributorData = getFilmContributorsData(imdb)
     const genreIntervalData = getGenreDataIntervals(imdb)
-    const countCollab = [];
-    const Allcollababorations = countCollaborations(imdb)
     const genreData = getMoviesByGenre(imdb)
+    const collaborationsData = getTopCollaborations(imdb)
+
     const certificateData = getCertificateData(imdb)
     const seasonalData = getDataBySeason(imdb)
 
@@ -176,7 +196,7 @@ import * as d3 from 'd3'
     viz1Helper.drawYAxis(g1, yScale1)
 
     const flatData = Object.values(imdb).flat();
-    const years = flatData.map(d => new Date(d.releaseDate).getFullYear());
+    const years = flatData.map(d => d.year);
     const minDate = d3.min(years);
     const maxDate = d3.max(years);
     viz1Legend.drawLegend(colorScale1, g1, graphSize1.width, graphSize1.height, minDate, maxDate)
@@ -523,7 +543,6 @@ import * as d3 from 'd3'
       // Exemple de lecture
       const randomRectData = viz3Example.selectRandomRectangle();
       const phraseEx = viz3Example.phraseExemple(randomRectData, colorScale);
-      console.log("Phrase exemple : ", phraseEx);
 
       const exampleContainerViz3 = document.querySelector(".exampleViz3");
 
@@ -574,76 +593,102 @@ import * as d3 from 'd3'
 
     /* Visualisation 4 - Impact des films */
 
-    const margin = {
+    const margin4 = {
       top: 75,
       right: 200,
       bottom: 100,
       left: 80
     }
 
-    let svgSize, graphSize
+    let svgSize4, graphSize4
 
     function setSizing() {
-      svgSize = {
+      svgSize4 = {
         width: 1000,
         height: 600
       }
 
-      graphSize = {
-        width: svgSize.width - margin.right - margin.left,
-        height: svgSize.height - margin.bottom - margin.top
+      graphSize4 = {
+        width: svgSize4.width - margin4.right - margin4.left,
+        height: svgSize4.height - margin4.bottom - margin4.top
       }
 
-      viz4Helper.setCanvasSize(svgSize.width, svgSize.height)
+      viz4Helper.setCanvasSize(svgSize4.width, svgSize4.height)
     }
 
     setSizing();
 
-    const viz4xScale = viz4Scales.setXScale(graphSize.width, imdb);
-    const viz4yScaleBoxOffice = viz4Scales.setYScaleBO(graphSize.height, imdb);
+    let title;
+    const ListOfFields = ["directors", "genre", "casts", "writers"];
+
+    let viz4FixedImdb = viz4Process.addNumberOfNominations(imdb)
+
+    let viz4xScale;
+    let viz4yScaleBoxOffice;
+    let viz4ColorScale;
+    
+    viz4CheckBoxes.generateCheckBoxes(ListOfFields);
 
     const viz4 = d3.select(".film-impact-svg");
+    
 
-    const axes = viz4.append("g").attr("class", "axes")
-      .attr("transform", 'translate(' + margin.left + ', ' + margin.top + ')');
-    const courbes = viz4.append("g").attr("class", "courbes")
-      .attr("transform", 'translate(' + margin.left + ', ' + margin.top + ')');
+    buildViz4(viz4FixedImdb);
+    
+    function buildViz4(viz4data) {
 
-    viz4Helper.appendAxes(axes);
-    viz4Helper.appendGraphLabels(axes);
-    viz4Helper.positionLabels(axes, graphSize.width, graphSize.height);
+      viz4xScale = viz4Scales.setXScale(graphSize4.width, viz4data);
+      viz4yScaleBoxOffice = viz4Scales.setYScaleBO(graphSize4.height, viz4data);
 
-    viz4Helper.drawXAxis(viz4xScale, graphSize.height);
-    viz4Helper.drawYAxis(viz4yScaleBoxOffice);
+      const axes = viz4.append("g").attr("class", "axes")
+        .attr("transform", 'translate(' + margin4.left + ', ' + margin4.top + ')');
+      const courbes = viz4.append("g").attr("class", "courbes")
+        .attr("transform", 'translate(' + margin4.left + ', ' + margin4.top + ')');
 
-    let title;
-    const ListOfFields = ["directors", "year", "genre"];
+      viz4Helper.appendAxes(axes);
+      viz4Helper.appendGraphLabels(axes);
+      viz4Helper.positionLabels(axes, graphSize4.width, graphSize4.height);
 
-    const viz4ColorScale = viz4Scales.setColorScale(ListOfFields);
+      viz4Helper.drawXAxis(viz4xScale, graphSize4.height);
+      viz4Helper.drawYAxis(viz4yScaleBoxOffice);
 
-    document.addEventListener('viz4movieSelected', (e) => {
-      console.log("Received movie:", e.detail.movie);
-      title = e.detail.movie;
-      // Update your visualization
-      //const testProcess = viz4Process.getMoviesBySameField(title, imdb, "directors");
-      //const testProcess2 = viz4Process.getMoviesBySameField(title, imdb, "year");
-      //console.log("liste : ", testProcess);
-      //viz4Viz.drawCircles(testProcess, viz4xScale, viz4yScaleBoxOffice);
-      const test = viz4Process.generateDataToDisplay(title, imdb, ListOfFields);
-      console.log("Test", test);
-      viz4Viz.drawAllCategories(test, viz4xScale, viz4yScaleBoxOffice, viz4ColorScale);
-
-    });
-
-    viz4.append("circle");
-
-    viz4Search.initFilmList(imdb);
-
-    buildViz4(certificateData);
-
-    function buildViz4(data) {
-      //console.log(data);
+      viz4Search.initFilmList(viz4data);
     }
+
+  function refreshViz4 (viz4data, viz4mesureSucces) {
+      console.log("Changement");
+
+      viz4CheckBoxes.checkAll();
+
+      const dataToShow = viz4Process.indexData(title, viz4data, viz4mesureSucces);
+
+      const test = viz4Process.generateDataToDisplay(title, dataToShow, ListOfFields, 2);
+      console.log("Test refresh : ", test);
+
+      const viz4yScaleFlexible = viz4Scales.setYScaleMesureSucces(graphSize4.height, test, "average");
+      viz4Helper.drawYAxis(viz4yScaleFlexible);
+      viz4ColorScale = viz4Scales.setColorScale(test);
+
+      console.log(viz4ColorScale);
+      viz4Viz.drawCircles(test, viz4xScale, viz4yScaleFlexible, viz4ColorScale, graphSize4.width);
+      
+      viz4Viz.drawRef(title, dataToShow, viz4xScale, viz4yScaleFlexible, graphSize4.height);
+
+      const tip4 = d3Tip().attr('class', 'viz4-tip').html(function (d) { return viz4Tooltip.getContents(d, viz4ColorScale) });
+      viz4.select(".courbes").call(tip4);
+      viz4Tooltip.setCircleHoverHandler(viz4.select(".courbes"), tip4);
+    }
+
+  selectorMetric.addEventListener('change', () => {
+     refreshViz4(viz4FixedImdb, selectorMetric.value);
+   });
+
+  document.addEventListener('viz4movieSelected', (e) => {
+    console.log("Received movie:", e.detail.movie);
+    title = e.detail.movie;
+    const viz4MesureSucces = selectorMetric.value;
+    
+    refreshViz4(viz4FixedImdb, viz4MesureSucces);
+  });
 
     // }, [])
     // d3.csv('./golden_globe_awards.csv', d3.autoType).then(function (data) {
