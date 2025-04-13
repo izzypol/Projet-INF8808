@@ -134,7 +134,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const contributorData = getFilmContributorsData(imdb)
     const genreIntervalData = getGenreDataIntervals(imdb)
     const genreData = getMoviesByGenre(imdb)
-    const collaborationsData = getTopCollaborations(imdb)
 
     const certificateData = getCertificateData(imdb)
     const seasonalData = getDataBySeason(imdb)
@@ -318,11 +317,11 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
         
-        const filteredCollabsByType = Allcollababorations.filter(c => 
+        const filteredCollabs = AllcollababorationsFiltered.filter(c => 
           (c.connectionType === 'actor/director' || c.connectionType === 'writer/director')
         );
         
-        const data = viz2Process.processData(filteredCollabsByType, maxEntitiesVal, AllcollababorationsFiltered);
+        const data = viz2Process.processData(filteredCollabs, maxEntitiesVal, AllcollababorationsFiltered);
      
         currentData = data;
      

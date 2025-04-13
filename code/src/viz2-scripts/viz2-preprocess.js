@@ -9,7 +9,13 @@
  */
 export function processData(rawData, maxEntities, collabs, selectedEntity = null) {
   // First get all actors from actorDirectorData
-  const actorsFromDirectorData = [...new Set(rawData.map(c => c.participant1 === "writer/director" ? c.participant2 : c.participant1))];
+  const actorsFromDirectorData = [...new Set(rawData.flatMap(c => {
+    if (c.connectionType === "actor/director") {
+      return [c.participant1];
+    } else if (c.connectionType === "actor/actor") {
+      return [c.participant2, c.participant1];
+    } 
+  }))];
   
   // Get all actor-actor collaborations from collabs
   const actorActorCollabs = collabs.filter(c => 
@@ -19,15 +25,22 @@ export function processData(rawData, maxEntities, collabs, selectedEntity = null
   );
   
   // Get all directors from actorDirectorData
-  const directors = [...new Set(rawData.map(c => c.participant1 === "writer/director" ? c.participant1 : c.participant2))];
+  const directors = [...new Set(rawData.map(c => c.participant2))];
 
   // Calculate counts for actors and directors
   const actorCounts = {}, directorCounts = {};
   rawData.forEach(c => {
-    const actor = c.participant1 === "writer/director" ? c.participant2 : c.participant1;
-    const director = c.participant1 === "writer/director" ? c.participant1 : c.participant2;
-    actorCounts[actor] = (actorCounts[actor] || 0) + c.count;
-    directorCounts[director] = (directorCounts[director] || 0) + c.count;
+    if (c.connectionType === "actor/director") {
+      const actor = c.participant1;
+      const director = c.participant2;
+      actorCounts[actor] = (actorCounts[actor] || 0) + c.count;
+      directorCounts[director] = (directorCounts[director] || 0) + c.count;
+    } else if (c.connectionType === "actor/actor") {
+      const actor1 = c.participant1;
+      const actor2 = c.participant2;
+      actorCounts[actor1] = (actorCounts[actor1] || 0) + c.count;
+      actorCounts[actor2] = (actorCounts[actor2] || 0) + c.count;
+    }
   });
 
   // Get top actors and directors
@@ -47,8 +60,9 @@ export function processData(rawData, maxEntities, collabs, selectedEntity = null
   
   // Add actor-director connections from actorDirectorData
   rawData.forEach(c => {
-    const actor = c.participant1 === "writer/director" ? c.participant2 : c.participant1;
-    const director = c.participant1 === "writer/director" ? c.participant1 : c.participant2;
+    if (c.connectionType === "writer/director" || c.connectionType === "actor/actor") return;
+    const actor = c.participant1;
+    const director = c.participant2;
     
     const aIdx = allEntities.indexOf(actor);
     const dIdx = allEntities.indexOf(director);

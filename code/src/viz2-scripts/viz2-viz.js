@@ -15,16 +15,30 @@ import { generateEntityTooltipContent, generateConnectionTooltipContent } from '
  * @param {object} imdb The IMDB data
  */
 export function renderChordDiagram(data, svgWidth, svgHeight, margin, containerId, highlightEntity, tooltip, handleEntitySelect, collabs, imdb) {
-  // Check for undefined data
-  if (!data || !data.entities) return;
-  
   // Remove previous SVG to avoid rendering issues
   d3.select(`#${containerId}`).select("svg").remove();
 
+  // Create SVG
   const svg = d3.select(`#${containerId}`).append("svg")
     .attr("width", svgWidth)
-    .attr("height", svgHeight)
-    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+    .attr("height", svgHeight);
+
+  // Check for undefined or empty data
+  if (!data || !data.entities || data.entities.length === 0) {
+    // Display a message when no data is available
+    svg.append("text")
+      .attr("x", svgWidth / 2)
+      .attr("y", svgHeight / 2)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .style("font-size", "16px")
+      .style("fill", "#666")
+      .text("Aucune donnée disponible. Essayez avec un autre entité ou ajustez les filtres.");
+    
+    return;
+  }
+  
+  svg.attr("transform", `translate(${margin.left}, ${margin.top})`);
 
   const outerRadius = Math.min(svgWidth, svgHeight) / 2 - 90;
   const innerRadius = outerRadius * 0.9;

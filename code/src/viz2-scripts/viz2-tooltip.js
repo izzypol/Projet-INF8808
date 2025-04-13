@@ -119,7 +119,6 @@ export function createTooltip() {
     if (moviesList && moviesList.length > 0) {
       updatedMovieList = imdb.filter(movie => moviesList.includes(movie.name));
     }
-    
     const boxOfficeText = avgBoxOffice ? 
       `$${avgBoxOffice.toLocaleString()}` : 'N/A';
   
@@ -130,7 +129,7 @@ export function createTooltip() {
         <div style="max-height: 120px; overflow-y: auto; font-size: 10px;">`;
       
       updatedMovieList.forEach(movie => {
-        let profitDisplay = '';
+        let profitDisplay = 'N/A';
         if (movie.profit !== undefined && movie.profit !== null) {
           const sign = movie.profit >= 0 ? '+' : '-';
           const color = movie.profit >= 0 ? '#2e7d32' : '#c62828';
