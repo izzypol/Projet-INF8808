@@ -47,6 +47,11 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
 import * as viz4CheckBoxes from './viz4-scripts/viz4-checkboxes.js'
 import * as viz4Tooltip from './viz4-scripts/viz4-tooltip.js'
 
+/* viz 5 stuff */
+import * as viz5Helper from './viz5-scripts/viz5-helper.js'
+//import * as viz5Viz from './viz5-scripts/viz5-viz.js'
+import * as viz5process from './viz5-scripts/viz5-preprocess.js'
+
 // import * as helper from './scripts/helper.js'
 // import * as preproc from './scripts/preprocess_imbd_data.js'
 // import * as viz from './scripts/viz.js'
@@ -127,8 +132,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const collaborationsData = getTopCollaborations(imdb)
 
     const certificateData = getCertificateData(imdb)
-    const seasonalData = getDataBySeason(imdb)
-
+  
     const movieLengthData = getMovieLengthData(imdb)
     const taglineWordData = getTaglineWordsData(imdb)
     const taglineLengthData = getTaglineLengthData(imdb)
@@ -547,5 +551,52 @@ document.addEventListener("DOMContentLoaded", () => {
     //   setSizing()
     //   build()
     // })
+
+    // viz5 stuff 
+    const viz5data = viz5process.getDataBySeason(imdb)
+    console.log(viz5data)
+
+    //set up the space for the graph
+    const margin5 = {
+      top: 75,
+      right: 200,
+      bottom: 100,
+      left: 80
+    }
+
+    let svgSize5, graphSize5
+
+    function setSizing_5() {
+      svgSize5 = {
+        width: 1000,
+        height: 600
+      }
+
+      graphSize5= {
+        width: svgSize5.width - margin5.right - margin5.left,
+        height: svgSize5.height - margin5.bottom - margin5.top
+      }
+
+      viz5Helper.setCanvasSize_5(svgSize5.width, svgSize5.height)
+    }
+
+    setSizing_5();
+    viz5Helper.generateG_5(d3.select(".season-taglines-svg"), margin5, "graph-g-viz5")
+
+    function buildViz5(viz5data) {
+
+      viz5Helper.appendAxes(axes);
+      viz4Helper.appendGraphLabels(axes);
+      viz4Helper.positionLabels(axes, graphSize4.width, graphSize4.height);
+
+      viz4Helper.drawXAxis(viz4xScale, graphSize4.height);
+      viz4Helper.drawYAxis(viz4yScaleBoxOffice);
+
+      viz4Search.initFilmList(viz4data);
+    }
+
+
   })
+
+  
 })(d3)

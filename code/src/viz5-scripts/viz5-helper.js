@@ -15,8 +15,8 @@ export function margeG (g, margin) {
    * @param {number} width The desired width
    * @param {number} height The desired height
    */
-  export function setCanvasSize (width, height) {
-    d3.select('.film-impact-svg')
+  export function setCanvasSize_5 (width, height) {
+    d3.select('.season-taglines-svg')
       .attr('width', width)
       .attr('height', height)
   }
@@ -29,7 +29,7 @@ export function margeG (g, margin) {
  * @param {string} id Optional ID or class for the <g> container
  * @returns {*} The d3 Selection for the created g element
  */
-export function generateG (svgSelector, margin, id = null) {
+export function generateG_5 (svgSelector, margin, id = null) {
     const g = svgSelector
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
@@ -39,16 +39,4 @@ export function generateG (svgSelector, margin, id = null) {
     }
   
     return g;
-  }
-  
-  /**
-   * Sets the size of the SVG canvas containing the graph.
-   *
-   * @param {number} width The desired width
-   * @param {number} height The desired height
-   */
-  export function setCanvasSize (width, height) {
-    d3.select('.success-scatter-svg')
-      .attr('width', width)
-      .attr('height', height)
   }
