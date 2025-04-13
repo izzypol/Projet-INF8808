@@ -586,7 +586,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const g5 = viz5Helper.generateG_5(svgViz5, margin5, "graph-g-viz5")
 
     const seasonalCategories = viz5process.getSeasonalCategories(viz5data)
+    const taglineCounts = viz5process.getTaglineCounts(viz5data)
     viz5Viz.setColorScale_5(seasonalCategories)
+    viz5Viz.setRadiusScale_5(taglineCounts)
 
     // function buildViz5(viz5data) {
 
@@ -600,6 +602,5 @@ document.addEventListener("DOMContentLoaded", () => {
     //   viz4Search.initFilmList(viz4data);
     // }
   })
-
   
 })(d3)

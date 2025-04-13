@@ -9,10 +9,10 @@ var svg = d3.select(".season-tagline-svg")
   .attr("width", width)
   .attr("height", height)
 
-// Color palette for emotions
-var color = d3.scaleOrdinal()
-  .domain(["Happy", "Sad", "etc.", "", ""])
-  .range(d3.schemeSet1);
+// // Color palette for emotions
+// var color = d3.scaleOrdinal()
+//   .domain(["Happy", "Sad", "etc.", "", ""])
+//   .range(d3.schemeSet1);
 
 /**
  * Defines the color scale based on release year.
@@ -23,10 +23,9 @@ export function setColorScale_5 (data) {
   return d3.scaleOrdinal().domain(data).range(d3.schemeSet1);
 }
 
-// // Size scale for movies
-// var size = d3.scaleLinear()
-//   .domain([0, 1400000000])
-//   .range([7,55])  // circle will be between 7 and 55 px wide
+export function setRadiusScale_5 (taglineWordCounts) {
+  return d3.scaleLinear().domain([d3.min(taglineWordCounts), d3.max(taglineWordCounts)]).range([10, 25])
+}
 
 // // create a tooltip
 // // not sure how to make this work with the tooltip file

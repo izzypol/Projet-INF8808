@@ -393,3 +393,14 @@ export function getSeasonalCategories (seasonalData) {
 
   return categories
 }
+
+export function getTaglineCounts (seasonalData) {
+  const taglineCounts = []
+  Object.entries(seasonalData).map(([keys, value]) => {
+    value.taglineWords.forEach(tagline => {
+      if (!taglineCounts.includes(tagline.count)) taglineCounts.push(tagline.count)
+    })
+  })
+
+  return taglineCounts
+}
