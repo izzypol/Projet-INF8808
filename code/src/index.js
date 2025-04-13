@@ -51,6 +51,7 @@ import * as viz4Tooltip from './viz4-scripts/viz4-tooltip.js'
 import * as viz5Helper from './viz5-scripts/viz5-helper.js'
 import * as viz5Viz from './viz5-scripts/viz5-viz.js'
 import * as viz5process from './viz5-scripts/viz5-preprocess.js'
+import * as viz5Tooltip from './viz5-scripts/viz5-tooltip.js'
 
 // import * as helper from './scripts/helper.js'
 // import * as preproc from './scripts/preprocess_imbd_data.js'
@@ -554,7 +555,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // viz5 stuff
     const viz5data = viz5process.getDataBySeason(imdb)
-    console.log(viz5data)
+    //console.log(viz5data)
 
     //set up the space for the graph
     const margin5 = {
@@ -584,6 +585,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const svgViz5 = d3.select(".season-tagline-svg");
     const g5 = viz5Helper.generateG_5(svgViz5, margin5, "graph-g-viz5")
+
+    const tip5 = d3Tip().attr('class', 'd3-tip').html(function (d) { return viz5Tooltip.getContents_5(viz5data) })
+    g5.call(tip)
+
+    const radiusScale5 = viz5Viz.setRadiusScale_5(imdb)
+    const colorScales5 = viz5Viz.setColorScale_5(imdb)
+
 
     const seasonalCategories = viz5process.getSeasonalCategories(viz5data)
     const taglineCounts = viz5process.getTaglineCounts(viz5data)

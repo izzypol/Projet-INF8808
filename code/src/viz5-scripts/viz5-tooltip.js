@@ -1,33 +1,26 @@
 /**
- * Defines the contents of the tooltip. See CSS for tooltip styling.
- * The tooltip features the movie name, box office, total nominations,
- * rank, and release year.
+ * Defines the contents of the tooltip. See CSS for tooltip styling. The tooltip
+ * features the number of times a word was used in the taglines from a specific season 
+ * by a label and followed by units where applicable.
  *
  * @param {object} d The data associated to the hovered element
  * @returns {string} The tooltip contents
  */
-var Tooltip = d3.select("viz5")
-.append("div")
-.style("opacity", 0)
-.attr("class", "tooltip")
-.style("background-color", "white")
-.style("border", "solid")
-.style("border-width", "2px")
-.style("border-radius", "5px")
-.style("padding", "5px")
+export function getContents_5 (d) {
+  console.log(d)
+  const hoverData_5 = {
+    Count: getTaglineCounts(d)
+  }
 
-// Three function that change the tooltip when user hover / move / leave a cell
-var mouseover = function(d) {
-Tooltip
-  .style("opacity", 1)
-}
-var mousemove = function(d) {
-Tooltip
-  .html('<u>' + d.key + '</u>' + "<br>" + d.value + "Number of occurences")
-  .style("left", (d3.mouse(this)[0]+20) + "px")
-  .style("top", (d3.mouse(this)[1]) + "px")
-}
-var mouseleave = function(d) {
-Tooltip
-  .style("opacity", 0)
+  const content = d3.create()
+
+  Object.entries(hoverData_5).forEach(([key, value]) => {
+    content.append('div')
+      .text(`${key} : `)
+      .append('span')
+      .text(value)
+      .attr('class', 'tooltip-value')
+  })
+
+  return content.html()
 }
