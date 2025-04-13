@@ -53,6 +53,7 @@ import * as viz5Viz from './viz5-scripts/viz5-viz.js'
 import * as viz5process from './viz5-scripts/viz5-preprocess.js'
 import * as viz5Tooltip from './viz5-scripts/viz5-tooltip.js'
 
+
 // import * as helper from './scripts/helper.js'
 // import * as preproc from './scripts/preprocess_imbd_data.js'
 // import * as viz from './scripts/viz.js'
@@ -589,14 +590,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const tip5 = d3Tip().attr('class', 'd3-tip').html(function (d) { return viz5Tooltip.getContents_5(viz5data) })
     g5.call(tip)
 
-    const radiusScale5 = viz5Viz.setRadiusScale_5(imdb)
-    const colorScales5 = viz5Viz.setColorScale_5(imdb)
-
-
     const seasonalCategories = viz5process.getSeasonalCategories(viz5data)
     const taglineCounts = viz5process.getTaglineCounts(viz5data)
-    viz5Viz.setColorScale_5(seasonalCategories)
-    viz5Viz.setRadiusScale_5(taglineCounts)
+    const radiusScale5 = viz5Viz.setRadiusScale_5(taglineCounts)
+    const colorScales5 = viz5Viz.setColorScale_5(seasonalCategories)
+
+    viz5Viz.build5(g5, viz5data, 0, radiusScale5, colorScales5) 
+    
+    viz5Tooltip.setCircleHoverHandler_5(g5, tip5)
 
     // function buildViz5(viz5data) {
 

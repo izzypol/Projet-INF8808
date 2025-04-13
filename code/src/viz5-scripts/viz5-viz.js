@@ -27,52 +27,28 @@ export function setRadiusScale_5 (taglineWordCounts) {
   return d3.scaleLinear().domain([d3.min(taglineWordCounts), d3.max(taglineWordCounts)]).range([10, 25])
 }
 
-// // create a tooltip
-// // not sure how to make this work with the tooltip file
-// var Tooltip = d3.select(".season-tagline-svg")
-//   .append("div")
-//   .style("opacity", 0)
-//   .attr("class", "tooltip")
-//   .style("background-color", "white")
-//   .style("border", "solid")
-//   .style("border-width", "2px")
-//   .style("border-radius", "5px")
-//   .style("padding", "5px")
-
-// // Three function that change the tooltip when user hover / move / leave a cell
-// var mouseover = function(d) {
-//   Tooltip
-//     .style("opacity", 1)
-// }
-// var mousemove = function(d) {
-//   Tooltip
-//     .html('<u>' + d.key + '</u>' + "<br>" + d.value + " inhabitants")
-//     .style("left", (d3.mouse(this)[0]+20) + "px")
-//     .style("top", (d3.mouse(this)[1]) + "px")
-// }
-// var mouseleave = function(d) {
-//   Tooltip
-//     .style("opacity", 0)
-// }
+/**
+ * This function builds the graph.
+* @param {object} g5 The D3 selection of the <g> element containing the circles
+  * @param {object} data5 The data to be used
+* @param {number} transitionDuration5 The duration of the transition while placing the circles
+* @param {*} rScale5 The scale for the circles' radius
+* @param {*} colorScale5 The scale for the circles' color
+*/
+export function build5(g5, data5, transitionDuration5, rScale5, colorScale5) {
 
 // // Initialize the circle: all located at the center of the svg area
-// var node = svg.append("g")
-//   .selectAll("circle")
-//   .data(data)
-//   .enter()
-//   .append("circle")
-//     .attr("class", "node")
-//     .attr("r", function(d){ return size(d.value)})
-//     .attr("cx", width / 2)
-//     .attr("cy", height / 2)
-//     .style("fill", function(d){ return color(d.region)})
-//     .style("fill-opacity", 0.8)
-//     .attr("stroke", "black")
-//     .style("stroke-width", 1)
-//     .on("mouseover", mouseover) // What to do when hovered
-//     .on("mousemove", mousemove)
-//     .on("mouseleave", mouseleave)
-//     .call(d3.drag() // call specific function when circle is dragged
-//     .on("start", dragstarted)
-//     .on("drag", dragged)
-//     .on("end", dragended));
+  d3.select("g")
+   .selectAll("circle")
+   .data(data5)// change this?
+   .enter()
+   .append("circle")
+     .attr("class", "node")
+     .attr("r", rScale5)
+     .attr("cx", width / 2)
+     .attr("cy", height / 2)
+     .style("fill", colorScale5)
+     .style("fill-opacity", 0.8)
+     .attr("stroke", "black")
+     .style("stroke-width", 1)
+};

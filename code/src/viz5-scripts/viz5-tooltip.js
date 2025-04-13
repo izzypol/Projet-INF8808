@@ -1,26 +1,21 @@
 /**
- * Defines the contents of the tooltip. See CSS for tooltip styling. The tooltip
- * features the number of times a word was used in the taglines from a specific season 
- * by a label and followed by units where applicable.
+ * Sets up the hover event handler. The tooltip should show on on hover.
  *
- * @param {object} d The data associated to the hovered element
- * @returns {string} The tooltip contents
+ * @param {*} tip The tooltip
  */
-export function getContents_5 (d) {
-  console.log(d)
-  const hoverData_5 = {
-    Count: getTaglineCounts(d)
-  }
+export function setCircleHoverHandler_5 (g,tip) {
+  // TODO : Set hover handler. The tooltip shows on
+  // hover and the opacity goes up to 100% (from 70%)
 
-  const content = d3.create()
+                             // On sélectionne le graphe et les bulles
+    g.selectAll('.bubble5')                                  
 
-  Object.entries(hoverData_5).forEach(([key, value]) => {
-    content.append('div')
-      .text(`${key} : `)
-      .append('span')
-      .text(value)
-      .attr('class', 'tooltip-value')
-  })
-
-  return content.html()
+    .on('mouseover', function (e,d){              // Quand la souris passe dessus
+      d3.select(this).style('opacity', 1);        // Opacité -> 100%
+      tip.show(d, this);                          // On montre le tip 
+    })
+    .on('mouseout', function (e,d){               // Quand la souris sort
+      d3.select(this).style('opacity', 0.85);      // Opacité -> 70%
+      tip.hide(d, this);                          // On cache le tip 
+    });
 }
