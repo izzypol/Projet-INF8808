@@ -49,7 +49,7 @@
 
     <section id="success">
       <h2>1. Mesure du succès</h2>
-      <p>Plusieurs métriques peuvent être adoptés pour mesurer le succès d'un film. Par exemple, on peut regarder le
+      <p style="text-align: center;">Plusieurs métriques peuvent être adoptés pour mesurer le succès d'un film. Par exemple, on peut regarder le
         box-office ou le classement IMDB, mais également le nombre de nomination ou encore le profit généré.</p>
       <div class="viz_n_text_container">
         <div class="visualization" style = "text-align: center">
@@ -59,7 +59,9 @@
           </div>
         </div>
       </div>
-
+      
+      <h2 style="text-align: center;"> Par la suite, il est possible d'étudier d'autres métriques de 
+        succès et même d'autres paramètres complétement.</h2>
       <div class="choose_metric">
         <div class="container">
           <p>Choisissez une métrique pour mesurer le succès:</p>
@@ -75,6 +77,9 @@
 
     <section id="team">
       <h2>2. Équipe du film</h2>
+      <p style="text-align: center;"> Plusieurs artistes et réalisateurs ont déjà un grand nombre de supporters. 
+        Il est alors intéressant de se demander: quel est la performance des différents acteurs, réalisateurs et 
+        scénaristes? Et quels sont les collaborations les plus fructueuses ?</p>
       <div class="viz_n_text_container">
 
         <div class="visualization">
@@ -83,13 +88,15 @@
             <svg class="team-heatmap-svg"></svg>
           </div>
         </div>
-        <p>Quel est la performance des différents acteurs, réalisateurs et scénaristes. Et quels sont les collaborations
-          les plus fructueuses ?</p>
+
       </div>
     </section>
 
     <section id="genres">
       <h2>3. Genres et tendances</h2>
+      <p style="text-align: center;"> La préférence du public pour certains genres a fluctué dans le temps. 
+        Il ne faut penser qu'aux films slasher des années 1980 ou les films superhéros des 2010-2020. 
+        Ce graphique illustre l'évolution de la part du marché occupée par chaque genre dans le temps. </p>
       <div class="options-tendances">
         <h3>Options</h3>
         <div class="option-container">
@@ -129,6 +136,8 @@
 
     <section id="impact">
       <h2>4. Impact d'un film</h2>
+      <p style = "text-align: center; width: 100%;"> Certains films en particulier ont des impacts extraordinaires sur le marché. 
+        Ce graphique permet de visualisez cet impact sur les directeurs, le genre, le casting et le scénariste. </p>
       <div class="viz_n_text_container">
 
 
@@ -157,12 +166,12 @@
 
           </div>
 
-          <div class="graph" id="film-impact">
+          <div class="graph" id="film-impact" style = "text-align: center">
             <!-- Impact du film -->
             <svg class="film-impact-svg"></svg>
           </div>
         </div>
-        <p>Visualisez l'impact d'un film sur le marché</p>
+
       </div>
     </section>
   
@@ -191,7 +200,8 @@
   </main>
 
   <footer>
-    <p>Footer</p>
+    <p style="text-align: center;">Par Massimo Donato, Alexandre Dréan, Alexis Hirab, Ianis Kelfoun, Isabelle Poliquin et Julien Segonne</p>
+    <p style="text-align: center;">INF8808</p>
   </footer>
 
   <script src="https://d3js.org/d3.v7.js"></script>
