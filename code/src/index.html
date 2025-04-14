@@ -18,6 +18,7 @@
       <a href="#team">Équipe du film</a>
       <a href="#genres">Genres & tendances</a>
       <a href="#impact">Impact d'un film</a>
+      <a href="#tagline">Taglines</a>
     </nav>
   </header>
 
@@ -48,15 +49,13 @@
 
     <section id="success">
       <h2>1. Mesure du succès</h2>
-
+      <p>Plusieurs métriques peuvent être adoptés pour mesurer le succès d'un film. Par exemple, on peut regarder le
+        box-office ou le classement IMDB, mais également le nombre de nomination ou encore le profit généré.</p>
       <div class="viz_n_text_container">
-        <p>Plusieurs métriques peuvent être adoptés pour mesurer le succès d'un film. Par exemple, on peut regarder le
-          box-office ou le classement IMDB, mais également le nombre de nomination ou encore le profit généré.</p>
-
-        <div class="visualization">
-          <div class="graph" id="success-scatter">
+        <div class="visualization" style = "text-align: center">
+          <div class="graph" id="success-scatter" >
             <!-- Mesure de succès scatter plot -->
-            <svg class="success-scatter-svg"></svg>
+            <svg class="success-scatter-svg" ></svg>
           </div>
         </div>
       </div>
@@ -167,8 +166,23 @@
       </div>
     </section>
   
-    <section>
-      <div class="visualization">
+    <section id="taglines">
+      <h2>5. Taglines des films</h2>
+        <p style="text-align:center; width: 100%;">Les taglines sont des phrases accrocheuses qui accompagnent souvent les affiches de films. Elles sont conçues
+          pour attirer l'attention du public et donner un aperçu du film. Cette visualisation explore les taglines de
+          films à travers les saisons, permettant de mettre en évidence les tendances et les thèmes récurrents.</p> 
+          <div class="choose_season">
+            <div class="container">
+              <p>Choisissez une sainson:</p>
+              <!-- dropdown menu -->
+              <select id="season-select" class="season-select">
+                <option value="summer">Summer</option>
+                <option value="fall">Fall</option>
+                <option value="winter">Winter</option>
+                <option value="spring">Spring</option>
+            </div>
+          </div>
+        <div class="visualization">
         <div class="graph" id="season-taglines">
           <svg class="season-tagline-svg" ></svg>
         </div>
