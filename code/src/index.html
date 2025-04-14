@@ -166,13 +166,40 @@
         <p>Visualisez l'impact d'un film sur le marché</p>
       </div>
     </section>
-  
+<!--   
     <section>
       <div class="visualization">
         <div class="graph" id="season-taglines">
           <svg class="season-tagline-svg" ></svg>
         </div>
       </div>
+    </section> -->
+    <section class="tagline-visualization-section">
+      <!-- Season selector dropdown -->
+      <div class="controls">
+        <label for="season-select">Select Season: </label>
+        <select id="season-select">
+          <option value="all">All Seasons</option>
+          <option value="spring">Spring</option>
+          <option value="summer">Summer</option>
+          <option value="fall" selected>Fall</option>
+          <option value="winter">Winter</option>
+        </select>
+      </div>
+      
+      <!-- Chart title and subtitle -->
+      <div class="chart-title">Word Frequency in Movie Taglines</div>
+      <div class="chart-subtitle">Size represents word frequency, color represents word category</div>
+      
+      <!-- Visualization container -->
+      <div class="visualization">
+        <div class="graph" id="season-taglines">
+          <svg class="season-tagline-svg"></svg>
+        </div>
+      </div>
+      
+      <!-- Legend for categories -->
+      <div id="tagline-legend" class="legend"></div>
     </section>
   </main>
 

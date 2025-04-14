@@ -6,16 +6,15 @@
  * @param {string} id Optional ID or class for the <g> container
  * @returns {*} The d3 Selection for the created g element
  */
+// eslint-disable-next-line camelcase
 export function generateG_5 (svgSelector, margin, id = null) {
   const g = svgSelector
     .append('g')
-    .attr('transform', `translate(${margin.left},${margin.top})`);
+    .attr('transform', `translate(${margin.left},${margin.top})`)
 
-  if (id) {
-    g.attr('id', id);
-  }
+  if (id) g.attr('id', id)
 
-  return g;
+  return g
 }
 
 /**
@@ -24,6 +23,7 @@ export function generateG_5 (svgSelector, margin, id = null) {
  * @param {number} width The desired width
  * @param {number} height The desired height
  */
+// eslint-disable-next-line camelcase
 export function setCanvasSize_5 (width, height) {
   d3.select('.season-tagline-svg')
     .attr('width', width)

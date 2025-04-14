@@ -62,7 +62,7 @@ export function cleanMovieName(name) {
  * @param {number} topYear The year to adjust the amount to
  * @returns {number} The inflation-adjusted amount, rounded to 2 decimal places
  */
-export function adjustForInflation(moneterayAmount, movieYear, topYear) {
+export function adjustForInflation (moneterayAmount, movieYear, topYear) {
   const nYears = topYear - movieYear
   const inflationRate = 1 + (3.3 / 100)
 
