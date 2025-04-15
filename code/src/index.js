@@ -568,13 +568,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const svgSize5 = {
-      width: 900,
-      height: 900
+      width: 1200,
+      height: 850
     }
 
     d3.select('.season-tagline-svg')
       .attr('width', svgSize5.width)
       .attr('height', svgSize5.height)
+      .attr('viewBox', `0 0 ${svgSize5.width} ${svgSize5.height}`)
+      .style('border-radius', '50%')
+      .style('overflow', 'auto')
 
     const svgViz5 = d3.select('.season-tagline-svg')
     const g5 = svgViz5.append('g')
@@ -590,7 +593,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const width = svgSize5.width - margin5.left - margin5.right
     const height = svgSize5.height - margin5.top - margin5.bottom
 
-    viz5Helper.createUIElements(seasonalCategories)
+    viz5Helper.createLegendsContainer(seasonalCategories)
 
     d3.select('#season-select').on('change', function () {
       const selectedSeason = this.value
@@ -609,6 +612,6 @@ document.addEventListener('DOMContentLoaded', () => {
       viz5Legend.setLegendSize(taglineCounts, radiusScale)
     }
 
-    updateVisualization('summer')
+    updateVisualization('all')
   })
 })(d3)

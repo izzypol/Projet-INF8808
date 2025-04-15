@@ -117,16 +117,14 @@ export function setLegendSize (taglineCounts, radiusScale) {
  * @param {Array} numberedWords - Array of objects with number, word, category, count
  */
 export function setNumberedWordsLegend (numberedWords) {
-  const listContainer = document.getElementById('numbered-legend-list')
+  const listContainer = document.getElementById('bubble-numbers-legend')
   if (!listContainer) return
-
-  listContainer.innerHTML = ''
 
   const ul = document.createElement('ul')
   ul.style.listStyle = 'none'
   ul.style.padding = '0'
   ul.style.margin = '0'
-  ul.style.columnCount = 3
+  ul.style.columnCount = 6
   ul.style.columnGap = '40px'
 
   numberedWords.forEach(entry => {

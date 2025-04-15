@@ -54,7 +54,7 @@ export function createVisualization (data, g, width, height, radiusScale, colorS
     })
     .style('pointer-events', 'none')
     .style('font-weight', '600')
-    .style('fill', d => d.refNumber ? 'white' : 'black')
+    .style('fill', 'black')
 
   simulation.on('tick', () => {
     this.updatePositions(nodes, labels, width, height, radiusScale)
@@ -74,10 +74,14 @@ export function createVisualization (data, g, width, height, radiusScale, colorS
  * @returns {object} D3 force simulation
  */
 export function createForceSimulation (data, width, height, radiusScale) {
+  const padding = 2
+
   return d3.forceSimulation(data)
-    .force('center', d3.forceCenter((3 * width) / 5, height / 3))
-    .force('charge', d3.forceManyBody().strength(5))
-    .force('collision', d3.forceCollide().radius(d => radiusScale(d.count) + 1))
+    .force('center', d3.forceCenter((width / 2) - 100, height / 2 - 50))
+    .force('x', d3.forceX(width / 2).strength(0.1))
+    .force('y', d3.forceY(height / 2 + 40).strength(0.1))
+    .force('charge', d3.forceManyBody().strength(8))
+    .force('collision', d3.forceCollide().radius(d => radiusScale(d.count) + padding))
 }
 
 /**

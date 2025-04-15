@@ -1,86 +1,60 @@
 /**
- * Creates UI elements for the visualization
- *
- * @param {Array} seasonalCategories - Array of categories
- */
-export function createUIElements (seasonalCategories) {
-  this.createSeasonDropdown()
-  this.createLegendsContainer(seasonalCategories)
-}
-
-/**
- * Creates the season selection dropdown
- */
-export function createSeasonDropdown () {
-  if (!document.getElementById('season-select')) {
-    const controlsDiv = document.createElement('div')
-    controlsDiv.style.marginBottom = '20px'
-
-    const label = document.createElement('label')
-    label.htmlFor = 'season-select'
-    label.textContent = 'Select Season: '
-
-    const select = document.createElement('select')
-    select.id = 'season-select'
-
-    const options = [
-      { value: 'all', text: 'All Seasons' },
-      { value: 'spring', text: 'Spring' },
-      { value: 'summer', text: 'Summer' },
-      { value: 'fall', text: 'Fall' },
-      { value: 'winter', text: 'Winter' }
-    ]
-
-    options.forEach(option => {
-      const optionElement = document.createElement('option')
-      optionElement.value = option.value
-      optionElement.textContent = option.text
-      select.appendChild(optionElement)
-    })
-
-    select.value = 'summer'
-
-    controlsDiv.appendChild(label)
-    controlsDiv.appendChild(select)
-
-    const svgContainer = document.querySelector('.season-tagline-svg')
-    if (svgContainer && svgContainer.parentNode) {
-      svgContainer.parentNode.insertBefore(controlsDiv, svgContainer)
-    }
-  }
-}
-
-/**
  * Creates containers for legends inside the existing #tagline-legend div
  *
  * @param {Array} seasonalCategories - Array of categories
  */
 export function createLegendsContainer (seasonalCategories) {
-  const legendsContainer = document.getElementById('tagline-legend')
+  const graphWrapper = document.querySelector('#season-taglines')
+  graphWrapper.style.display = 'flex'
+  graphWrapper.style.flexDirection = 'row'
+  graphWrapper.style.alignItems = 'flex-start'
+  graphWrapper.style.justifyContent = 'space-between'
+  graphWrapper.style.gap = '20px'
+  graphWrapper.style.position = 'relative'
 
-  legendsContainer.innerHTML = ''
+  let description = document.getElementById('viz5-description')
+  if (!description) {
+    description = document.createElement('div')
+    description.id = 'viz5-description'
+    description.style.width = '20%'
+    description.style.fontSize = '13px'
+    description.style.lineHeight = '1.6'
+    description.style.paddingRight = '10px'
 
-  legendsContainer.style.display = 'flex'
-  legendsContainer.style.flexDirection = 'column'
-  legendsContainer.style.gap = '20px'
-  legendsContainer.style.marginTop = '20px'
-  legendsContainer.style.width = '100%'
+    description.innerHTML = `
+      <strong>Comment lire ce graphique :</strong><br />
+      Chaque bulle représente un mot fréquemment utilisé dans les taglines.
+      <ul style="margin-top: 5px; padding-left: 16px;">
+        <li><strong>Taille</strong> : plus une bulle est grande, plus le mot est fréquent.</li>
+        <li><strong>Couleur</strong> : elle correspond à la catégorie thématique du mot.</li>
+        <li><strong>Numéros</strong> : certains mots trop longs ou peu lisibles sont remplacés par des numéros. 
+        La légende en bas de la visualisation les détaille.</li>
+      </ul>
+      <br />
+      Utilisez le menu déroulant pour explorer les mots par saison.
+    `
+    graphWrapper.insertBefore(description, graphWrapper.firstChild)
+  }
 
-  const topRow = document.createElement('div')
-  topRow.style.display = 'flex'
-  topRow.style.justifyContent = 'flex-start'
-  topRow.style.gap = '60px'
-  topRow.style.position = 'relative'
-  topRow.style.left = '-100px'
+  const legend = document.getElementById('tagline-legend')
+  legend.innerHTML = ''
+  legend.style.position = 'absolute'
+  legend.style.top = '10px'
+  legend.style.right = '10px'
+  legend.style.zIndex = '10'
+  legend.style.display = 'flex'
+  legend.style.flexDirection = 'column'
+  legend.style.gap = '10px'
+  legend.style.background = 'none'
 
   const categoryContainer = document.createElement('div')
   categoryContainer.id = 'category-legend-container'
 
   const categoryTitle = document.createElement('div')
-  categoryTitle.textContent = 'Categories'
+  categoryTitle.textContent = 'Catégories'
   categoryTitle.style.fontWeight = 'bold'
   categoryTitle.style.fontSize = '14px'
-  categoryTitle.style.marginBottom = '10px'
+  categoryTitle.style.marginBottom = '6px'
   categoryContainer.appendChild(categoryTitle)
 
   categoryContainer.innerHTML += `<svg id="category-legend-svg" width="150" height="${20 * seasonalCategories.length + 20}"></svg>`
@@ -89,36 +63,36 @@ export function createLegendsContainer (seasonalCategories) {
   frequencyContainer.id = 'frequency-legend-container'
 
   const frequencyTitle = document.createElement('div')
-  frequencyTitle.textContent = 'Frequency'
+  frequencyTitle.textContent = 'Fréquences'
   frequencyTitle.style.fontWeight = 'bold'
   frequencyTitle.style.fontSize = '14px'
-  frequencyTitle.style.marginBottom = '10px'
-  frequencyTitle.style.marginLeft = '10px'
+  frequencyTitle.style.marginBottom = '6px'
   frequencyContainer.appendChild(frequencyTitle)
 
-  frequencyContainer.innerHTML += '<svg id="frequency-legend-svg" width="150" height="300"></svg>'
+  frequencyContainer.innerHTML += '<svg id="frequency-legend-svg" width="150" height="150"></svg>'
 
-  topRow.appendChild(categoryContainer)
-  topRow.appendChild(frequencyContainer)
+  legend.appendChild(categoryContainer)
+  legend.appendChild(frequencyContainer)
 
-  legendsContainer.appendChild(topRow)
+  const bottomLegendContainer = document.getElementById('bubble-numbers-legend')
+  bottomLegendContainer.style.position = 'absolute'
+  bottomLegendContainer.style.top = 'calc(100% - 500px)'
+  bottomLegendContainer.style.left = '50%'
+  bottomLegendContainer.style.transform = 'translateX(-50%)'
+  bottomLegendContainer.style.textAlign = 'center'
+  bottomLegendContainer.style.width = '100%'
+  bottomLegendContainer.style.zIndex = '1'
+  bottomLegendContainer.style.marginBottom = '30px'
 
-  const numberedLegendContainer = document.createElement('div')
-  numberedLegendContainer.id = 'numbered-legend-container'
-  numberedLegendContainer.style.position = 'relative'
-  numberedLegendContainer.style.left = '-100px'
+  const legendList = document.createElement('div')
+  legendList.id = 'numbered-legend-list'
+  legendList.textContent = 'Mots avec chiffres'
+  legendList.style.fontWeight = 'bold'
+  legendList.style.fontSize = '16px'
+  legendList.style.marginBottom = '20px'
+  legendList.style.textAlign = 'center'
 
-  const numberedTitle = document.createElement('div')
-  numberedTitle.textContent = 'Words with Numbers'
-  numberedTitle.style.fontWeight = 'bold'
-  numberedTitle.style.fontSize = '14px'
-  numberedTitle.style.marginBottom = '10px'
-  numberedTitle.style.marginLeft = '27%'
-  numberedLegendContainer.appendChild(numberedTitle)
-
-  numberedLegendContainer.innerHTML += '<div id="numbered-legend-list" style="font-size: 12px;"></div>'
-
-  legendsContainer.appendChild(numberedLegendContainer)
+  bottomLegendContainer.appendChild(legendList)
 }
 
 /**

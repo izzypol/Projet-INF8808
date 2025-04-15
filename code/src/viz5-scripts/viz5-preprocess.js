@@ -129,7 +129,7 @@ const stopWords = new Set([
 
 // Word categories for tagline significant word categorization
 const wordCategories = {
-  emotionalThemes: {
+  thèmesÉmotionnels: {
     positiveEmotions: [
       'hope', 'triumph', 'dreams', 'love', 'heart', 'passion', 'friendship',
       'celebration', 'comedy', 'laugh', 'laughter', 'awe', 'incredible',
@@ -146,7 +146,7 @@ const wordCategories = {
     ]
   },
 
-  timeAndChange: {
+  tempsEtChangement: {
     timeElements: [
       'time', 'years', 'forever', 'beginning', 'year', 'days', 'minutes',
       'day', 'november', 'season', 'summer', 'since', 'never', 'past', 'last',
@@ -161,7 +161,7 @@ const wordCategories = {
     ]
   },
 
-  humanExperience: {
+  expérienceHumaine: {
     identity: [
       'family', 'father', 'husband', 'man', 'people', 'children',
       'someone', 'anyone', 'everyone', 'young', 'men', 'name', "he's",
@@ -181,7 +181,7 @@ const wordCategories = {
     ]
   },
 
-  storytellingElements: {
+  élémentsNarrations: {
     narrative: [
       'story', 'legend', 'saga', 'true', 'real', 'tale', 'films', 'picture', 'experience'
     ],
@@ -197,7 +197,7 @@ const wordCategories = {
     ]
   },
 
-  filmSpecific: {
+  spécifiqueFilm: {
     cinemaTerms: [
       'film', 'screen', 'director', 'motion', 'footage', 'theatre',
       'dvd', 'reissue', 'poster', 'print', 'rerelease', 'screens',
@@ -214,7 +214,7 @@ const wordCategories = {
     ]
   },
 
-  conceptual: {
+  conceptuel: {
     abstractConcepts: [
       'power', 'freedom', 'free', 'innocence', 'silence', 'mighty', 'make', 'thing', 'put'
     ],
@@ -228,7 +228,7 @@ const wordCategories = {
     ]
   },
 
-  miscellaneous: {
+  autres: {
     numbers: [
       'one', 'three', 'seven', 'first', 'second', 'two', '2007'
     ],
