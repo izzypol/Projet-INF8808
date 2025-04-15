@@ -194,12 +194,13 @@
       </div>
     </section>
 
-    <section class="tagline-visualization-section">
+    <section id='tagline' class="tagline-visualization-section">
       <h2>5. Taglines des films</h2>
         <p style="text-align:center; width: 100%;">Les taglines sont des phrases accrocheuses qui accompagnent souvent les affiches de films. Elles sont conçues
           pour attirer l'attention du public et donner un aperçu du film. Cette visualisation explore les taglines de
           films à travers les saisons, permettant de mettre en évidence les tendances et les thèmes récurrents.</p> 
-      <!-- Season selector dropdown -->
+
+          
       <div class="controls">
         <label for="season-select">Select Season: </label>
         <select id="season-select">
@@ -215,16 +216,24 @@
       <div class="chart-title" style="text-align: center ; font-size: larger;">Word Frequency in Movie Taglines</div>
       <div class="chart-subtitle" style="text-align: center;">Size represents word frequency, color represents word category</div>
       
-      <!-- Visualization container -->
-      <div class="visualization">
+      <div class="visualization" style="display: flex">
         <div class="graph" id="season-taglines">
-          <svg class="season-tagline-svg" style="text-align: center;"></svg>
+            <!-- Tagline Word frequency -->
+          <svg class="season-tagline-svg"></svg>
         </div>
-        
+        <div id="tagline-legend" class="legend"></div>
+        <div id="bubble-numbers-legend"></div>
       </div>
       
-      <!-- Legend for categories -->
-      <div id="tagline-legend" class="legend"></div>
+    </section>
+
+    <section>
+      <h2> Sources</h2>
+      <p>Fontes, R., & Lu, D. (2020). The Oscar Award, 1927—2024 (Version 11) [Dataset]. Kaggle. https://www.kaggle.com/datasets/unanimad/the-oscar-award</p>
+      <p>Javed, A. (2020). Golden Globe Awards Analysis [CSV]. Kaggle. https://kaggle.com/code/ahmadjaved097/golden-globe-awards-analysis </p>
+      <p>Raju G, C. (2023). IMDB Top 250 Movies Dataset (Version 1) [CSV]. Kaggle. https://www.kaggle.com/datasets/rajugc/imdb-top-250-movies-dataset </p>
+      <p>Singh, U. (2023). Movie Dataset : Budgets, Genres, Insights (Version 1) [Dataset]. Kaggle. https://www.kaggle.com/datasets/utkarshx27/movies-dataset </p>
+      <p>Zarracina, J. (2018). The 21 best movies of 2017 [Picture collage]. https://www.vox.com/2017-in-review/2017/12/15/16751138/best-movies-2017-streaming-how-to-watch</p>
     </section>
 
     <section>

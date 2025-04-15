@@ -51,7 +51,9 @@ import * as viz4Tooltip from './viz4-scripts/viz4-tooltip.js'
 import * as viz5Helper from './viz5-scripts/viz5-helper.js'
 import * as viz5Viz from './viz5-scripts/viz5-viz.js'
 import * as viz5process from './viz5-scripts/viz5-preprocess.js'
+import * as viz5Legend from './viz5-scripts/viz5-legend.js'
 import * as viz5Tooltip from './viz5-scripts/viz5-tooltip.js'
+import * as viz5Scales from './viz5-scripts/viz5-scales.js'
 
 
 // import * as helper from './scripts/helper.js'
@@ -134,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const collaborationsData = getTopCollaborations(imdb)
 
     const certificateData = getCertificateData(imdb)
-  
+
     const movieLengthData = getMovieLengthData(imdb)
     const taglineWordData = getTaglineWordsData(imdb)
     const taglineLengthData = getTaglineLengthData(imdb)
@@ -221,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /* Visualisation 3 - Genres et tendances */
 
 
-    let metricViz3 = 'rating'; // "box_office", 
+    let metricViz3 = 'rating'; // "box_office",
     let selectedFilterViz3 = 'genre';
     let intervalLenght = 10;
     let numElemPerStack = 4;
@@ -424,14 +426,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let viz4xScale;
     let viz4yScaleBoxOffice;
     let viz4ColorScale;
-    
+
     viz4CheckBoxes.generateCheckBoxes(ListOfFields);
 
     const viz4 = d3.select('.film-impact-svg');
-    
+
 
     buildViz4(viz4FixedImdb);
-    
+
     function buildViz4(viz4data) {
 
       viz4xScale = viz4Scales.setXScale(graphSize4.width, viz4data);
@@ -452,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
       viz4Search.initFilmList(viz4data);
     }
 
-  function refreshViz4 (viz4data, viz4mesureSucces) {
+    function refreshViz4 (viz4data, viz4mesureSucces) {
       console.log('Changement');
 
       viz4CheckBoxes.checkAll();
@@ -468,7 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       console.log(viz4ColorScale);
       viz4Viz.drawCircles(test, viz4xScale, viz4yScaleFlexible, viz4ColorScale, graphSize4.width);
-      
+
       viz4Viz.drawRef(title, dataToShow, viz4xScale, viz4yScaleFlexible, graphSize4.height);
 
       const tip4 = d3Tip().attr('class', 'viz4-tip').html(function (d) { return viz4Tooltip.getContents(d, viz4ColorScale) });
@@ -476,17 +478,17 @@ document.addEventListener('DOMContentLoaded', () => {
       viz4Tooltip.setCircleHoverHandler(viz4.select('.courbes'), tip4);
     }
 
-  selectorMetric.addEventListener('change', () => {
-     refreshViz4(viz4FixedImdb, selectorMetric.value);
-   });
+    selectorMetric.addEventListener('change', () => {
+      refreshViz4(viz4FixedImdb, selectorMetric.value);
+    });
 
-  document.addEventListener('viz4movieSelected', (e) => {
-    console.log('Received movie:', e.detail.movie);
-    title = e.detail.movie;
-    const viz4MesureSucces = selectorMetric.value;
-    
-    refreshViz4(viz4FixedImdb, viz4MesureSucces);
-  });
+    document.addEventListener('viz4movieSelected', (e) => {
+      console.log('Received movie:', e.detail.movie);
+      title = e.detail.movie;
+      const viz4MesureSucces = selectorMetric.value;
+
+      refreshViz4(viz4FixedImdb, viz4MesureSucces);
+    });
 
     // }, [])
     // d3.csv('./golden_globe_awards.csv', d3.autoType).then(function (data) {
@@ -554,428 +556,59 @@ document.addEventListener('DOMContentLoaded', () => {
     //   build()
     // })
 
-    // viz5 stuff
-    // const viz5data = viz5process.getDataBySeason(imdb)
+    /* Visualisation 5 - Taglines des films */
 
-    // const margin5 = {
-    //   top: 75,
-    //   right: 200,
-    //   bottom: 100,
-    //   left: 80
-    // }
+    const viz5data = viz5process.getDataBySeason(imdb)
 
-    // let svgSize5
+    const margin5 = {
+      top: 75,
+      right: 50,
+      bottom: 100,
+      left: 50
+    }
 
-    // function setSizing_5() {
-    //   svgSize5 = {
-    //     width: 1000,
-    //     height: 600
-    //   }
+    const svgSize5 = {
+      width: 900,
+      height: 900
+    }
 
-    //   // graphSize5 = {
-    //   //   width: svgSize5.width - margin5.right - margin5.left,
-    //   //   height: svgSize5.height - margin5.bottom - margin5.top
-    //   // }
+    d3.select('.season-tagline-svg')
+      .attr('width', svgSize5.width)
+      .attr('height', svgSize5.height)
 
-    //   viz5Helper.setCanvasSize_5(svgSize5.width, svgSize5.height)
-    // }
+    const svgViz5 = d3.select('.season-tagline-svg')
+    const g5 = svgViz5.append('g')
+      .attr('transform', `translate(${margin5.left},${margin5.top})`)
+      .attr('id', 'graph-g-viz5')
 
-    // setSizing_5()
+    const seasonalCategories = viz5process.getSeasonalCategories(viz5data)
+    const taglineCounts = viz5process.getTaglineCounts(viz5data).sort((a, b) => a - b)
 
-    // const svgViz5 = d3.select('.season-tagline-svg')
-    // const g5 = viz5Helper.generateG_5(svgViz5, margin5, 'graph-g-viz5')
+    const radiusScale = viz5Scales.createRadiusScale(taglineCounts)
+    const colorScale = viz5Scales.createColorScale(seasonalCategories)
 
-    // const tip5 = d3Tip().attr('class', 'd3-tip').html(function (d) {
-    //   return viz5Tooltip.getContents_5(d)
-    // })
-    // g5.call(tip5)
+    const width = svgSize5.width - margin5.left - margin5.right
+    const height = svgSize5.height - margin5.top - margin5.bottom
 
-    // const seasonalCategories = viz5process.getSeasonalCategories(viz5data)
-    // const taglineCounts = viz5process.getTaglineCounts(viz5data)
-    // console.log(viz5data)
+    viz5Helper.createUIElements(seasonalCategories)
 
-    // const radiusScale5 = viz5Viz.setRadiusScale_5(taglineCounts)
-    // const colorScales5 = viz5Viz.setColorScale_5(seasonalCategories)
-
-    // var node = svgViz5.append('g')
-    //   .selectAll('circle')
-    //   .data(viz5data)
-    //   .enter()
-    //   .append('circle')
-    //     .attr('class', 'node')
-    //     .attr('r', function (d) {return rScale(d.count)})
-    //   .attr('cx', 1000 / 2)
-    //   .attr('cy', 600 / 2)
-    //   .style('fill', function(d){ return color(d.region)})
-    //   .style('fill-opacity', 0.8)
-    //   .attr('stroke', 'black')
-    //   .style('stroke-width', 1)
-    // Minimal implementation to show bubbles for summer season
-// This builds on your existing code with minimal changes
-
-// Process data
-const viz5data = viz5process.getDataBySeason(imdb)
-
-// Set up margins and sizing
-const margin5 = {
-  top: 75,
-  right: 100, // Reduced right margin as legends will be in separate divs
-  bottom: 100,
-  left: 80
-}
-
-let svgSize5 = {
-  width: 1000,
-  height: 600
-}
-
-// Set SVG size
-d3.select('.season-tagline-svg')
-  .attr('width', svgSize5.width)
-  .attr('height', svgSize5.height)
-
-// Create SVG group
-const svgViz5 = d3.select('.season-tagline-svg')
-const g5 = svgViz5.append('g')
-  .attr('transform', `translate(${margin5.left},${margin5.top})`)
-  .attr('id', 'graph-g-viz5')
-
-// Get categories and counts for scales
-const seasonalCategories = viz5process.getSeasonalCategories(viz5data)
-const taglineCounts = viz5process.getTaglineCounts(viz5data).sort((a, b) => a - b)
-
-// Create scales
-const radiusScale = d3.scaleLinear()
-  .domain([d3.min(taglineCounts), d3.max(taglineCounts)])
-  .range([10, 25])
-
-const colorScale = d3.scaleOrdinal()
-  .domain(seasonalCategories)
-  .range(d3.schemeSet1)
-
-// Calculate width and height for simulation
-const width = svgSize5.width - margin5.left - margin5.right
-const height = svgSize5.height - margin5.top - margin5.bottom
-
-// Create UI elements if they don't exist
-function createUIElements() {
-  // Create season dropdown if it doesn't exist
-  if (!document.getElementById('season-select')) {
-    // Create container
-    const controlsDiv = document.createElement('div')
-    controlsDiv.style.marginBottom = '20px'
-    
-    // Create label
-    const label = document.createElement('label')
-    label.htmlFor = 'season-select'
-    label.textContent = 'Select Season: '
-    
-    // Create select element
-    const select = document.createElement('select')
-    select.id = 'season-select'
-    
-    // Add options
-    const options = [
-      { value: 'all', text: 'All Seasons' },
-      { value: 'spring', text: 'Spring' },
-      { value: 'summer', text: 'Summer' },
-      { value: 'fall', text: 'Fall' },
-      { value: 'winter', text: 'Winter' }
-    ]
-    
-    options.forEach(option => {
-      const optionElement = document.createElement('option')
-      optionElement.value = option.value
-      optionElement.textContent = option.text
-      select.appendChild(optionElement)
+    d3.select('#season-select').on('change', function () {
+      const selectedSeason = this.value
+      updateVisualization(selectedSeason)
     })
-    
-    // Set default selected option
-    select.value = 'summer'
-    
-    // Append elements
-    controlsDiv.appendChild(label)
-    controlsDiv.appendChild(select)
-    
-    // Add to DOM before the SVG container
-    const svgContainer = document.querySelector('.season-tagline-svg')
-    if (svgContainer && svgContainer.parentNode) {
-      svgContainer.parentNode.insertBefore(controlsDiv, svgContainer)
+
+    // eslint-disable-next-line jsdoc/require-jsdoc
+    function updateVisualization (season) {
+      g5.selectAll('*').remove()
+
+      const data = viz5Helper.getSeasonData(season, viz5data)
+
+      viz5Viz.createVisualization(data, g5, width, height, radiusScale, colorScale)
+
+      viz5Legend.setLegendColor(seasonalCategories, colorScale)
+      viz5Legend.setLegendSize(taglineCounts, radiusScale)
     }
-  }
-  
-  // Create legends container if it doesn't exist
-  if (!document.getElementById('legends-container')) {
-    // Main legends container
-    const legendsContainer = document.createElement('div')
-    legendsContainer.id = 'legends-container'
-    legendsContainer.style.display = 'flex'
-    legendsContainer.style.flexDirection = 'row'
-    legendsContainer.style.justifyContent = 'flex-start'
-    legendsContainer.style.gap = '60px' // Space between category and frequency legends
-    legendsContainer.style.marginTop = '20px'
-    
-    // Category legend container
-    const categoryContainer = document.createElement('div')
-    categoryContainer.id = 'category-legend-container'
-    
-    // Category title
-    const categoryTitle = document.createElement('div')
-    categoryTitle.textContent = 'Categories'
-    categoryTitle.style.fontWeight = 'bold'
-    categoryTitle.style.fontSize = '14px'
-    categoryTitle.style.marginBottom = '10px'
-    categoryContainer.appendChild(categoryTitle)
-    
-    // Create SVG for category legend
-    const categorySvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    categorySvg.id = 'category-legend-svg'
-    categorySvg.setAttribute('width', '150')
-    categorySvg.setAttribute('height', `${20 * seasonalCategories.length + 20}`)
-    categoryContainer.appendChild(categorySvg)
-    
-    // Frequency legend container
-    const frequencyContainer = document.createElement('div')
-    frequencyContainer.id = 'frequency-legend-container'
-    
-    // Frequency title
-    const frequencyTitle = document.createElement('div')
-    frequencyTitle.textContent = 'Frequency'
-    frequencyTitle.style.fontWeight = 'bold'
-    frequencyTitle.style.fontSize = '14px'
-    frequencyTitle.style.marginBottom = '10px'
-    frequencyContainer.appendChild(frequencyTitle)
-    
-    // Create SVG for frequency legend
-    const frequencySvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    frequencySvg.id = 'frequency-legend-svg'
-    frequencySvg.setAttribute('width', '100')
-    frequencySvg.setAttribute('height', '200') // Fixed height, will be adjusted later
-    frequencySvg.style.backgroundColor = '#e6f2ff' // Light blue background
-    frequencyContainer.appendChild(frequencySvg)
-    
-    // Add both legends to container
-    legendsContainer.appendChild(categoryContainer)
-    legendsContainer.appendChild(frequencyContainer)
-    
-    // Add legends after the SVG container
-    const svgContainer = document.querySelector('.season-tagline-svg')
-    if (svgContainer && svgContainer.parentNode) {
-      svgContainer.parentNode.appendChild(legendsContainer)
-    }
-  }
-}
 
-// Create color legend
-function createColorLegend() {
-  const categorySvg = d3.select('#category-legend-svg')
-  categorySvg.html('') // Clear previous content
-  
-  // Create legend items
-  seasonalCategories.forEach((category, i) => {
-    const y = 15 + i * 20
-    
-    // Add color circle
-    categorySvg.append('circle')
-      .attr('cx', 10)
-      .attr('cy', y)
-      .attr('r', 6)
-      .style('fill', colorScale(category))
-      .style('stroke', 'black')
-      .style('stroke-width', 0.5)
-    
-    // Add category name
-    categorySvg.append('text')
-      .attr('x', 25)
-      .attr('y', y + 4)
-      .attr('text-anchor', 'start')
-      .style('font-size', '12px')
-      .text(category)
-  })
-}
-
-// Create size legend
-function createSizeLegend() {
-  const frequencySvg = d3.select('#frequency-legend-svg')
-  frequencySvg.html('') // Clear previous content
-  
-  // Use specific values for size legend
-  const idealValues = [1, 3, 5, 10];
-  let valuesToShow = [];
-  
-  // Find closest matches to ideal values
-  idealValues.forEach(ideal => {
-    if (taglineCounts.includes(ideal)) {
-      valuesToShow.push(ideal);
-    } else {
-      // Find closest value
-      const closest = taglineCounts.reduce((prev, curr) => 
-        Math.abs(curr - ideal) < Math.abs(prev - ideal) ? curr : prev
-      );
-      
-      if (!valuesToShow.includes(closest)) {
-        valuesToShow.push(closest);
-      }
-    }
-  });
-  
-  // Sort values
-  valuesToShow.sort((a, b) => a - b);
-  
-  // Ensure values are unique
-  valuesToShow = [...new Set(valuesToShow)];
-  
-  // Calculate total height needed
-  const maxRadius = radiusScale(valuesToShow[valuesToShow.length - 1]);
-  const minRadius = radiusScale(valuesToShow[0]);
-  
-  // Calculate positions so that there's space between bubbles
-  // We want the distance between the bottom of upper circle and top of lower circle to be consistent
-  const spacing = 5; // Space between circles
-  const positions = [];
-  let currentY = maxRadius; // Start at the top with enough space for the first circle
-  
-  valuesToShow.forEach((value, i) => {
-    const radius = radiusScale(value);
-    positions.push(currentY);
-    if (i < valuesToShow.length - 1) {
-      // Move to the next position: current position + current radius + spacing + next radius
-      currentY += radius + spacing + radiusScale(valuesToShow[i + 1]);
-    }
-  });
-  
-  // Update SVG height based on calculated positions
-  const totalHeight = positions[positions.length - 1] + radiusScale(valuesToShow[valuesToShow.length - 1]) + 20;
-  frequencySvg.attr('height', totalHeight);
-  
-  // Calculate center line
-  const centerX = 20; // Center X position for bubbles
-  
-  // Add vertical line connecting bubbles
-  frequencySvg.append('line')
-    .attr('x1', centerX)
-    .attr('y1', positions[0])
-    .attr('x2', centerX)
-    .attr('y2', positions[positions.length - 1])
-    .attr('stroke', 'black')
-    .attr('stroke-width', 1.5);
-  
-  // Create the size bubbles
-  valuesToShow.forEach((value, i) => {
-    // Add circle
-    frequencySvg.append('circle')
-      .attr('cx', centerX)
-      .attr('cy', positions[i])
-      .attr('r', radiusScale(value))
-      .style('fill', '#6b93b0') // Blue-gray color
-      .style('fill-opacity', 0.8)
-      .style('stroke', 'black')
-      .style('stroke-width', 1)
-    
-    // Add value label
-    frequencySvg.append('text')
-      .attr('x', centerX + maxRadius + 10) // Position labels consistently
-      .attr('y', positions[i] + 4)
-      .attr('text-anchor', 'start')
-      .style('font-size', '12px')
-      .text(value)
-  })
-}
-
-// Function to update visualization based on selected season
-function updateVisualization(season) {
-  // Clear previous visualization
-  g5.selectAll('*').remove()
-  
-  // Get data for the selected season
-  let data
-  if (season === 'all') {
-    // Combine data from all seasons
-    data = []
-    Object.values(viz5data).forEach(seasonData => {
-      data = data.concat(seasonData.taglineWords)
-    })
-    
-    // Combine words with the same name
-    const wordMap = {}
-    data.forEach(word => {
-      if (!wordMap[word.word]) {
-        wordMap[word.word] = {...word}
-      } else {
-        wordMap[word.word].count += word.count
-        if (wordMap[word.word].movies && word.movies) {
-          wordMap[word.word].movies = [...wordMap[word.word].movies, ...word.movies]
-        }
-      }
-    })
-    data = Object.values(wordMap)
-  } else {
-    data = viz5data[season].taglineWords
-  }
-  
-  // Create force simulation
-  const simulation = d3.forceSimulation(data)
-    .force("center", d3.forceCenter(width / 2, height / 2))
-    .force("charge", d3.forceManyBody().strength(5))
-    .force("collision", d3.forceCollide().radius(d => radiusScale(d.count) + 1))
-  
-  // Create nodes
-  const nodes = g5.selectAll('.node')
-    .data(data)
-    .enter()
-    .append('circle')
-    .attr('class', 'node')
-    .attr('r', d => radiusScale(d.count))
-    .attr('cx', width / 2)
-    .attr('cy', height / 2)
-    .style('fill', d => colorScale(d.category))
-    .style('fill-opacity', 0.8)
-    .style('stroke', 'black')
-    .style('stroke-width', 1)
-  
-  // Add text labels
-  const labels = g5.selectAll('.bubble-text')
-    .data(data)
-    .enter()
-    .append('text')
-    .attr('class', 'bubble-text')
-    .attr('text-anchor', 'middle')
-    .attr('dominant-baseline', 'middle')
-    .text(d => d.word)
-    .style('font-size', d => Math.min(2 * radiusScale(d.count) / 3, 14) + 'px')
-    .style('pointer-events', 'none')
-    .style('font-weight', '600')
-  
-  // Tick function to update positions
-  simulation.on('tick', function() {
-    nodes
-      .attr('cx', d => {
-        return d.x = Math.max(radiusScale(d.count), Math.min(width - radiusScale(d.count), d.x))
-      })
-      .attr('cy', d => {
-        return d.y = Math.max(radiusScale(d.count), Math.min(height - radiusScale(d.count), d.y))
-      })
-    
-    labels
-      .attr('x', d => d.x)
-      .attr('y', d => d.y)
-  })
-  
-  // Update the legends
-  createColorLegend()
-  createSizeLegend()
-}
-
-// Create UI elements
-createUIElements()
-
-// Add event listener to dropdown
-d3.select('#season-select').on('change', function() {
-  const selectedSeason = this.value
-  updateVisualization(selectedSeason)
-})
-
-// Initialize with summer season
-updateVisualization('summer')
+    updateVisualization('summer')
   })
 })(d3)

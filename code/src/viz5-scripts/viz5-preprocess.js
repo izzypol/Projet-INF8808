@@ -356,7 +356,7 @@ export function getDataBySeason (movies, minWordLength = 3, minOccurrences = 2) 
           .filter(word => word in seasonWordData)
       )
       movieWords.forEach(word => {
-        seasonWordData[word].movies.push({ name: movie.name, year: movie.year, tagline: movie.tagline })
+        seasonWordData[word].movies.push({ name: movie.name, year: movie.year, tagline: movie.tagline, rating: movie.rating })
         MetricsHelper.addMovieMetrics(seasonWordData[word], movie)
         if (movie.genre) {
           const genres = Array.isArray(movie.genre) ? movie.genre : [movie.genre]
@@ -383,6 +383,12 @@ export function getDataBySeason (movies, minWordLength = 3, minOccurrences = 2) 
   return seasons
 }
 
+/**
+ * Creates a list of strings that contains the different word categories
+ *
+ * @param {object} seasonalData - Object containing the various word data associated to each season
+ * @returns {string[]} Array of strings with the different word categories
+ */
 export function getSeasonalCategories (seasonalData) {
   const categories = []
   Object.entries(seasonalData).map(([keys, value]) => {
@@ -394,6 +400,12 @@ export function getSeasonalCategories (seasonalData) {
   return categories
 }
 
+/**
+ * Iterates over the different words associated to a given season and stores their count in an array
+ *
+ * @param {object} seasonalData - Object containing the various word data associated to each season
+ * @returns {string[]} Array of word counts associated to a given season
+ */
 export function getTaglineCounts (seasonalData) {
   const taglineCounts = []
   Object.entries(seasonalData).map(([keys, value]) => {
