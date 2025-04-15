@@ -194,24 +194,53 @@
 
     <section id="impact">
       <h2>4. Impact d'un film</h2>
-      <div class="viz_n_text_container">
 
+      
+
+      <div class="viz_n_text_container">
+        <div class="visualization-description">
+          <p>
+            Cette visualisation permet de sélectionner un film de référence et présente le succès relatif (exprimé en pourcentage de la valeur de référence) obtenu en moyenne par année par les films similaire. 
+            Elle permet de remettre le succès d'un film dans le contexte de ce qui l'a précédé ou de visualiser son impact sur le marché en illustrant son potentiel impact sur la popularité d'un genre ou le succès des membres de son équipe.
+          </p>
+          <p>
+            <strong>Comment lire ce graphique :</strong>
+          </p> 
+          <ul>
+            <li> Commencer par sélectionner le nom d'un film dans la barre de recherche. </li>
+            <li> Si les données sont disponibles, elles seront regroupées en courbes par catégories.</li>
+            <li> Le point blanc représente le film sélectionné comme référence. Sa valeur de succès est prise comme référence à 100%. </li>
+            <li> Chaque autre point représente une moyenne de succès sur l'année pour la catégorie.</li>
+            <li> On peut cliquer sur les légendes à droite du graphique pour activer et désactiver certaines courbes. </li>
+            <li> On peut également cocher ou décocher les cases si l'on veut par exemple agir sur tous les genres. </li>
+              
+          </ul>
+        </div>
 
         <div class="visualization">
 
           <div class="viz4-controls">
-            <div id="search-container" style="margin-bottom: 0px; margin-right: 20px">
+            <div id="search-container" style="position: relative; margin-bottom: 0px; margin-right: 20px;">
               <input type="text" id="search-input" placeholder="Rechercher un film..."
-                style="width: 100%; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 4px;">
-            
-
-            <ul id="movie-list" style="width: 100%; list-style-type: none; padding: 0; 
-                    margin-top : 0px;
-                    margin-left: 5px;
-                    margin-right: 5px;
-                    margin-bottom: 20px; 
-                    border: 1px solid #ddd; border-top: none;">
-            </ul></div>
+                style="width: 300px; padding: 10px; font-size: 16px; border: 1px solid #ddd; border-radius: 4px;">
+              
+              <ul id="movie-list" style="position: absolute; 
+                                       top: 100%;
+                                       left: 0;
+                                       width: calc(100% - 10px);
+                                       background: white;
+                                       z-index: 1000;
+                                       list-style-type: none;
+                                       padding: 0;
+                                       margin: 0;
+                                       border: 1px solid #ddd;
+                                       border-top: none;
+                                       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                                       max-height: 300px;
+                                       overflow-y: auto;
+                                       display: none;">
+              </ul>
+            </div>
 
             <div class="viz-controls">
               <fieldset class="category-selector" style="width: 100%; border: 1px solid #ddd; border-radius: 4px;">
@@ -227,7 +256,7 @@
             <svg class="film-impact-svg"></svg>
           </div>
         </div>
-        <p>Visualisez l'impact d'un film sur le marché</p>
+
       </div>
     </section>
   </main>

@@ -1,6 +1,7 @@
 /**
  * Generates the SVG element g which will contain the data visualisation.
  *
+ * @param {*} g The d3 Selection of the graph's g SVG element
  * @param {object} margin The desired margins around the graph
  * @returns {*} The d3 Selection for the created g element
  */
@@ -46,10 +47,31 @@ export function margeG (g, margin) {
       .attr('font-size', 12)
   
     g.append('text')
-      .text('Année')
+      .text('Année de Parution')
       .attr('class', 'x axis-text')
       .attr('font-size', 12)
   }
+
+    /**
+   * Appends the labels for the the y axis and the title of the graph.
+   *
+   * @param {*} g The d3 Selection of the graph's g SVG element
+   * @param {string} labelString - The new text to display as the Y-axis label
+   */
+    export function resetYLabel (g, labelString) {
+
+      const LABEL_MATCH = {
+        'box_office' : 'Box Office',
+        'profit' : 'Profit Généré',
+        'rating' : 'Classement IMDb',
+        'numNominations' : 'Nombre de Nominations'
+      };
+
+      const cleanString = LABEL_MATCH[labelString] || labelString;
+
+      g.select(".y.axis-text")
+        .text(cleanString + " (%)")
+    }
 
   /**
  * Positions the x axis label and y axis label.
@@ -59,11 +81,12 @@ export function margeG (g, margin) {
  * @param {number} height The height of the graph
  */
 export function positionLabels (g, width, height) {
-    // TODO : Position axis labels
     g.select('.x.axis-text')
+      .attr('text-anchor', 'middle')
       .attr('transform', 'translate(' + width/2 + ', '+ (height+50) +')');    // On décale le label x à la moitié de la largeur
   
     g.select('.y.axis-text')
+      .attr('text-anchor', 'middle')
       .attr('transform', 'translate(-50, ' + height/2 + ')rotate(-90)');      // On décale le label x à la moitié de la hauteur
   }
   

@@ -593,7 +593,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function buildViz4(viz4data) {
 
       viz4xScale = viz4Scales.setXScale(graphSize4.width, viz4data);
-      viz4yScaleBoxOffice = viz4Scales.setYScaleBO(graphSize4.height, viz4data);
+      viz4yScaleBoxOffice = viz4Scales.setEmptyYScale(graphSize4.height);
 
       const axes = viz4.append("g").attr("class", "axes")
         .attr("transform", 'translate(' + margin4.left + ', ' + margin4.top + ')');
@@ -622,6 +622,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const viz4yScaleFlexible = viz4Scales.setYScaleMesureSucces(graphSize4.height, test, "average");
       viz4Helper.drawYAxis(viz4yScaleFlexible);
+      viz4Helper.resetYLabel(viz4, viz4mesureSucces);
       viz4ColorScale = viz4Scales.setColorScale(test);
 
       console.log(viz4ColorScale);
@@ -629,7 +630,7 @@ document.addEventListener("DOMContentLoaded", () => {
       
       viz4Viz.drawRef(title, dataToShow, viz4xScale, viz4yScaleFlexible, graphSize4.height);
 
-      const tip4 = d3Tip().attr('class', 'viz4-tip').html(function (d) { return viz4Tooltip.getContents(d, viz4ColorScale) });
+      const tip4 = d3Tip().attr('class', 'viz4-tip').html(function (d) { return viz4Tooltip.getContents(d, viz4mesureSucces) });
       viz4.select(".courbes").call(tip4);
       viz4Tooltip.setCircleHoverHandler(viz4.select(".courbes"), tip4);
     }

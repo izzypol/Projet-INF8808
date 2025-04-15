@@ -1,3 +1,10 @@
+/**
+ * Generates interactive checkboxes for each item in the provided list.
+ * Each checkbox controls the visibility of corresponding legend items and displayed data.
+ * 
+ * @param {Array<string>} list - Array of category names to create checkboxes for
+ * @returns {void} Modifies the DOM by adding checkbox elements
+ */
 export function generateCheckBoxes(list) {
 
     const checkGroup = d3.select(".check-group");
@@ -38,6 +45,12 @@ export function generateCheckBoxes(list) {
         });
 }
 
+/**
+ * Checks all category checkboxes in the check-group container.
+ * Typically used to reset or select all filters at once. Used to initialize.
+ * 
+ * @returns {void} Modifies the DOM by updating checkbox states
+ */
 export function checkAll() {
     d3.selectAll(".check-option input[type='checkbox']")
         .property("checked", true);

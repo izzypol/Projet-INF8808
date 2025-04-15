@@ -16,9 +16,7 @@ export function getMoviesBySameField(movieName, data, field) {
 
     // Create an array of arrays, one per distinct field value
     const moviesByFieldValue = targetValues.map(targetValue => {
-        // Filter movies that include this specific field value (case-insensitive exact match)
         const matchingMovies = data.filter(movie => {
-            //if (movie.name === movieName) return false; // Skip the target movie
             
             const movieValues = Array.isArray(movie[field])
                 ? movie[field]
@@ -35,14 +33,20 @@ export function getMoviesBySameField(movieName, data, field) {
             : matchingMovies;
 
         return {
-            categorie: targetValue, // The specific value being matched (e.g. "Action")
-            movies: sortedMovies    // Array of matching movies
+            categorie: targetValue, 
+            movies: sortedMovies    
         };
     });
 
     return moviesByFieldValue;
 }
 
+/**
+ * Calculates yearly averages for a success metric
+ * @param {Array<Object>} data - Array of movie objects
+ * @param {string} successMesure - Field containing the success metric
+ * @returns {Array<{year: number, average: number, count: number, noms: string}>} Yearly average data
+ */
 function averageByYear(data, succesMesure) {
     const yearGroups = {};
     
@@ -68,6 +72,14 @@ function averageByYear(data, succesMesure) {
         .sort((a, b) => a.year - b.year);
 }
 
+/**
+ * Generates formatted display data for visualization
+ * @param {string} movieName - Target movie name
+ * @param {Array<Object>} data - Complete movie dataset
+ * @param {Array<string>} fields - Fields to analyze (e.g. ["genre", "director"])
+ * @param {number} minlength - Minimum data points required for inclusion
+ * @returns {Array<{category: string, data: Array<Object>}>} Formatted data for charting
+ */
 export function generateDataToDisplay(movieName, data, fields, minlength) {
     const dataToDisplay = [];
 
@@ -82,7 +94,6 @@ export function generateDataToDisplay(movieName, data, fields, minlength) {
         groupedResults.forEach(group => {
 
             const averageData = averageByYear(group.movies, "mesureDeSucces");
-            //console.log("Average :", averageData);
 
             if (averageData.length > minlength){
                 dataToDisplay.push({
@@ -96,10 +107,16 @@ export function generateDataToDisplay(movieName, data, fields, minlength) {
         });
     });
     
-    //console.log("Data to display:", dataToDisplay);
     return dataToDisplay;
 }
 
+/**
+ * Normalizes success metrics relative to a reference movie
+ * @param {string} referenceName - Movie to use as reference (100%)
+ * @param {Array<Object>} originalData - Complete movie dataset
+ * @param {string} successMesure - Field containing the success metric
+ * @returns {Array<Object>} Data with indexed success values
+ */
 export function indexData(referenceName, originalData, successMesure) {
 
     const validData = originalData.filter(movie => {
@@ -118,9 +135,7 @@ export function indexData(referenceName, originalData, successMesure) {
     }
 
     const referenceValue = targetMovie[successMesure];
-    console.log("Ref : ", referenceValue);
     const targetYear = targetMovie.year;
-    //console.log(`Indexing ${validData.length} movies against ${referenceName} (${referenceValue})`);
 
     return validData.map(movie => ({
         ...movie,  
@@ -132,6 +147,11 @@ export function indexData(referenceName, originalData, successMesure) {
     );
 }
 
+/**
+ * Enhances movie data with nomination counts
+ * @param {Array<Object>} dataSource - Original movie data
+ * @returns {Array<Object>} Enhanced data with nomination metrics
+ */
 export function addNumberOfNominations(dataSource) {
     return dataSource.map(movie => {
         // Calculate Golden Globes nominations (with null checks)

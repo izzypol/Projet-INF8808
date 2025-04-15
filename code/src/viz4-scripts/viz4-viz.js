@@ -1,3 +1,12 @@
+/** Draws the circles and lines associated with the given data
+ * 
+ * @param {*} data
+ * @param {d3.Scale} xScale
+ * @param {d3.Scale} yScale
+ * @param {d3.Scale} colorScale
+ * @param {number} width
+ * @returns {void}
+ */
 export function drawCircles(data, xScale, yScale, colorScale, width) {
     const courbesElement = d3.select(".courbes"); 
 
@@ -6,8 +15,22 @@ export function drawCircles(data, xScale, yScale, colorScale, width) {
     // Clear previous elements
     courbesElement.selectAll(".ensemble-points").remove();
     courbesElement.selectAll(".data-line").remove();
-    courbesElement.selectAll(".legend-item").remove(); // Changed from myLabels
+    courbesElement.selectAll(".legend-item").remove();
     courbesElement.selectAll(".category-group").remove();
+    courbesElement.selectAll(".error-message").remove();
+
+    // Error message if empty data
+    if (!data || data.length === 0 || data.every(d => !d.data || d.data.length === 0)) {
+        courbesElement.append("text")
+            .attr("class", "error-message")
+            .attr("x", width/2)
+            .attr("y", 100)
+            .attr("text-anchor", "middle")
+            .style("font-size", "20px")
+            .style("fill", "gray")
+            .text("Données indisponibles pour cette mesure de succès");
+        return;
+    }
 
     const categoryGroups = courbesElement.selectAll(".category-group")
     .data(data)
@@ -93,7 +116,11 @@ export function drawCircles(data, xScale, yScale, colorScale, width) {
             .on("click", hideShowCategory);
 }
 
-
+/** Hide or show the given element depending of current state
+ * @param {MouseEvent} event
+ * @param {Object} d
+ * @returns {void}
+ */
 function hideShowCategory(event, d) {
     const categoryClass = d.category.replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').toLowerCase();
     const currentOpacity = d3.selectAll(`.${categoryClass}`).style("opacity");
@@ -106,6 +133,14 @@ function hideShowCategory(event, d) {
         .style("font-weight", currentOpacity == 0 ? "bold" : "normal");
 }
 
+/** Draw the point corresponding to the reference movie in a different way
+ * @param {string} title
+ * @param {Array<Object>} data
+ * @param {d3.Scale} xScale
+ * @param {d3.Scale} yScale
+ * @param {number} height
+ * @returns {void}
+ */
 export function drawRef(title, data, xScale, yScale, height) {
     const courbesElement = d3.select(".courbes"); 
 
