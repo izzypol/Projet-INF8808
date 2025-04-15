@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="Description" content="Visualisations de données de films IMDB">
-  <title>Les films et les influences sur leur succès | INF8808</title>
+  <title > 🎬Les films et les influences sur leur succès | INF8808</title>
   <link rel="stylesheet" href="assets/style.css">
   <link rel="stylesheet" href="assets/typography.css">
 </head>
@@ -14,19 +14,20 @@
 
   <header class="navigation">
     <nav>
-      <a href="#success">Mesure du succès</a>
-      <a href="#team">Équipe du film</a>
+      <a href="#success"> Mesure du succès</a>
+      <a href="#team"> Équipe du film</a>
       <a href="#genres">Genres & tendances</a>
       <a href="#impact">Impact d'un film</a>
+      <a href="#tagline">Taglines</a>
     </nav>
   </header>
 
   <section class="hero">
     <div class="header-img">
-      <img src="assets/img/IMDB.png" alt="IMDB background">
+      <img src="assets/img/films_banner.webp" alt="films background">
     </div>
     <div class="header-content">
-      <h1>Les films et les influences sur leur succès</h1>
+      <h1 style="font-family: inherit;"> 🎬 Les films et les influences sur leur succès 🎬</h1>
     </div>
   </section>
 
@@ -35,10 +36,29 @@
   <main>
     <section id="introduction">
       <h2>Introduction</h2>
-      <p>Présentation du dataset, objectif et problématique. Cette visualisation explore les facteurs qui contribuent au
-        succès des films, en analysant les données de l'IMDB, des Oscars et des Golden Globes pour identifier les
-        tendances et les corrélations significatives.</p>
-      <p>
+      <p style="text-align: justify;">Avec plus de 500 films sortis au Canada et aux Etats-Unis en 2024, l’industrie du cinéma occupe 
+        une part importante de la production culturelle et continue d’évoluer au rythme des nouvelles 
+        tendances et attentes du public. Entre blockbusters à gros budget et films indépendants acclamés 
+        par la critique, le succès des films repose sur de multiples facteurs. Comprendre leurs dynamiques
+        peut permettre d’analyser les tendances actuelles et d’éventuellement anticiper le succès d’un nouveau film.</p>
+      <p style="text-align: justify;">L’objectif principal de cette page web est d’analyser les facteurs de succès des films en 
+        fournissant aux utilisateurs cibles plusieurs visualisations interactives. En étudiant les 
+        250 films les mieux classés au monde selon IMDb, nous souhaitons leur permettre de mieux identifier
+        et comprendre les différents facteurs pouvant contribuer à la réussite d’un film, en mettant en 
+        avant les éléments communs aux principales œuvres à succès. 
+      </p>
+      <p style="text-align: justify;"> Le public visé par les différentes visualisations produites dans le cadre de ce projet seront 
+        les studios de film et les cinéastes indépendants. Pour ces professionnels n’ayant pas le même 
+        niveau de support financier ou populaire que ceux provenant de grands studios établis, produire 
+        un film peut être très risqué. Il est donc à leur avantage de faire certains choix qui favorisent 
+        le succès de leurs films. Les visualisations, hébergées sur un site web, permettent aux utilisateurs 
+        de comparer plusieurs aspects de films comme le genre et le tagline pour constater des tendances 
+        passées et futures. Les visualisations auront aussi l’option de basculer entre quelques métriques 
+        de succès pour permettre une compréhension plus globale du concept de succès dans le monde du film. 
+        Les données utilisées proviennent principalement de IMDb et de prix américains (Oscar et Golden Globes). 
+        Les tendances seront donc plus axées sur les goûts occidentaux.
+      </p>
+      <p style="text-align: justify;">
         Les différentes valeurs du box-office ont été comparées en tenant compte de l'inflation du dollar américain,
         afin d'assurer une évaluation plus juste et représentative dans le temps. L’ajustement des montants a été
         réalisé en se basant sur l’indice des prix à la consommation (CPI). Source: <a
@@ -48,19 +68,19 @@
 
     <section id="success">
       <h2>1. Mesure du succès</h2>
-
+      <p style="text-align: center;">Plusieurs métriques peuvent être adoptés pour mesurer le succès d'un film. Par exemple, on peut regarder le
+        box-office ou le classement IMDB, mais également le nombre de nomination ou encore le profit généré.</p>
       <div class="viz_n_text_container">
-        <p>Plusieurs métriques peuvent être adoptés pour mesurer le succès d'un film. Par exemple, on peut regarder le
-          box-office ou le classement IMDB, mais également le nombre de nomination ou encore le profit généré.</p>
-
-        <div class="visualization">
-          <div class="graph" id="success-scatter">
+        <div class="visualization" style = "text-align: center">
+          <div class="graph" id="success-scatter" >
             <!-- Mesure de succès scatter plot -->
-            <svg class="success-scatter-svg"></svg>
+            <svg class="success-scatter-svg" ></svg>
           </div>
         </div>
       </div>
-
+      
+      <h2 style="text-align: center;"> Par la suite, il est possible d'étudier d'autres métriques de 
+        succès et même d'autres paramètres complétement.</h2>
       <div class="choose_metric">
         <div class="container">
           <p>Choisissez une métrique pour mesurer le succès:</p>
@@ -76,6 +96,9 @@
 
     <section id="team">
       <h2>2. Équipe du film</h2>
+      <p style="text-align: center;"> Plusieurs artistes et réalisateurs ont déjà un grand nombre de supporters. 
+        Il est alors intéressant de se demander: quel est la performance des différents acteurs, réalisateurs et 
+        scénaristes? Et quels sont les collaborations les plus fructueuses ?</p>
       <div class="viz_n_text_container">
 
         <div class="visualization">
@@ -84,13 +107,15 @@
             <svg class="team-heatmap-svg"></svg>
           </div>
         </div>
-        <p>Quel est la performance des différents acteurs, réalisateurs et scénaristes. Et quels sont les collaborations
-          les plus fructueuses ?</p>
+
       </div>
     </section>
 
     <section id="genres">
       <h2>3. Genres et tendances</h2>
+      <p style="text-align: center;"> La préférence du public pour certains genres a fluctué dans le temps. 
+        Il ne faut penser qu'aux films slasher des années 1980 ou les films superhéros des 2010-2020. 
+        Ce graphique illustre l'évolution de la part du marché occupée par chaque genre dans le temps. </p>
       <div class="options-tendances">
         <h3>Options</h3>
         <div class="option-container">
@@ -130,6 +155,8 @@
 
     <section id="impact">
       <h2>4. Impact d'un film</h2>
+      <p style = "text-align: center; width: 100%;"> Certains films en particulier ont des impacts extraordinaires sur le marché. 
+        Ce graphique permet de visualisez cet impact sur les directeurs, le genre, le casting et les scénaristes. </p>
       <div class="viz_n_text_container">
 
 
@@ -158,18 +185,61 @@
 
           </div>
 
-          <div class="graph" id="film-impact">
+          <div class="graph" id="film-impact" style = "text-align: center">
             <!-- Impact du film -->
             <svg class="film-impact-svg"></svg>
           </div>
         </div>
-        <p>Visualisez l'impact d'un film sur le marché</p>
+
       </div>
+    </section>
+
+    <section class="tagline-visualization-section">
+      <h2>5. Taglines des films</h2>
+        <p style="text-align:center; width: 100%;">Les taglines sont des phrases accrocheuses qui accompagnent souvent les affiches de films. Elles sont conçues
+          pour attirer l'attention du public et donner un aperçu du film. Cette visualisation explore les taglines de
+          films à travers les saisons, permettant de mettre en évidence les tendances et les thèmes récurrents.</p> 
+      <!-- Season selector dropdown -->
+      <div class="controls">
+        <label for="season-select">Select Season: </label>
+        <select id="season-select">
+          <option value="all">All Seasons</option>
+          <option value="spring">Spring</option>
+          <option value="summer">Summer</option>
+          <option value="fall" selected>Fall</option>
+          <option value="winter">Winter</option>
+        </select>
+      </div>
+      
+      <!-- Chart title and subtitle -->
+      <div class="chart-title" style="text-align: center ; font-size: larger;">Word Frequency in Movie Taglines</div>
+      <div class="chart-subtitle" style="text-align: center;">Size represents word frequency, color represents word category</div>
+      
+      <!-- Visualization container -->
+      <div class="visualization">
+        <div class="graph" id="season-taglines">
+          <svg class="season-tagline-svg" style="text-align: center;"></svg>
+        </div>
+        
+      </div>
+      
+      <!-- Legend for categories -->
+      <div id="tagline-legend" class="legend"></div>
+    </section>
+
+    <section>
+      <h2> Sources</h2>
+      <p>Fontes, R., & Lu, D. (2020). The Oscar Award, 1927—2024 (Version 11) [Dataset]. Kaggle. https://www.kaggle.com/datasets/unanimad/the-oscar-award</p>
+      <p>Javed, A. (2020). Golden Globe Awards Analysis [CSV]. Kaggle. https://kaggle.com/code/ahmadjaved097/golden-globe-awards-analysis </p>
+      <p>Raju G, C. (2023). IMDB Top 250 Movies Dataset (Version 1) [CSV]. Kaggle. https://www.kaggle.com/datasets/rajugc/imdb-top-250-movies-dataset </p>
+      <p>Singh, U. (2023). Movie Dataset : Budgets, Genres, Insights (Version 1) [Dataset]. Kaggle. https://www.kaggle.com/datasets/utkarshx27/movies-dataset </p>
+      <p>Zarracina, J. (2018). The 21 best movies of 2017 [Picture collage]. https://www.vox.com/2017-in-review/2017/12/15/16751138/best-movies-2017-streaming-how-to-watch</p>
     </section>
   </main>
 
   <footer>
-    <p>Footer</p>
+    <p style="text-align: center;">Par Massimo Donato, Alexandre Dréan, Alexis Hirab, Ianis Kelfoun, Isabelle Poliquin et Julien Segonne</p>
+    <p style="text-align: center;">INF8808</p>
   </footer>
 
   <script src="https://d3js.org/d3.v7.js"></script>
