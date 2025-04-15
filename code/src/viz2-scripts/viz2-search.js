@@ -1,22 +1,11 @@
 /**
  * Creates the dropdown container for the search box.
  * 
- * @param {HTMLElement} searchInput The search input element
  * @returns {Object} Object containing the container and dropdown elements
  */
-export function createDropdownContainer(searchInput) {
+export function createDropdownContainer() {
   let dropdownContainer = d3.select("#search-container");
-  if (dropdownContainer.empty()) {
-    const searchParent = d3.select(searchInput.parentNode);
-    dropdownContainer = searchParent.append("div")
-      .attr("id", "search-container")
-      .style("position", "relative")
-      .style("width", "100%");
-    
-    searchInput.parentNode.removeChild(searchInput);
-    dropdownContainer.node().appendChild(searchInput);
-  }
-
+  
   let dropdown = dropdownContainer.select(".autocomplete-dropdown");
   if (dropdown.empty()) {
     dropdown = dropdownContainer.append("div")
@@ -31,7 +20,8 @@ export function createDropdownContainer(searchInput) {
       .style("border-radius", "0 0 4px 4px")
       .style("z-index", "1000")
       .style("display", "none")
-      .style("box-shadow", "0 4px 8px rgba(0,0,0,0.1)");
+      .style("box-shadow", "0 4px 8px rgba(0,0,0,0.1)")
+      .style("margin-top", "52px");
   } else {
     dropdown.style("display", "none").html("");
   }

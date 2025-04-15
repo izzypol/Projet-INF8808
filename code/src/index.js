@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const svgViz2 = d3.select(".collaboration-chord-svg");
     
       const tooltip = viz2Tooltip.createTooltip();
-      const dropdownContainer = viz2Search.createDropdownContainer(searchInput);
+      const dropdownContainer = viz2Search.createDropdownContainer();
       const dropdown = dropdownContainer.dropdown;
       
       function updateViz(newEntityName = null) {
