@@ -6,9 +6,18 @@
  * @param {object} d The data associated to the hovered element
  * @returns {string} The tooltip contents
  */
-export function getContents(d, colorScale) {
+export function getContents(d, mesureSucces) {
 
-  console.log(d);
+  const LABEL_MATCH = {
+    'box_office' : 'Box Office',
+    'profit' : 'Profit Généré',
+    'rating' : 'Classement IMDb',
+    'numNominations' : 'Nombre de Nominations'
+  };
+
+  const successName = LABEL_MATCH[mesureSucces] || mesureSucces;
+
+  console.log("Contents : ", d);
 
   let html = `<div class="tooltip-value" style="
       z-index: 6;
@@ -32,6 +41,12 @@ export function getContents(d, colorScale) {
   html += `<div style="margin: 4px 0; filter: brightness(1.5);">
             <strong>📅 Année:</strong> ${d.year}
           </div>`;
+
+  if (d[mesureSucces] !== undefined) {
+    html += `<div style="margin: 4px 0;">
+              <strong>⭐ ${successName}:</strong> ${d[mesureSucces]}
+            </div>`;
+  }
 
   // Conditional content based on data
   if (d.count !== undefined) {
@@ -63,6 +78,7 @@ export function getContents(d, colorScale) {
 /**
  * Sets up the hover event handler. The tooltip should show on on hover.
  *
+ * @param {*} g The d3 Selection of the graph's g SVG element
  * @param {*} tip The tooltip
  */
 export function setCircleHoverHandler(g, tip) {
