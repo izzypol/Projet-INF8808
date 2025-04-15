@@ -50,7 +50,7 @@ export function createDropdownContainer(searchInput) {
 export function updateDropdownSuggestions(searchTerm, collabs, dropdown, handleEntitySelect) {
   const actors = new Set();
   const directors = new Set();
-  
+  const writers = new Set();
   collabs.forEach(collab => {
     if (collab.connectionType === 'actor/actor') {
       // Both participants are actors
@@ -69,9 +69,9 @@ export function updateDropdownSuggestions(searchTerm, collabs, dropdown, handleE
       // Handle writer/director type
       if (collab.participant1 === 'writer/director') {
         directors.add(collab.participant1);
-        actors.add(collab.participant2);
+        writers.add(collab.participant2);
       } else {
-        actors.add(collab.participant1);
+        writers.add(collab.participant1);
         directors.add(collab.participant2);
       }
     }
@@ -84,14 +84,19 @@ export function updateDropdownSuggestions(searchTerm, collabs, dropdown, handleE
   const filteredDirectors = Array.from(directors)
     .filter(director => director && director.toLowerCase().includes(searchTerm.toLowerCase()));
   
+  const filteredWriters = Array.from(writers)
+    .filter(writer => writer && writer.toLowerCase().includes(searchTerm.toLowerCase()));
+  
   // Limit results to avoid overwhelming the user
   const maxSuggestions = 10;
   const limitedActors = filteredActors.slice(0, Math.ceil(maxSuggestions/2));
   const limitedDirectors = filteredDirectors.slice(0, Math.floor(maxSuggestions/2));
+  const limitedWriters = filteredWriters.slice(0, Math.floor(maxSuggestions/2));
   
   const suggestions = [
     ...limitedActors.map(name => ({ name, type: 'actor' })),
-    ...limitedDirectors.map(name => ({ name, type: 'director' }))
+    ...limitedDirectors.map(name => ({ name, type: 'director' })),
+    ...limitedWriters.map(name => ({ name, type: 'writer' }))
   ];
   
   if (suggestions.length > 0) {
@@ -118,11 +123,11 @@ export function updateDropdownSuggestions(searchTerm, collabs, dropdown, handleE
         })
         .html(`
           <span>${suggestion.name}</span>
-          <span style="color: ${suggestion.type === 'actor' ? '#4285F4' : '#EA4335'}; 
+          <span style="color: ${suggestion.type === 'actor' ? '#4285F4' : suggestion.type === 'director' ? '#EA4335' : '#F4B400'}; 
                        font-size: 12px; padding: 2px 6px; 
-                       border: 1px solid ${suggestion.type === 'actor' ? '#4285F4' : '#EA4335'};
+                       border: 1px solid ${suggestion.type === 'actor' ? '#4285F4' : suggestion.type === 'director' ? '#EA4335' : '#F4B400'};
                        border-radius: 12px;">
-            ${suggestion.type === 'actor' ? 'Actor' : 'Director'}
+            ${suggestion.type === 'actor' ? 'Actor' : suggestion.type === 'director' ? 'Director' : 'Writer'}
           </span>
         `);
     });

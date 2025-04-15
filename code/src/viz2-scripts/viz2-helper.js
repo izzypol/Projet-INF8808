@@ -7,9 +7,13 @@
  * @returns {*} The d3 Selection for the created g element
  */
 export function generateG (svgSelector, margin, id = null) {
-  const g = svgSelector.append('g')
-    .attr('id', id)
-    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+  const g = svgSelector
+    .append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
+  
+  if (id) {
+    g.attr('id', id);
+  }
   
   return g
 }
@@ -21,8 +25,7 @@ export function generateG (svgSelector, margin, id = null) {
  * @param {number} height The desired height
  */
 export function setCanvasSize (width, height) {
-  d3.select('#collaboration-chord')
-    .select('svg')
+  d3.select(".collaboration-chord-svg")
     .attr('width', width)
     .attr('height', height)
 }

@@ -1,58 +1,44 @@
-/**
- * Defines the log scale used to position the center of the circles in X.
- *
- * @param {number} width The width of the graph
- * @param {object} data The data to be used
- * @returns {*} The linear scale in X
- */
-export function setXScale (width, directors) {
-    const xScale = d3.scaleBand()
-      .domain(directors)
-      .range([0, 650])
-      .padding(0.5);  
-  
-    return xScale
-  }
-
-/**
- * Defines the log scale used to position the center of the circles in Y.
- *
- * @param {number} height The height of the graph
- * @param {object} data The data to be used
- * @returns {*} The linear scale in Y
- */
-export function setYScale(height, topY) {      // Idem que la fonction précédente
-    // TODO : Set scale
-    const yScale =  d3.scaleBand()
-      .domain(topY)
-      .range([0, height])
-      .padding(0.05);
-  
-    return yScale}
+import * as d3 from 'd3';
 
 /**
  * Sets the color scale for entity types.
  * 
  * @returns {d3.ScaleOrdinal} The color scale
  */
-export function setColorScale() {
+export function createColorScale() {
   return d3.scaleOrdinal()
-    .domain(['actor', 'director'])
-    .range(['#4285F4', '#EA4335']);
+    .domain(['actor', 'director', 'writer'])
+    .range(['#4285F4', '#EA4335', '#F4B400']);
 }
 
 /**
- * Creates a radius scale for entity nodes based on collaboration count.
- * 
- * @param {Array} data The entity data
- * @returns {d3.ScaleLinear} The radius scale
+ * Create the chord layout object
+ * @returns {d3.ChordLayout} The chord layout
  */
-export function setRadiusScale(data) {
-  // Find the maximum connection count
-  const maxCount = d3.max(data, d => d.count || 0);
-  
-  // Create scale with range appropriate for the visualization
-  return d3.scaleLinear()
-    .domain([0, maxCount])
-    .range([5, 20]);
+export function createChordScales() {
+  return d3.chord()
+    .padAngle(0.05)
+    .sortSubgroups(d3.descending);
+}
+
+/**
+ * Create the arc generator
+ * @param {number} innerRadius - The inner radius of the arc
+ * @param {number} outerRadius - The outer radius of the arc
+ * @returns {d3.Arc} The arc generator
+ */
+export function createArcScales(innerRadius, outerRadius) {
+  return d3.arc()
+    .innerRadius(innerRadius)
+    .outerRadius(outerRadius);
+}
+
+/**
+ * Create the ribbon generator
+ * @param {number} innerRadius - The radius for the ribbon
+ * @returns {d3.Ribbon} The ribbon generator
+ */
+export function createRibbonScales(innerRadius) {
+  return d3.ribbon()
+    .radius(innerRadius);
 }

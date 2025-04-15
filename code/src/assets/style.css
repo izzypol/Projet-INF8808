@@ -135,6 +135,8 @@ h2 {
   flex: 0 0 30%;
   max-width: 30%;
   padding-right: 20px;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .visualization2 {

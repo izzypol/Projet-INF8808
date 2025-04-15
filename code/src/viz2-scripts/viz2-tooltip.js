@@ -52,8 +52,8 @@ export function createTooltip() {
     connections.sort((a, b) => b.count - a.count);
   
     let content = `<div style="margin-bottom: 6px;">
-                    <strong style="font-size: 14px; color: ${type === 'actor' ? '#4285F4' : '#EA4335'}">${entity}</strong><br>
-                    <span style="color: #666">${type === 'actor' ? 'Acteur' : 'Réalisateur'}</span>
+                    <strong style="font-size: 14px; color: ${type === 'actor' ? '#4285F4' : type === 'director' ? '#EA4335' : '#F4B400'}">${entity}</strong><br>
+                    <span style="color: #666">${type === 'actor' ? 'Acteur' : type === 'director' ? 'Réalisateur' : 'Scénariste'}</span>
                   </div>`;
   
     if (connections.length > 0) {
@@ -62,7 +62,7 @@ export function createTooltip() {
       
       connections.forEach(conn => {
         content += `<div style="font-size: 11px; margin: 2px 0; display: flex; justify-content: space-between;">
-                     <span>${conn.name} <span style="color: ${conn.type === 'actor' ? '#4285F4' : '#EA4335'}">(${conn.type === 'actor' ? 'Acteur' : 'Réalisateur'})</span></span>
+                     <span>${conn.name} <span style="color: ${conn.type === 'actor' ? '#4285F4' : conn.type === 'director' ? '#EA4335' : '#F4B400'}">(${conn.type === 'actor' ? 'Acteur' : conn.type === 'director' ? 'Réalisateur' : 'Scénariste'})</span></span>
                      <span style="font-weight: bold; margin-left: 10px;">${conn.count}</span>
                    </div>`;
       });
@@ -103,10 +103,10 @@ export function createTooltip() {
           <strong>Collaboration avec:</strong>
         </div>
         <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-          <span style="color: ${sourceType === 'actor' ? '#4285F4' : '#EA4335'}">
+          <span style="color: ${sourceType === 'actor' ? '#4285F4' : sourceType === 'director' ? '#EA4335' : '#F4B400'}">
             ${sourceName}
           </span>
-          <span style="color: ${targetType === 'actor' ? '#4285F4' : '#EA4335'}">
+          <span style="color: ${targetType === 'actor' ? '#4285F4' : targetType === 'director' ? '#EA4335' : '#F4B400'}">
             ${targetName}
           </span>
         </div>`;
@@ -167,10 +167,10 @@ export function createTooltip() {
         <strong>Collaboration(s): ${collab.count || d.source.value} </strong>
       </div>
       <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-        <span style="color: ${sourceType === 'actor' ? '#4285F4' : '#EA4335'}">
+        <span style="color: ${sourceType === 'actor' ? '#4285F4' : sourceType === 'director' ? '#EA4335' : '#F4B400'}">
           ${sourceName}
         </span>
-        <span style="color: ${targetType === 'actor' ? '#4285F4' : '#EA4335'}">
+        <span style="color: ${targetType === 'actor' ? '#4285F4' : targetType === 'director' ? '#EA4335' : '#F4B400'}">
           ${targetName}
         </span>
       </div>
