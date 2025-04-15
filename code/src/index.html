@@ -40,8 +40,8 @@
         tendances et les corrélations significatives.</p>
       <p>
         Les différentes valeurs du box-office ont été comparées en tenant compte de l'inflation du dollar américain,
-        afin d'assurer une évaluation plus juste et représentative dans le temps. L’ajustement des montants a été
-        réalisé en se basant sur l’indice des prix à la consommation (CPI). Source: <a
+        afin d'assurer une évaluation plus juste et représentative dans le temps. L'ajustement des montants a été
+        réalisé en se basant sur l'indice des prix à la consommation (CPI). Source: <a
           href="https://tradingeconomics.com/united-states/inflation-cpi">https://tradingeconomics.com/united-states/inflation-cpi</a>.
       </p>
     </section>
@@ -55,7 +55,6 @@
 
         <div class="visualization">
           <div class="graph" id="success-scatter">
-            <!-- Mesure de succès scatter plot -->
             <svg class="success-scatter-svg"></svg>
           </div>
         </div>
@@ -63,8 +62,7 @@
 
       <div class="choose_metric">
         <div class="container">
-          <p>Choisissez une métrique pour mesurer le succès:</p>
-          <!-- dropdown menu -->
+          <p>Choisissez une métrique pour mesure le succès:</p>
           <select id="metric-select" class="metric-select">
             <option value="box_office">Box Office</option>
             <option value="rating">IMDB Rating</option>
@@ -77,15 +75,73 @@
     <section id="team">
       <h2>2. Équipe du film</h2>
       <div class="viz_n_text_container">
+        <div class="visualization-description">
+          <p>
+            Cette visualisation présente les collaborations entre acteurs et réalisateurs des films. 
+            Le diagramme en accord (chord diagram) illustre les liens professionnels qui se sont formés au fil des années dans l'industrie cinématographique.
+          </p>
+          <p>
+            <strong>Comment lire ce graphique :</strong>
+          </p>
+          <ul>
+            <li><span style="color: #4285F4; font-weight: bold;">Les acteurs</span> et <span style="color: #EA4335; font-weight: bold;">les réalisateurs</span> sont représentés sur le cercle extérieur</li>
+            <li>L'épaisseur des liens entre deux entités indique le nombre de collaborations ensemble</li>
+            <li>Cliquez sur un nom pour mettre en évidence les collaborations directes avec celui-ci</li>
+            <li>Utilisez la recherche pour trouver rapidement un acteur ou réalisateur spécifique</li>
+            <li>Ajustez les filtres pour voir la fréquence des différentes collaborations</li>
+          </ul>
+          <p>
+            Découvrez les réseaux d'influence et les équipes récurrentes qui ont façonné les plus grands succès du cinéma. 
+            Observez quels acteurs et réalisateurs travaillent fréquemment ensemble et comment ses collaborations influencent le succès de leurs films.
+          </p>
+        </div>
+        <div class="visualization2">
+          <div class="team-controls" style="margin-bottom: 1em;">
+            <div style="display: flex; flex-wrap: wrap; gap: 1em;">
+              <div id="search-container" style="position: relative; min-width: 200px;">
+                <label for="search-box">Rechercher un Acteur/Réalisateur:</label><br />
+                <input id="search-box" type="text" placeholder="Rechercher..." style="width: 100%; padding: 6px; border: 1px solid #ddd; border-radius: 4px;" />
+              </div>
+          
+              <div>
+                <label for="min-collab">Collaborations minimum:</label><br />
+                <select id="min-collab" style="padding: 4px;">
+                  <option value="1">1</option>
+                  <option value="2" selected>2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+          
+              <div>
+                <label for="max-entities">Liens maximum:</label><br />
+                <select id="max-entities" style="padding: 4px;">
+                  <option value="10">10</option>
+                  <option value="15">15</option>
+                  <option value="20" selected>20</option>
+                  <option value="25">25</option>
+                  <option value="30">30</option>
+                </select>
+              </div>
 
-        <div class="visualization">
-          <div class="graph" id="team-heatmap">
-            <!--  Équipe du film Heatmap -->
-            <svg class="team-heatmap-svg"></svg>
+              <div>
+                <label>&nbsp;</label><br />
+                <button id="reset-button" style="padding: 4px 8px; background: #f5f5f5; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">Reset View</button>
+              </div>
+            </div>
+            <p style="margin-top: 0.5em; font-size: 0.9em; color: gray;">
+              <span style="color: #4285F4;">●</span> Acteurs
+              &nbsp;&nbsp;
+              <span style="color: #EA4335;">●</span> Réalisateurs
+              &nbsp;&nbsp;– Cliquer sur un nom ou rechercher pour mettre en évidence les collaborations.
+            </p>
+          </div>
+          
+          <div class="graph" id="collaboration-chord">
+            <!-- D3.js will inject the SVG here -->
           </div>
         </div>
-        <p>Quel est la performance des différents acteurs, réalisateurs et scénaristes. Et quels sont les collaborations
-          les plus fructueuses ?</p>
       </div>
     </section>
 
