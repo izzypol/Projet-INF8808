@@ -152,11 +152,11 @@ export function updatePositions (nodes, labels, width, height, radiusScale) {
   nodes
     .attr('cx', d => {
       const bubbleRadius = radiusScale(d.count)
-      return d.x = Math.max(bubbleRadius, Math.min(width - bubbleRadius, d.x))
+      return d.x = Math.max(bubbleRadius, Math.min(width - bubbleRadius, d.x));
     })
     .attr('cy', d => {
       const bubbleRadius = radiusScale(d.count)
-      return d.y = Math.max(bubbleRadius, Math.min(height - bubbleRadius, d.y))
+      return d.y = Math.max(bubbleRadius, Math.min(height - bubbleRadius, d.y));
     })
 
   labels

@@ -106,18 +106,13 @@ export function createLegendsContainer (seasonalCategories) {
  */
 export function getSeasonData (season, viz5data) {
   if (season === 'every-season') {
-    console.log('viz5data structure:', viz5data)
     const wordMap = {}
 
-    // Determine if viz5data is an object with seasons or an array
-    const dataToProcess = Array.isArray(viz5data) 
-      ? viz5data 
+    const dataToProcess = Array.isArray(viz5data)
+      ? viz5data
       : Object.values(viz5data).flatMap(seasonData => seasonData.taglineWords || [])
 
-    console.log('Data to process:', dataToProcess)
-
     dataToProcess.forEach(wordData => {
-      // Ensure wordData is valid
       if (!wordData || !wordData.word) return
 
       const word = wordData.word
@@ -129,10 +124,8 @@ export function getSeasonData (season, viz5data) {
           movies: Array.isArray(wordData.movies) ? [...wordData.movies] : []
         }
       } else {
-        // Increment count
         wordMap[word].count += wordData.count || 0
 
-        // Merge movies avoiding duplicates
         if (Array.isArray(wordData.movies)) {
           const existingMovieIds = new Set(wordMap[word].movies.map(m => m.id || m.name))
           wordData.movies.forEach(movie => {

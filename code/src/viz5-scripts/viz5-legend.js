@@ -120,6 +120,8 @@ export function setNumberedWordsLegend (numberedWords) {
   const listContainer = document.getElementById('bubble-numbers-legend')
   if (!listContainer) return
 
+  listContainer.innerHTML = ''
+
   const ul = document.createElement('ul')
   ul.style.listStyle = 'none'
   ul.style.padding = '0'
