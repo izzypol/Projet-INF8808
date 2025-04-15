@@ -34,6 +34,7 @@ import * as viz2Scales from './viz2-scripts/viz2-scales.js'
 import * as viz2Viz from './viz2-scripts/viz2-viz.js'
 import * as viz2Tooltip from './viz2-scripts/viz2-tooltip.js'
 import * as viz2Search from './viz2-scripts/viz2-search.js'
+
 /* Visualisation 3 - Importations */
 import * as viz3Process from './viz3-scripts/viz3-preprocess.js'
 import * as viz3Helper from './viz3-scripts/viz3-helper.js'
@@ -44,7 +45,6 @@ import * as viz3Example from './viz3-scripts/viz3-example.js'
 
 
 /* Visualisation 4 - Importations */
-
 import * as viz4Helper from './viz4-scripts/viz4-helper.js'
 import * as viz4Search from './viz4-scripts/viz4-search.js'
 import * as viz4Scales from './viz4-scripts/viz4-scales.js'
@@ -53,18 +53,14 @@ import * as viz4Viz from './viz4-scripts/viz4-viz.js'
 import * as viz4CheckBoxes from './viz4-scripts/viz4-checkboxes.js'
 import * as viz4Tooltip from './viz4-scripts/viz4-tooltip.js'
 
+/* Visualisation 5 - Importations */
+import * as viz5Helper from './viz5-scripts/viz5-helper.js'
+import * as viz5Viz from './viz5-scripts/viz5-viz.js'
+import * as viz5process from './viz5-scripts/viz5-preprocess.js'
+import * as viz5Legend from './viz5-scripts/viz5-legend.js'
+import * as viz5Scales from './viz5-scripts/viz5-scales.js'
+
 import * as d3 from 'd3'
-
-
-// import * as helper from './scripts/helper.js'
-// import * as preproc from './scripts/preprocess_imbd_data.js'
-// import * as viz from './scripts/viz.js'
-// import * as legend from './scripts/legend.js'
-// import * as hover from './scripts/hover.js'
-// import * as util from './scripts/util.js'
-
-// import * as d3Chromatic from 'd3-scale-chromatic'
-
 
 
 /* Déplacer le sélecteur de métrique en haut à droite si on le dépasse sur la page */
@@ -139,7 +135,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const seasonalData = getDataBySeason(imdb)
 
     const movieLengthData = getMovieLengthData(imdb)
-    const taglineWordData = getTaglineWordsData(imdb)
     const taglineLengthData = getTaglineLengthData(imdb)
 
 
@@ -712,5 +707,64 @@ document.addEventListener("DOMContentLoaded", () => {
     //   setSizing()
     //   build()
     // })
+
+    /* Visualisation 5 - Taglines des films */
+
+    const viz5data = viz5process.getDataBySeason(imdb)
+    const taglineWordData = getTaglineWordsData(imdb)
+
+    const margin5 = {
+      top: 75,
+      right: 50,
+      bottom: 100,
+      left: 50
+    }
+
+    const svgSize5 = {
+      width: 1200,
+      height: 1000
+    }
+
+    d3.select('.season-tagline-svg')
+      .attr('width', svgSize5.width)
+      .attr('height', svgSize5.height)
+      .attr('viewBox', `0 0 ${svgSize5.width} ${svgSize5.height}`)
+      .style('border-radius', '50%')
+      .style('overflow', 'auto')
+
+    const svgViz5 = d3.select('.season-tagline-svg')
+    const g5 = svgViz5.append('g')
+      .attr('transform', `translate(${margin5.left},${margin5.top})`)
+      .attr('id', 'graph-g-viz5')
+
+    const seasonalCategories = viz5process.getSeasonalCategories(viz5data)
+    const taglineCounts = viz5process.getTaglineCounts(viz5data).sort((a, b) => a - b)
+
+    const radiusScale = viz5Scales.createRadiusScale(taglineCounts)
+    const colorScale = viz5Scales.createColorScale(seasonalCategories)
+
+    const width = svgSize5.width - margin5.left - margin5.right
+    const height = svgSize5.height - margin5.top - margin5.bottom
+
+    viz5Helper.createLegendsContainer(seasonalCategories)
+
+    d3.select('#season-select').on('change', function () {
+      const selectedSeason = this.value
+      updateVisualization(selectedSeason)
+    })
+
+    // eslint-disable-next-line jsdoc/require-jsdoc
+    function updateVisualization (season) {
+      g5.selectAll('*').remove()
+
+      const data = viz5Helper.getSeasonData(season, season === 'every-season' ? taglineWordData : viz5data)
+
+      viz5Viz.createVisualization(data, g5, width, height, radiusScale, colorScale)
+
+      viz5Legend.setLegendColor(seasonalCategories, colorScale)
+      viz5Legend.setLegendSize(taglineCounts, radiusScale)
+    }
+
+    updateVisualization('every-season')
   })
 })(d3)

@@ -18,6 +18,7 @@
       <a href="#team">Équipe du film</a>
       <a href="#genres">Genres & tendances</a>
       <a href="#impact">Impact d'un film</a>
+      <a href="#taglines">Taglines & Saisons</a>
     </nav>
   </header>
 
@@ -255,10 +256,52 @@
 
       </div>
     </section>
+
+    <section id='taglines' class="tagline-visualization-section">
+      <h2>5. Taglines des films</h2>
+        <p style="text-align:center; width: 100%;">Les taglines sont des phrases accrocheuses qui accompagnent souvent les affiches de films. Elles sont conçues
+          pour attirer l'attention du public et donner un aperçu du film. Cette visualisation explore les taglines de
+          films à travers les saisons, permettant de mettre en évidence les tendances et les thèmes récurrents.</p> 
+
+          
+      <div class="controls">
+        <label for="season-select">Sélectionner la saison: </label>
+        <select id="season-select">
+          <option value="every-season" selected>Tous les saisons</option>
+          <option value="spring">Printemps</option>
+          <option value="summer">Été</option>
+          <option value="fall">Automne</option>
+          <option value="winter">Hiver</option>
+        </select>
+      </div>
+      
+      <div class="chart-title" style="text-align: center ; font-size: larger;">Fréquence d'apparition des mots dans les taglines des films</div>
+      <div class="chart-subtitle" style="text-align: center;">Largeur représente la fréquence des mots, la couleur la catégorie des mots</div>
+      
+      <div class="visualization">
+        <div class="graph" id="season-taglines">
+          <div id="tagline-legend" class="legend"></div>
+          <div id="viz5-title"></div>
+          <svg class="season-tagline-svg"></svg>
+        </div>
+        <div id="bubble-numbers-legend"></div>
+      </div>
+      
+    </section>
+
+    <div>
+      <h2> Sources</h2>
+      <p>Fontes, R., & Lu, D. (2020). The Oscar Award, 1927—2024 (Version 11) [Dataset]. Kaggle. https://www.kaggle.com/datasets/unanimad/the-oscar-award</p>
+      <p>Javed, A. (2020). Golden Globe Awards Analysis [CSV]. Kaggle. https://kaggle.com/code/ahmadjaved097/golden-globe-awards-analysis </p>
+      <p>Raju G, C. (2023). IMDB Top 250 Movies Dataset (Version 1) [CSV]. Kaggle. https://www.kaggle.com/datasets/rajugc/imdb-top-250-movies-dataset </p>
+      <p>Singh, U. (2023). Movie Dataset : Budgets, Genres, Insights (Version 1) [Dataset]. Kaggle. https://www.kaggle.com/datasets/utkarshx27/movies-dataset </p>
+      <p>Zarracina, J. (2018). The 21 best movies of 2017 [Picture collage]. https://www.vox.com/2017-in-review/2017/12/15/16751138/best-movies-2017-streaming-how-to-watch</p>
+    </div>
   </main>
 
   <footer>
-    <p>Footer</p>
+    <p style="text-align: center;">Par Massimo Donato, Alexandre Dréan, Alexis Hirab, Ianis Kelfoun, Isabelle Poliquin et Julien Segonne</p>
+    <p style="text-align: center;">INF8808</p>
   </footer>
 
   <script src="https://d3js.org/d3.v7.js"></script>

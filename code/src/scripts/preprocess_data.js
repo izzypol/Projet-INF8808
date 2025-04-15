@@ -659,7 +659,8 @@ export function getTaglineWordsData (movies, minWordLength = 3, minOccurrences =
       wordData[word].movies.push({
         name: movie.name,
         year: movie.year,
-        tagline: movie.tagline
+        tagline: movie.tagline,
+        rating: movie.rating
       })
 
       wordData[word].count++
