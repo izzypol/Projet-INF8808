@@ -26,3 +26,27 @@ npm run build
 Le dossier dist devrait contenir les fichiers build avec parcel-bundle.
 
 **Déployer le build sur la branche build (gh-pages)**
+Après avoir build dans la branch main
+```
+git switch build
+```
+```
+git rm -rf --ignore-unmatch *
+```
+
+```
+cp -r code/dist/* .
+```
+```
+rm -rf code
+``` 
+*(ou supprimer le dossier code à la main de cette branche)*
+```
+git add .
+git commit -m "Déploiement de la dernière version"
+git push origin build --force
+```
+Retour sur la branche main
+```
+git checkout main
+```
