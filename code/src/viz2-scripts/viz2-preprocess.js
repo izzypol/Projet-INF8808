@@ -16,6 +16,12 @@ export function processData(rawData, maxEntities, collabs, selectedEntity = null
       return [c.participant2, c.participant1];
     } 
   }))];
+
+  const writerFromDirectorData = [...new Set(rawData.flatMap(c => {
+    if (c.connectionType === "writer/director") {
+      return [c.participant1];
+    }
+  }))];
   
   // Get all actor-actor collaborations from collabs
   const actorActorCollabs = collabs.filter(c => 
@@ -23,12 +29,12 @@ export function processData(rawData, maxEntities, collabs, selectedEntity = null
     actorsFromDirectorData.includes(c.participant1) && 
     actorsFromDirectorData.includes(c.participant2)
   );
-  
+
   // Get all directors from actorDirectorData
   const directors = [...new Set(rawData.map(c => c.participant2))];
 
   // Calculate counts for actors and directors
-  const actorCounts = {}, directorCounts = {};
+  const actorCounts = {}, directorCounts = {}, writerCounts = {};
   rawData.forEach(c => {
     if (c.connectionType === "actor/director") {
       const actor = c.participant1;
@@ -40,31 +46,48 @@ export function processData(rawData, maxEntities, collabs, selectedEntity = null
       const actor2 = c.participant2;
       actorCounts[actor1] = (actorCounts[actor1] || 0) + c.count;
       actorCounts[actor2] = (actorCounts[actor2] || 0) + c.count;
+    } else if (c.connectionType === "writer/director") {
+      const writer = c.participant1;
+      const director = c.participant2;
+      writerCounts[writer] = (writerCounts[writer] || 0) + c.count;
+      directorCounts[director] = (directorCounts[director] || 0) + c.count;
     }
   });
 
-  // Get top actors and directors
+  // Get top actors, directors and writers
+  const actorCount = Math.floor(maxEntities / 3);
+  const directorCount = Math.floor(maxEntities / 3);
+  const writerCount = maxEntities - actorCount - directorCount; // Remaining entities
+  
   const topActors = actorsFromDirectorData
     .sort((a, b) => actorCounts[b] - actorCounts[a])
-    .slice(0, Math.ceil(maxEntities / 2));
+    .slice(0, actorCount);
   
   const topDirectors = directors
     .sort((a, b) => directorCounts[b] - directorCounts[a])
-    .slice(0, Math.floor(maxEntities / 2));
+    .slice(0, directorCount);
+
+  const topWriters = writerFromDirectorData
+    .sort((a, b) => writerCounts[b] - writerCounts[a])
+    .slice(0, writerCount);
   
-  const allEntities = [...topActors, ...topDirectors];
-  const allTypes = [...topActors.map(() => 'actor'), ...topDirectors.map(() => 'director')];
+  const allEntities = [...topActors, ...topDirectors, ...topWriters];
+  const allTypes = [
+    ...topActors.map(() => 'actor'), 
+    ...topDirectors.map(() => 'director'),
+    ...topWriters.map(() => 'writer')
+  ];
 
   // Create initial matrix with all potential entities
   const initialMatrix = Array.from({ length: allEntities.length }, () => Array(allEntities.length).fill(0));
   
   // Add actor-director connections from actorDirectorData
   rawData.forEach(c => {
-    if (c.connectionType === "writer/director" || c.connectionType === "actor/actor") return;
-    const actor = c.participant1;
+    if (c.connectionType === "actor/actor") return;
+    const actorOrWriter = c.participant1;
     const director = c.participant2;
     
-    const aIdx = allEntities.indexOf(actor);
+    const aIdx = allEntities.indexOf(actorOrWriter);
     const dIdx = allEntities.indexOf(director);
     
     if (aIdx !== -1 && dIdx !== -1) {
@@ -83,6 +106,7 @@ export function processData(rawData, maxEntities, collabs, selectedEntity = null
       initialMatrix[a2Idx][a1Idx] = c.count;
     }
   });
+
 
   // Now filter out entities that have no connections
   const connectedIndices = new Set();

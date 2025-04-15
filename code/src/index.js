@@ -224,17 +224,17 @@ document.addEventListener("DOMContentLoaded", () => {
     /* Visualisation 2 - Équipe du film */
 
     function buildViz2_V2() {
-
       const margin2 = {
-        top: 10,
-        right: 40,
+        top: 320,
+        right: 320,
         bottom: 60,
-        left: 10
+        left: 450
       }
       
       const svgWidth = 850;
       const svgHeight = 650;
-      const containerId = "collaboration-chord";
+    
+      viz2Helper.setCanvasSize(svgWidth, svgHeight);
     
       let currentData = null;
       let highlightEntity = null;
@@ -245,112 +245,91 @@ document.addEventListener("DOMContentLoaded", () => {
       const collabSelect = document.getElementById("min-collab");
       const maxEntSelect = document.getElementById("max-entities");
       
-      // Set up the SVG container
-      viz2Helper.setCanvasSize(svgWidth, svgHeight);
-
-      // Create tooltip
+      const svgViz2 = d3.select(".collaboration-chord-svg");
+    
       const tooltip = viz2Tooltip.createTooltip();
-
-      // Set up search dropdown
       const dropdownContainer = viz2Search.createDropdownContainer(searchInput);
       const dropdown = dropdownContainer.dropdown;
       
-      const handleEntitySelect = (entityName, entityType) => {
-        selectedEntityName = entityName;
-        selectedEntityType = entityType;
+      function updateViz(newEntityName = null) {
+        svgViz2.selectAll("*").remove();
+        
+        const g2 = viz2Helper.generateG(svgViz2, margin2, "graph-g-viz2");
+        
+        if (newEntityName !== null) {
+          selectedEntityName = newEntityName;
+          searchInput.value = newEntityName;
+        }
         
         const minCollabVal = parseInt(collabSelect.value);
-        const AllcollababorationsFiltered = Allcollababorations.filter(c => c.count >= minCollabVal);
-        const filteredCollabsByEntity = viz2Process.filterDataByEntity(entityName, AllcollababorationsFiltered);
-        const newData = viz2Process.processData(filteredCollabsByEntity, maxEntSelect.value, AllcollababorationsFiltered, entityName);
-        
-        viz2Viz.renderChordDiagram(
-          newData, 
-          svgWidth, 
-          svgHeight, 
-          margin2,
-          containerId, 
-          highlightEntity, 
-          tooltip, 
-          handleEntitySelect, 
-          AllcollababorationsFiltered, 
-          imdb
-        );
-        
-        currentData = newData;
-        
-        const idx = newData.entities.findIndex(name => name === entityName);
-        highlightEntity = idx !== -1 ? idx : null;
-        
-        searchInput.value = entityName;
-        
-        dropdown.style("display", "none");
-      };
-      
-      function updateViz() {
-        const minCollabVal = parseInt(collabSelect.value);
-        const AllcollababorationsFiltered = Allcollababorations.filter(c => c.count >= minCollabVal);
         const maxEntitiesVal = parseInt(maxEntSelect.value);
-        const searchVal = searchInput.value.toLowerCase();
-     
+        const AllcollababorationsFiltered = Allcollababorations.filter(c => c.count >= minCollabVal);
+        
+        let data;
+        
         if (selectedEntityName) {
           const filteredCollabsByEntity = viz2Process.filterDataByEntity(selectedEntityName, AllcollababorationsFiltered);
-          const data = viz2Process.processData(filteredCollabsByEntity, maxEntitiesVal, AllcollababorationsFiltered, selectedEntityName);
-          
-          currentData = data;
+          data = viz2Process.processData(filteredCollabsByEntity, maxEntitiesVal, AllcollababorationsFiltered, selectedEntityName);
           
           const idx = data.entities.findIndex(name => name === selectedEntityName);
           highlightEntity = idx !== -1 ? idx : null;
-          
-          viz2Viz.renderChordDiagram(
-            data, 
-            svgWidth, 
-            svgHeight, 
-            margin2,
-            containerId, 
-            highlightEntity, 
-            tooltip, 
-            handleEntitySelect, 
-            AllcollababorationsFiltered, 
-            imdb
+        } else {
+          const filteredCollabsByType = AllcollababorationsFiltered.filter(c => 
+            (c.connectionType === 'actor/director' || c.connectionType === 'writer/director')
           );
+          
+          data = viz2Process.processData(filteredCollabsByType, maxEntitiesVal, AllcollababorationsFiltered);
+          
+          const searchVal = searchInput.value.toLowerCase();
+          highlightEntity = null;
+          if (searchVal) {
+            const idx = data.entities.findIndex(name => name.toLowerCase().includes(searchVal));
+            highlightEntity = idx !== -1 ? idx : null;
+          }
+        }
+        
+        currentData = data;
+
+        if (!data || !data.entities || data.entities.length === 0) {
+          viz2Viz.displayNoDataMessage(svgViz2, svgWidth, svgHeight);
           return;
         }
+
+        const outerRadius = Math.min(svgWidth, svgHeight) / 2 - 90;
+        const innerRadius = outerRadius * 0.9;
+
+        const chord = viz2Scales.createChordScales();
+        const arc = viz2Scales.createArcScales(innerRadius, outerRadius);
+        const ribbon = viz2Scales.createRibbonScales(innerRadius);
+        const colorScale = viz2Scales.createColorScale();
+        const chords = chord(data.matrix);
         
-        const filteredCollabs = AllcollababorationsFiltered.filter(c => 
-          (c.connectionType === 'actor/director' || c.connectionType === 'writer/director')
-        );
-        
-        const data = viz2Process.processData(filteredCollabs, maxEntitiesVal, AllcollababorationsFiltered);
-     
-        currentData = data;
-     
-        highlightEntity = null;
-        if (searchVal) {
-          const idx = data.entities.findIndex(name => name.toLowerCase().includes(searchVal));
-          highlightEntity = idx !== -1 ? idx : null;
-        }
-    
-        viz2Viz.renderChordDiagram(
-          data, 
-          svgWidth, 
-          svgHeight, 
-          margin2,
-          containerId, 
-          highlightEntity, 
-          tooltip, 
-          handleEntitySelect, 
-          AllcollababorationsFiltered, 
-          imdb
-        );
+          
+        const group = g2.append("g")
+        .selectAll("g")
+        .data(chords.groups)
+        .join("g");
+
+        viz2Viz.drawArcs(data, g2, chords, group, arc, colorScale, tooltip, handleEntitySelect);
+          
+        viz2Viz.drawLabels(group, outerRadius, data);
+
+        viz2Viz.drawRibbons(g2, chords, ribbon, colorScale, data, tooltip, AllcollababorationsFiltered, imdb);
+
+        viz2Viz.updateHighlight(g2, chords, highlightEntity);
+       
+        dropdown.style("display", "none");
       }
+      
+      const handleEntitySelect = (entityName, entityType) => {
+        updateViz(entityName, entityType);
+      };
       
       searchInput.addEventListener("input", function() {
         const searchTerm = this.value.trim();
         
         if (searchTerm.length > 0) {
           const AllcollababorationsFiltered = Allcollababorations.filter(c => c.count >= collabSelect.value);
-
           viz2Search.updateDropdownSuggestions(searchTerm, AllcollababorationsFiltered, dropdown, handleEntitySelect);
         } else {
           dropdown.style("display", "none");
@@ -370,42 +349,19 @@ document.addEventListener("DOMContentLoaded", () => {
         event.stopPropagation();
       });
     
-      collabSelect.addEventListener("change", updateViz);
-      maxEntSelect.addEventListener("change", updateViz);
+      collabSelect.addEventListener("change", () => updateViz());
+      maxEntSelect.addEventListener("change", () => updateViz());
       
-      // Reset button to show all data without filters
       const resetButton = document.getElementById('reset-button');
       if (resetButton) {
         resetButton.addEventListener("click", () => {
           searchInput.value = '';
-          dropdown.style("display", "none");
           collabSelect.value = 2;
           maxEntSelect.value = 20;
           selectedEntityName = null;
           selectedEntityType = null;
           
-          const filteredCollabsByType = Allcollababorations.filter(c => 
-            (c.connectionType === 'actor/director' || c.connectionType === 'writer/director')
-          );
-          const AllcollababorationsFiltered = Allcollababorations.filter(c => c.count >= collabSelect.value);
-
-          const data = viz2Process.processData(filteredCollabsByType, maxEntSelect.value, AllcollababorationsFiltered);
-          currentData = data;
-          
-          highlightEntity = null;
-          
-          viz2Viz.renderChordDiagram(
-            data, 
-            svgWidth, 
-            svgHeight, 
-            margin2,
-            containerId, 
-            highlightEntity, 
-            tooltip, 
-            handleEntitySelect, 
-            AllcollababorationsFiltered, 
-            imdb
-          );
+          updateViz();
         });
       }
     
@@ -418,6 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const metric = document.getElementById("metric-select-team");
     
     buildViz2_V2(role, metric);
+   
     
 
     /* Visualisation 3 - Genres et tendances */

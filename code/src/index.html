@@ -77,14 +77,20 @@
       <div class="viz_n_text_container">
         <div class="visualization-description">
           <p>
-            Cette visualisation présente les collaborations entre acteurs et réalisateurs des films. 
+            Cette visualisation présente les collaborations entre acteurs, réalisateurs et scénaristes des films. 
             Le diagramme en accord (chord diagram) illustre les liens professionnels qui se sont formés au fil des années dans l'industrie cinématographique.
+            Les relations représentées sont :
+            <ul>
+              <li>Les collaborations entre acteurs et réalisateurs</li>
+              <li>Les collaborations entre les acteurs</li>
+              <li>Les collaborations entre scénaristes et réalisateurs</li>
+            </ul>
           </p>
           <p>
             <strong>Comment lire ce graphique :</strong>
           </p>
           <ul>
-            <li><span style="color: #4285F4; font-weight: bold;">Les acteurs</span> et <span style="color: #EA4335; font-weight: bold;">les réalisateurs</span> sont représentés sur le cercle extérieur</li>
+            <li><span style="color: #4285F4; font-weight: bold;">Les acteurs</span>, <span style="color: #F4B400; font-weight: bold;">les scénaristes</span> et <span style="color: #EA4335; font-weight: bold;">les réalisateurs</span> sont représentés sur le cercle extérieur</li>
             <li>L'épaisseur des liens entre deux entités indique le nombre de collaborations ensemble</li>
             <li>Cliquez sur un nom pour mettre en évidence les collaborations directes avec celui-ci</li>
             <li>Utilisez la recherche pour trouver rapidement un acteur ou réalisateur spécifique</li>
@@ -133,13 +139,15 @@
             <p style="margin-top: 0.5em; font-size: 0.9em; color: gray;">
               <span style="color: #4285F4;">●</span> Acteurs
               &nbsp;&nbsp;
+              <span style="color: #F4B400;">●</span> Scénaristes
+              &nbsp;&nbsp;
               <span style="color: #EA4335;">●</span> Réalisateurs
               &nbsp;&nbsp;– Cliquer sur un nom ou rechercher pour mettre en évidence les collaborations.
             </p>
           </div>
           
           <div class="graph" id="collaboration-chord">
-            <!-- D3.js will inject the SVG here -->
+            <svg class="collaboration-chord-svg"></svg>
           </div>
         </div>
       </div>
