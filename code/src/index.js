@@ -12,7 +12,7 @@ import { addAdditionalMovieData, getAdditionalMovieData } from './scripts/proces
 import { processMovieData } from './scripts/process_imdb'
 import {
   getFilmContributorsData, getGenreDataIntervals,
-  getTopCollaborations, getCertificateData, getDataBySeason, getMovieLengthData, getTaglineWordsData, getTaglineLengthData, calculateMovieProfits, getMoviesByGenre
+  getTopCollaborations, getCertificateData, getDataBySeason, getMovieLengthData, getTaglineWordsData, getTaglineLengthData, calculateMovieProfits, getMoviesByGenre, countCollaborations
 } from './scripts/preprocess_data'
 
 import { adjustForInflation, convertMovieNamesToString } from './scripts/helper.js'
@@ -27,7 +27,13 @@ import * as viz1Viz from './viz1-scripts/viz1-viz.js'
 
 import d3Tip from 'd3-tip'
 
-
+/* Visualisation 2 - Importations */
+import * as viz2Process from './viz2-scripts/viz2-preprocess.js'
+import * as viz2Helper from './viz2-scripts/viz2-helper.js'
+import * as viz2Scales from './viz2-scripts/viz2-scales.js'
+import * as viz2Viz from './viz2-scripts/viz2-viz.js'
+import * as viz2Tooltip from './viz2-scripts/viz2-tooltip.js'
+import * as viz2Search from './viz2-scripts/viz2-search.js'
 /* Visualisation 3 - Importations */
 import * as viz3Process from './viz3-scripts/viz3-preprocess.js'
 import * as viz3Helper from './viz3-scripts/viz3-helper.js'
@@ -46,6 +52,9 @@ import * as viz4Process from './viz4-scripts/viz4-process.js'
 import * as viz4Viz from './viz4-scripts/viz4-viz.js'
 import * as viz4CheckBoxes from './viz4-scripts/viz4-checkboxes.js'
 import * as viz4Tooltip from './viz4-scripts/viz4-tooltip.js'
+
+import * as d3 from 'd3'
+
 
 // import * as helper from './scripts/helper.js'
 // import * as preproc from './scripts/preprocess_imbd_data.js'
@@ -120,11 +129,11 @@ document.addEventListener("DOMContentLoaded", () => {
     convertMovieNamesToString(imdb)
 
     imdb = calculateMovieProfits(imdb)
-
+  
+    const Allcollababorations = countCollaborations(imdb)
     const contributorData = getFilmContributorsData(imdb)
     const genreIntervalData = getGenreDataIntervals(imdb)
     const genreData = getMoviesByGenre(imdb)
-    const collaborationsData = getTopCollaborations(imdb)
 
     const certificateData = getCertificateData(imdb)
     const seasonalData = getDataBySeason(imdb)
@@ -212,8 +221,206 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
 
-    /* Visualisation 3 - Genres et tendances */
+    /* Visualisation 2 - Équipe du film */
 
+    function buildViz2_V2() {
+
+      const margin2 = {
+        top: 10,
+        right: 40,
+        bottom: 60,
+        left: 10
+      }
+      
+      const svgWidth = 850;
+      const svgHeight = 650;
+      const containerId = "collaboration-chord";
+    
+      let currentData = null;
+      let highlightEntity = null;
+      let selectedEntityName = null;
+      let selectedEntityType = null;
+    
+      const searchInput = document.getElementById("search-box");
+      const collabSelect = document.getElementById("min-collab");
+      const maxEntSelect = document.getElementById("max-entities");
+      
+      // Set up the SVG container
+      viz2Helper.setCanvasSize(svgWidth, svgHeight);
+
+      // Create tooltip
+      const tooltip = viz2Tooltip.createTooltip();
+
+      // Set up search dropdown
+      const dropdownContainer = viz2Search.createDropdownContainer(searchInput);
+      const dropdown = dropdownContainer.dropdown;
+      
+      const handleEntitySelect = (entityName, entityType) => {
+        selectedEntityName = entityName;
+        selectedEntityType = entityType;
+        
+        const minCollabVal = parseInt(collabSelect.value);
+        const AllcollababorationsFiltered = Allcollababorations.filter(c => c.count >= minCollabVal);
+        const filteredCollabsByEntity = viz2Process.filterDataByEntity(entityName, AllcollababorationsFiltered);
+        const newData = viz2Process.processData(filteredCollabsByEntity, maxEntSelect.value, AllcollababorationsFiltered, entityName);
+        
+        viz2Viz.renderChordDiagram(
+          newData, 
+          svgWidth, 
+          svgHeight, 
+          margin2,
+          containerId, 
+          highlightEntity, 
+          tooltip, 
+          handleEntitySelect, 
+          AllcollababorationsFiltered, 
+          imdb
+        );
+        
+        currentData = newData;
+        
+        const idx = newData.entities.findIndex(name => name === entityName);
+        highlightEntity = idx !== -1 ? idx : null;
+        
+        searchInput.value = entityName;
+        
+        dropdown.style("display", "none");
+      };
+      
+      function updateViz() {
+        const minCollabVal = parseInt(collabSelect.value);
+        const AllcollababorationsFiltered = Allcollababorations.filter(c => c.count >= minCollabVal);
+        const maxEntitiesVal = parseInt(maxEntSelect.value);
+        const searchVal = searchInput.value.toLowerCase();
+     
+        if (selectedEntityName) {
+          const filteredCollabsByEntity = viz2Process.filterDataByEntity(selectedEntityName, AllcollababorationsFiltered);
+          const data = viz2Process.processData(filteredCollabsByEntity, maxEntitiesVal, AllcollababorationsFiltered, selectedEntityName);
+          
+          currentData = data;
+          
+          const idx = data.entities.findIndex(name => name === selectedEntityName);
+          highlightEntity = idx !== -1 ? idx : null;
+          
+          viz2Viz.renderChordDiagram(
+            data, 
+            svgWidth, 
+            svgHeight, 
+            margin2,
+            containerId, 
+            highlightEntity, 
+            tooltip, 
+            handleEntitySelect, 
+            AllcollababorationsFiltered, 
+            imdb
+          );
+          return;
+        }
+        
+        const filteredCollabs = AllcollababorationsFiltered.filter(c => 
+          (c.connectionType === 'actor/director' || c.connectionType === 'writer/director')
+        );
+        
+        const data = viz2Process.processData(filteredCollabs, maxEntitiesVal, AllcollababorationsFiltered);
+     
+        currentData = data;
+     
+        highlightEntity = null;
+        if (searchVal) {
+          const idx = data.entities.findIndex(name => name.toLowerCase().includes(searchVal));
+          highlightEntity = idx !== -1 ? idx : null;
+        }
+    
+        viz2Viz.renderChordDiagram(
+          data, 
+          svgWidth, 
+          svgHeight, 
+          margin2,
+          containerId, 
+          highlightEntity, 
+          tooltip, 
+          handleEntitySelect, 
+          AllcollababorationsFiltered, 
+          imdb
+        );
+      }
+      
+      searchInput.addEventListener("input", function() {
+        const searchTerm = this.value.trim();
+        
+        if (searchTerm.length > 0) {
+          const AllcollababorationsFiltered = Allcollababorations.filter(c => c.count >= collabSelect.value);
+
+          viz2Search.updateDropdownSuggestions(searchTerm, AllcollababorationsFiltered, dropdown, handleEntitySelect);
+        } else {
+          dropdown.style("display", "none");
+          selectedEntityName = null;
+          selectedEntityType = null;
+          updateViz();
+        }
+      });
+      
+      document.addEventListener("click", function(event) {
+        if (!event.target.closest("#search-container")) {
+          dropdown.style("display", "none");
+        }
+      });
+      
+      dropdown.on("click", function(event) {
+        event.stopPropagation();
+      });
+    
+      collabSelect.addEventListener("change", updateViz);
+      maxEntSelect.addEventListener("change", updateViz);
+      
+      // Reset button to show all data without filters
+      const resetButton = document.getElementById('reset-button');
+      if (resetButton) {
+        resetButton.addEventListener("click", () => {
+          searchInput.value = '';
+          dropdown.style("display", "none");
+          collabSelect.value = 2;
+          maxEntSelect.value = 20;
+          selectedEntityName = null;
+          selectedEntityType = null;
+          
+          const filteredCollabsByType = Allcollababorations.filter(c => 
+            (c.connectionType === 'actor/director' || c.connectionType === 'writer/director')
+          );
+          const AllcollababorationsFiltered = Allcollababorations.filter(c => c.count >= collabSelect.value);
+
+          const data = viz2Process.processData(filteredCollabsByType, maxEntSelect.value, AllcollababorationsFiltered);
+          currentData = data;
+          
+          highlightEntity = null;
+          
+          viz2Viz.renderChordDiagram(
+            data, 
+            svgWidth, 
+            svgHeight, 
+            margin2,
+            containerId, 
+            highlightEntity, 
+            tooltip, 
+            handleEntitySelect, 
+            AllcollababorationsFiltered, 
+            imdb
+          );
+        });
+      }
+    
+      updateViz();
+    }
+    
+    document.addEventListener("DOMContentLoaded", buildViz2_V2);
+    
+    const role = document.getElementById("y-role-select");
+    const metric = document.getElementById("metric-select-team");
+    
+    buildViz2_V2(role, metric);
+    
+
+    /* Visualisation 3 - Genres et tendances */
 
     let metricViz3 = "rating"; // "box_office", 
     let selectedFilterViz3 = "genre";

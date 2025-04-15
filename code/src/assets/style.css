@@ -130,6 +130,53 @@ h2 {
   flex: 1;
 }
 
+/* Visualization description */
+.visualization-description {
+  flex: 0 0 30%;
+  max-width: 30%;
+  padding-right: 20px;
+}
+
+.visualization2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.team-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 40px;
+
+}
+
+.visualization-description h3 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.3em;
+}
+
+.visualization-description p {
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.visualization-description ul {
+  padding-left: 20px;
+  margin-bottom: 15px;
+}
+
+.visualization-description li {
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.visualization-description strong {
+  color: #333;
+}
+
 .viz-container {
   display: flex;
   flex-direction: column;
@@ -287,44 +334,50 @@ footer {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-
-    header.navigation {
-      font-size: 13px;
-      width: 100%;
-    }
     
+    header.navigation {
+        padding: 5px 10px;
+        gap : 6px;
+    }
+
     header.navigation nav {
-      margin: 0px 5px;
-      width: 100%;
-      border-radius: 0px;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap : 3px;
+        width: 390px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 8px;
+        
     }
     
     header.navigation nav a {
-      color: #333;
-      padding: 4px 4px;
-      border-radius: 5px;
+        font-size: 0.8em;
+        margin: 1px;
     }
 
     .hero {
-      transform: translateY(-90px);
+        height: 300px;
     }
-    
 
     .viz_n_text_container {
-      flex-direction: column;
-      align-items: center;
-  }
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
     .viz_n_text_container>p {
-      flex: 0 0 100%;
-      max-width: 100%;
+        flex: 0 0 100%;
+        max-width: 100%;
     }
-    
+
+    .visualization-description {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding-right: 0;
+        margin-bottom: 20px;
+    }
+
     section {
-      scroll-margin-top: 110px;
+        margin-bottom: 40px;
     }
     
 }

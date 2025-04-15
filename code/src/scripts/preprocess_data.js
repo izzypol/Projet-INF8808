@@ -259,35 +259,45 @@ export function createYearIntervals (movies, intervalSize = 10) {
 }
 
 /**
- * Gets the top collaborations for actor/director and actor/actor collaborations
+ * Gets the top collaborations for actor/director, actor/actor, and writer/director collaborations.
  *
  * @param {Array} movies Array of movie objects
  * @param {number} limit Number of top collaborations to return (20 by default)
- * @returns {object} Object with the top actor/director and actor/actor collaborations
+ * @returns {object} Object with the top actor/director, actor/actor, and writer/director collaborations
  */
 export function getTopCollaborations (movies, limit = 20) {
   const allCollabs = countCollaborations(movies)
-
+  console.log(allCollabs);
   return {
     topActorDirectorCollabs: allCollabs.actorDirectorCollabs.slice(0, limit),
-    topActorActorCollabs: allCollabs.actorActorCollabs.slice(0, limit)
+    topActorActorCollabs: allCollabs.actorActorCollabs.slice(0, limit),
+    topWriterDirectorCollabs: allCollabs.writerDirectorCollabs.slice(0, limit)
   }
 }
 
 /**
- * Counts the amount of collaborations between actors and directors, and also between actors themselves
+ * Counts the amount of collaborations between actors and directors, writers and directors, and also between actors
  *
- * @param {Array} movies Array of movie objects with casts and directors properties
- * @returns {object} Object containing actorDirectorCollabs and actorActorCollabs
+ * @param {Array} movies Array of movie objects with casts, writers, and directors properties
+ * @returns {object} Object containing all collaborations sorted by count
  */
-function countCollaborations (movies) {
-  const actorDirectorCollabs = {}
-  const actorActorCollabs = {}
+export function countCollaborations (movies) {
+  const collaborations = {}
 
-  const createCollabObject = (isSameType, participant1, participant2) => {
+  const createCollabObject = (participant1, participant2, connectionType) => {
+    let finalParticipant1, finalParticipant2
+
+    if (connectionType === 'actor/actor') {
+      [finalParticipant1, finalParticipant2] = [participant1, participant2].sort()
+    } else {
+      finalParticipant1 = participant1
+      finalParticipant2 = participant2
+    }
+
     return {
-      [isSameType ? 'actor1' : 'actor']: participant1,
-      [isSameType ? 'actor2' : 'director']: participant2,
+      participant1: finalParticipant1,
+      participant2: finalParticipant2,
+      connectionType: connectionType,
       movies: [],
       genres: [],
       mostPopularGenre: null,
@@ -313,47 +323,69 @@ function countCollaborations (movies) {
   }
 
   movies.forEach(movie => {
-    const castMembers = movie.casts || []
+    const castMembers = (movie.casts || []).slice(0, 6)
     const directors = movie.directors || []
+    const writers = movie.writers || []
 
-    castMembers.forEach(actor => {
+    const roleMap = {}
+    directors.forEach(director => { if (director) roleMap[director] = 'director' })
+    castMembers.forEach(actor => { if (actor && !roleMap[actor]) roleMap[actor] = 'actor' })
+    writers.forEach(writer => { if (writer && !roleMap[writer]) roleMap[writer] = 'writer' })
+
+    const filteredActors = castMembers.filter(actor => actor && roleMap[actor] === 'actor')
+    const filteredDirectors = directors
+    const filteredWriters = writers.filter(writer => writer && roleMap[writer] === 'writer')
+
+    // Actor/Director collaborations
+    filteredActors.forEach(actor => {
       if (!actor) return
 
-      directors.forEach(director => {
-        if (!director) return
+      filteredDirectors.forEach(director => {
+        if (!director || actor === director) return
 
-        const key = `${actor}/${director}`
-
-        if (!actorDirectorCollabs[key]) {
-          actorDirectorCollabs[key] = createCollabObject(false, actor, director)
-        }
-
-        addMovieToCollab(actorDirectorCollabs[key], movie)
+        const key = `${actor}/${director}/actor-director`
+        if (!collaborations[key]) collaborations[key] = createCollabObject(actor, director, 'actor/director')
+        addMovieToCollab(collaborations[key], movie)
       })
     })
 
-    for (let i = 0; i < castMembers.length; i++) {
-      const actor1 = castMembers[i]
+    // Actor/Actor collaborations
+    for (let i = 0; i < filteredActors.length; i++) {
+      const actor1 = filteredActors[i]
       if (!actor1) continue
 
-      for (let j = i + 1; j < castMembers.length; j++) {
-        const actor2 = castMembers[j]
+      for (let j = i + 1; j < filteredActors.length; j++) {
+        const actor2 = filteredActors[j]
         if (!actor2) continue
 
-        const actorPair = [actor1, actor2].sort()
-        const key = `${actorPair[0]}/${actorPair[1]}`
+        const pair = [actor1, actor2].sort()
+        const key = `${pair[0]}/${pair[1]}/actor-actor`
 
-        if (!actorActorCollabs[key]) {
-          actorActorCollabs[key] = createCollabObject(true, actorPair[0], actorPair[1])
-        }
-
-        addMovieToCollab(actorActorCollabs[key], movie)
+        if (!collaborations[key]) collaborations[key] = createCollabObject(pair[0], pair[1], 'actor/actor')
+        addMovieToCollab(collaborations[key], movie)
       }
     }
+
+    // Writer/Director collaborations
+    filteredWriters.forEach(writer => {
+      if (!writer) return
+
+      filteredDirectors.forEach(director => {
+        if (!director || writer === director) return
+
+        const key = `${writer}/${director}/writer-director`
+        if (!collaborations[key]) {
+          collaborations[key] = createCollabObject(writer, director, 'writer/director')
+        }
+
+        addMovieToCollab(collaborations[key], movie)
+      })
+    })
   })
 
-  const finalizeCollabs = collabs => {
-    return Object.values(collabs).map(collab => {
+  const finalizedCollabs = Object.values(collaborations)
+    .filter(collab => collab.count >= 1)
+    .map(collab => {
       MetricsHelper.calculateAverages(collab)
 
       if (collab.genres.length) {
@@ -365,13 +397,10 @@ function countCollaborations (movies) {
       delete collab.genres
 
       return collab
-    }).sort((a, b) => b.count - a.count)
-  }
+    })
+    .sort((a, b) => b.count - a.count)
 
-  return {
-    actorDirectorCollabs: finalizeCollabs(actorDirectorCollabs),
-    actorActorCollabs: finalizeCollabs(actorActorCollabs)
-  }
+  return finalizedCollabs
 }
 
 /**
