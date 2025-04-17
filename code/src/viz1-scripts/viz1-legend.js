@@ -50,7 +50,7 @@ export function drawLegend(colorScale, g, width, height, minYear, maxYear) {
   
     // === BUBBLE LEGEND ===
   const bubbleLegend = g.append("g")
-    .attr("transform", `translate(${width + 130}, 140)`); // position ajustable
+    .attr("transform", `translate(${width + 130}, 140)`); 
 
   const circleSizes = [20, 14, 9, 4]; // rayons
   const spacing = 50;

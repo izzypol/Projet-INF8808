@@ -2,7 +2,7 @@
  * Defines the scale to use for the circle markers' radius.
  *
  * The radius is linearly proportional to the total number of nominations.
- * (Oscars + Golden Globes), in the interval [5, 20].
+ * (Oscars + Golden Globes), in the interval [5, 15].
  *
  * @param {object} data The data to be displayed
  * @returns {*} The linear scale used to determine the radius

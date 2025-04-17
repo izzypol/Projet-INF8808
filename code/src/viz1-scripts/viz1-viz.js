@@ -12,7 +12,6 @@
  * @param {number} height The height of the graph
  */
 export function positionLabels (g, width, height) {
-  // TODO : Position axis labels
   g.select('.x1.axis-text')
     .attr('transform', 'translate(' + width/2 + ', '+ (height+50) +')');    // On décale le label x à la moitié de la largeur
 
@@ -33,6 +32,7 @@ export function drawCircles(g, data, rScale, colorScale) {
     d.box_office !== "Not Available" &&
     !isNaN(d.box_office) &&
     d.rank !== undefined &&
+    d.box_office > 100000 &&  // on enlève les films avec un box office trop faible qui sont certainement des erreurs dans le dataset
     !isNaN(d.rank)
   );
 
@@ -50,7 +50,7 @@ export function drawCircles(g, data, rScale, colorScale) {
       d.oscarsData.oscarNominations + d.goldenGlobesData.goldenGlobesNominations
     ))
     .attr('fill', d => colorScale(d.year))
-    .style('opacity', 0.85)
+    .style('opacity', 0.80)
     .attr('stroke', 'white');
 }
 
@@ -77,8 +77,6 @@ export function moveCircles(g, xScale, yScale, transitionDuration) {
  * @param {*} tip The tooltip
  */
 export function setCircleHoverHandler (g,tip) {
-  // TODO : Set hover handler. The tooltip shows on
-  // hover and the opacity goes up to 100% (from 70%)
 
                              // On sélectionne le graphe et les bulles
     g.selectAll('.bubble1')                                  
@@ -88,18 +86,7 @@ export function setCircleHoverHandler (g,tip) {
       tip.show(d, this);                          // On montre le tip 
     })
     .on('mouseout', function (e,d){               // Quand la souris sort
-      d3.select(this).style('opacity', 0.85);      // Opacité -> 70%
+      d3.select(this).style('opacity', 0.80);      // Opacité -> 80%
       tip.hide(d, this);                          // On cache le tip 
     });
-}
-
-
-/**
- * Update the title of the graph.
- */
-export function setTitleText (year) {
-  // TODO : Set the title
-  d3.select('#graph-g')                 // Sélection du graphe
-    .select('.title1')                   // Sélection du titre
-    .text('Data for year : ');   // On change le texte (initialement vide) comme attendu
 }
