@@ -10,30 +10,43 @@ export function createLegendsContainer (seasonalCategories) {
   graphWrapper.style.display = 'flex'
   graphWrapper.style.flexDirection = 'row'
   graphWrapper.style.alignItems = 'flex-start'
-  graphWrapper.style.justifyContent = 'space-between'
-  graphWrapper.style.gap = '20px'
+  graphWrapper.style.justifyContent = 'flex-end'
+  graphWrapper.style.gap = '10px'
   graphWrapper.style.position = 'relative'
+  graphWrapper.style.paddingLeft = '100px'
 
   let description = document.getElementById('viz5-description')
   if (!description) {
     description = document.createElement('div')
     description.id = 'viz5-description'
-    description.style.width = '20%'
-    description.style.fontSize = '13px'
+    description.style.width = '250px'
+    description.style.fontSize = '16px'
     description.style.lineHeight = '1.6'
-    description.style.paddingRight = '10px'
+    description.style.position = 'absolute'
+    description.style.left = '-100px'
+    description.style.top = '10px'
+    description.style.backgroundColor = 'rgba(255, 255, 255, 0.9)'
+    description.style.padding = '15px'
+    description.style.borderRadius = '5px'
+    description.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)'
+    description.style.zIndex = '20'
 
     description.innerHTML = `
-      <strong>Comment lire ce graphique :</strong><br />
-      Chaque bulle représente un mot fréquemment utilisé dans les taglines.
-      <ul style="margin-top: 5px; padding-left: 16px;">
-        <li><strong>Taille</strong> : plus une bulle est grande, plus le mot est fréquent.</li>
-        <li><strong>Couleur</strong> : elle correspond à la catégorie thématique du mot.</li>
-        <li><strong>Numéros</strong> : certains mots trop longs ou peu lisibles sont remplacés par des numéros. 
-        La légende en bas de la visualisation les détaille.</li>
+      <strong style="font-size: 16px;">Comment lire ce graphique :</strong><br />
+      Chaque bulle représente un mot fréquemment utilisé dans les taglines.<br>
+      <br><strong style="font-size: 16px; margin-top: 8px">Interaction :</strong>
+      <ul style="margin-top: 8px; padding-left: 20px; max-width: 100%;">
+        <li style="margin-bottom: 8px;"><strong>Menu déroulant</strong> : sélectionnez une saison spécifique pour voir les mots les plus utilisés durant cette période.</li>
+        <li style="margin-bottom: 8px;"><strong>Survol</strong> : passez votre souris sur une bulle pour voir des détails supplémentaires sur le mot.</li>
+        <li style="margin-bottom: 8px;"><strong>Légende des catégories</strong> : référez-vous au panneau de droite pour identifier les différentes catégories thématiques.</li>
       </ul>
-      <br />
-      Utilisez le menu déroulant pour explorer les mots par saison.
+      
+      <strong style="font-size: 16px;">Analyse :</strong>
+      <ul style="margin-top: 8px; padding-left: 20px; max-width: 100%;">
+        <li style="margin-bottom: 8px;">Observez quels types de mots dominent selon les saisons et comment les tendances évoluent.</li>
+        <li style="margin-bottom: 8px;">Comparez la fréquence relative des différentes catégories thématiques.</li>
+        <li style="margin-bottom: 8px;">Identifiez les mots-clés récurrents qui caractérisent le cinéma de chaque période.</li>
+      </ul>
     `
     graphWrapper.insertBefore(description, graphWrapper.firstChild)
   }
@@ -59,7 +72,7 @@ export function createLegendsContainer (seasonalCategories) {
   categoryTitle.style.marginBottom = '6px'
   categoryContainer.appendChild(categoryTitle)
 
-  categoryContainer.innerHTML += `<svg id="category-legend-svg" width="150" height="${20 * seasonalCategories.length + 20}"></svg>`
+  categoryContainer.innerHTML += `<svg id="category-legend-svg" width="175" height="${20 * seasonalCategories.length + 20}"></svg>`
 
   const frequencyContainer = document.createElement('div')
   frequencyContainer.id = 'frequency-legend-container'
@@ -85,6 +98,7 @@ export function createLegendsContainer (seasonalCategories) {
   bottomLegendContainer.style.width = '100%'
   bottomLegendContainer.style.zIndex = '1'
   bottomLegendContainer.style.marginBottom = '30px'
+  bottomLegendContainer.style.paddingTop = '50px'
 
   const legendList = document.createElement('div')
   legendList.id = 'numbered-legend-list'
@@ -127,7 +141,7 @@ export function getSeasonData (season, viz5data) {
         wordMap[word].count += wordData.count || 0
 
         if (Array.isArray(wordData.movies)) {
-          const existingMovieIds = new Set(wordMap[word].movies.map(m => m.id || m.name))
+          const existingMovieIds = new Set(wordMap[word].movies.map(movie => movie.id || movie.name))
           wordData.movies.forEach(movie => {
             const uniqueId = movie.id || movie.name
             if (!existingMovieIds.has(uniqueId)) {
@@ -140,9 +154,9 @@ export function getSeasonData (season, viz5data) {
     })
 
     const mergedWords = Object.values(wordMap).map(entry => {
-      const ratedMovies = entry.movies.filter(m => typeof m.rating === 'number')
+      const ratedMovies = entry.movies.filter(movie => typeof movie.rating === 'number')
       const avgRating = ratedMovies.length
-        ? Number((ratedMovies.reduce((sum, m) => sum + m.rating, 0) / ratedMovies.length).toFixed(2))
+        ? Number((ratedMovies.reduce((sum, movie) => sum + movie.rating, 0) / ratedMovies.length).toFixed(2))
         : undefined
 
       const topMovies = ratedMovies.sort((a, b) => b.rating - a.rating).slice(0, 5)

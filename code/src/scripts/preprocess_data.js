@@ -3,7 +3,7 @@ import { stopWords, parseRuntime } from './helper'
 /**
  * Helper functions for metrics calculations (averages, quantity, etc)
  */
-const MetricsHelper = {
+export const MetricsHelper = {
   standardMetrics: [
     { property: 'rating', movieProperty: 'rating' },
     { property: 'budget', movieProperty: 'budget' },

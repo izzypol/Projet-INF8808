@@ -1,51 +1,10 @@
-
-// /**
-//  * Generates the SVG element g which will contain the data visualisation.
-//  *
-//  * @param {object} margin The desired margins around the graph
-//  * @returns {*} The d3 Selection for the created g element
-//  */
-// export function generateG (margin) {
-//   return d3.select('.graph')
-//     .select('svg')
-//     .append('g')
-//     .attr('id', 'graph-g')
-//     .attr('transform',
-//       'translate(' + margin.left + ',' + margin.top + ')')
-// }
-
-// /**
-//  * Sets the size of the SVG canvas containing the graph.
-//  *
-//  * @param {number} width The desired width
-//  * @param {number} height The desired height
-//  */
-// export function setCanvasSize (width, height) {
-//   d3.select('#heatmap').select('svg')
-//     .attr('width', width)
-//     .attr('height', height)
-// }
-
-// /**
-//  * Appends an SVG g element which will contain the axes.
-//  *
-//  * @param {*} g The d3 Selection of the graph's g SVG element
-//  */
-// export function appendAxes (g) {
-//   g.append('g')
-//     .attr('class', 'x axis')
-
-//   g.append('g')
-//     .attr('class', 'y axis')
-// }
-
 /**
  * Cleans the name to avoid mismatching during the comparison of movie names
  *
  * @param {string} name The movie name to clean
  * @returns {string} the cleaned movie name
  */
-export function cleanMovieName(name) {
+export function cleanMovieName (name) {
   let nameStr = String(name)
   const articlePattern = /^(.+),\s+(The|A|An)$/i
   const articleMatch = nameStr.match(articlePattern)
@@ -62,7 +21,7 @@ export function cleanMovieName(name) {
  * @param {number} topYear The year to adjust the amount to
  * @returns {number} The inflation-adjusted amount, rounded to 2 decimal places
  */
-export function adjustForInflation(moneterayAmount, movieYear, topYear) {
+export function adjustForInflation (moneterayAmount, movieYear, topYear) {
   const nYears = topYear - movieYear
   const inflationRate = 1 + (3.3 / 100)
 
@@ -79,7 +38,7 @@ export function adjustForInflation(moneterayAmount, movieYear, topYear) {
  * @param {string} runtimeString A string representing the runtime in hours and/or minutes
  * @returns {number|null} The total runtime in minutes, or null if invalid input
  */
-export function parseRuntime(runtimeString) {
+export function parseRuntime (runtimeString) {
   if (!runtimeString || typeof runtimeString !== 'string') return null
   let totalMins = 0
 
@@ -92,6 +51,7 @@ export function parseRuntime(runtimeString) {
   return totalMins > 0 ? totalMins : null
 }
 
+// Words that do not bring significant value to the data
 export const stopWords = new Set([
   'about', 'after', 'again', 'against', 'all', 'also', 'and', 'any', 'are', 'because',
   'been', 'before', 'being', 'between', 'both', 'but', 'can', 'cant', 'could', 'did', 'does',
@@ -100,7 +60,7 @@ export const stopWords = new Set([
   'once', 'only', 'other', 'over', 'same', 'should', 'some', 'such', 'than', 'that',
   'the', 'their', 'them', 'then', 'there', 'theres', 'these', 'they', 'this', 'those', 'through',
   'too', 'under', 'until', 'very', 'was', 'were', 'what', 'when', 'where', 'which',
-  'while', 'who', 'whom', 'why', 'will', 'with', 'would', 'your'
+  'while', 'who', 'whom', 'why', 'will', 'with', 'would', 'your', 'youve', 'hes', 'got'
 ])
 
 /**

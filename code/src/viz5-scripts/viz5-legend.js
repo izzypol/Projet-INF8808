@@ -24,7 +24,7 @@ export function setLegendColor (seasonalCategories, colorScale) {
       .attr('x', 25)
       .attr('y', y + 4)
       .attr('text-anchor', 'start')
-      .style('font-size', '12px')
+      .style('font-size', '14px')
       .text(category)
   })
 }
@@ -128,6 +128,8 @@ export function setNumberedWordsLegend (numberedWords) {
   ul.style.margin = '0'
   ul.style.columnCount = 6
   ul.style.columnGap = '40px'
+  ul.style.justifySelf = 'flex-end'
+
 
   numberedWords.forEach(entry => {
     const li = document.createElement('li')

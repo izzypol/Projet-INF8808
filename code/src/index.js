@@ -125,17 +125,17 @@ document.addEventListener("DOMContentLoaded", () => {
     convertMovieNamesToString(imdb)
 
     imdb = calculateMovieProfits(imdb)
-  
+
     const Allcollababorations = countCollaborations(imdb)
-    const contributorData = getFilmContributorsData(imdb)
-    const genreIntervalData = getGenreDataIntervals(imdb)
-    const genreData = getMoviesByGenre(imdb)
+    // const contributorData = getFilmContributorsData(imdb)
+    // const genreIntervalData = getGenreDataIntervals(imdb)
+    // const genreData = getMoviesByGenre(imdb)
 
-    const certificateData = getCertificateData(imdb)
-    const seasonalData = getDataBySeason(imdb)
+    // const certificateData = getCertificateData(imdb)
+    // const seasonalData = getDataBySeason(imdb)
 
-    const movieLengthData = getMovieLengthData(imdb)
-    const taglineLengthData = getTaglineLengthData(imdb)
+    // const movieLengthData = getMovieLengthData(imdb)
+    // const taglineLengthData = getTaglineLengthData(imdb)
 
 
     /* Visualisation 1 - Success scatter */
@@ -642,72 +642,6 @@ document.addEventListener("DOMContentLoaded", () => {
     refreshViz4(viz4FixedImdb, viz4MesureSucces);
   });
 
-    // }, [])
-    // d3.csv('./golden_globe_awards.csv', d3.autoType).then(function (data) {
-    //   console.log(data)
-    //   const neighborhoodNames = preproc.getNeighborhoodNames(data)
-    //   data = preproc.filterYears(data, 2010, 2020)
-
-    //   data = preproc.summarizeYearlyCounts(data)
-    //   data = preproc.fillMissingData(data, neighborhoodNames, 2010, 2020, util.range)
-
-    // viz.setColorScaleDomain(colorScale, data)
-
-    // legend.initGradient(colorScale)
-    // legend.initLegendBar()
-    // legend.initLegendAxis()
-
-    // const g = helper.generateG(margin)
-
-    // helper.appendAxes(g)
-    // viz.appendRects(data)
-
-    // setSizing()
-    // build()
-
-    /**
-     *   This function handles the graph's sizing.
-     */
-    // function setSizing () {
-    //   bounds = d3.select('.graph').node().getBoundingClientRect()
-
-    //   svgSize = {
-    //     width: bounds.width,
-    //     height: 550
-    //   }
-
-    //   graphSize = {
-    //     width: svgSize.width - margin.right - margin.left,
-    //     height: svgSize.height - margin.bottom - margin.top
-    //   }
-
-    //   helper.setCanvasSize(svgSize.width, svgSize.height)
-    // }
-
-    /**
-     *   This function builds the graph.
-     */
-    // function build () {
-    //   viz.updateXScale(xScale, data, graphSize.width, util.range)
-    //   viz.updateYScale(yScale, neighborhoodNames, graphSize.height)
-
-    //   viz.drawXAxis(xScale)
-    //   viz.drawYAxis(yScale, graphSize.width)
-
-    //   viz.rotateYTicks()
-
-    //   viz.updateRects(xScale, yScale, colorScale)
-
-    //   hover.setRectHandler(xScale, yScale, hover.rectSelected, hover.rectUnselected, hover.selectTicks, hover.unselectTicks)
-
-    //   legend.draw(margin.left / 2, margin.top + 5, graphSize.height - 10, 15, 'url(#gradient)', colorScale)
-    // }
-
-    // window.addEventListener('resize', () => {
-    //   setSizing()
-    //   build()
-    // })
-
     /* Visualisation 5 - Taglines des films */
 
     const viz5data = viz5process.getDataBySeason(imdb)
@@ -721,7 +655,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const svgSize5 = {
-      width: 1200,
+      width: 1300,
       height: 1000
     }
 

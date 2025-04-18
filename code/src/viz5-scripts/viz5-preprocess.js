@@ -1,4 +1,6 @@
 
+import { stopWords } from '../scripts/helper.js'
+
 /**
  * Helper functions for metrics calculations (averages, quantity, etc)
  */
@@ -115,18 +117,6 @@ export const MetricsHelper = {
     return { mostPopularGenre, genreCounts }
   }
 }
-
-// Words that do not bring significant value to the data
-const stopWords = new Set([
-  'about', 'after', 'again', 'against', 'all', 'also', 'and', 'any', 'are', 'because',
-  'been', 'before', 'being', 'between', 'both', 'but', 'can', 'cant', 'could', 'did', 'does',
-  'doing', 'dont', 'down', 'during', 'each', 'few', 'for', 'from', 'further', 'had', 'has',
-  'have', 'having', 'his', 'here', 'how', 'into', 'its', 'just', 'more', 'most', 'not', 'now', 'off',
-  'once', 'only', 'other', 'over', 'same', 'should', 'some', 'such', 'than', 'that',
-  'the', 'their', 'them', 'then', 'there', 'theres', 'these', 'they', 'this', 'those', 'through',
-  'too', 'under', 'until', 'very', 'was', 'were', 'what', 'when', 'where', 'which',
-  'while', 'who', 'whom', 'why', 'will', 'with', 'would', 'your', 'youve', 'hes', 'got'
-])
 
 // Word categories for tagline significant word categorization
 const wordCategories = {
